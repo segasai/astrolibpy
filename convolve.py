@@ -74,7 +74,7 @@ def convolve(image, psf, ft_psf=None, ft_image=None, no_ft=None, correlate=None,
       imft = ifft2(image)
    
    if (auto is not None):   
-      return shift(npix * real_part(fft2(imft * conjugate(imft))), sc[1], sc[2])
+      return roll(roll(npix * real(fft2(imft * conjugate(imft))), sc[0], 0),sc[1],1)
 
    if (ft_psf==None or ft_psf.ndim!=2 or ft_psf.shape!=image.shape or 
             ft_psf.dtype!=image.dtype):
