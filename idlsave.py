@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+To work with idlsave you need first to do 
+from idlsave import idlsave
+
+Then you can save and restore the variables 
+
+idlsave.save('xx.sav','x,y',2,3)
+exec (idlsave.restore('xx.sav'))
+
+"""
 
 import cPickle
 import types
-# idlsave.save('xx.sav','x,y',2,3)
-# exec (idlsave.restore('xx.sav'))
+
 
 class idlsave:
 	dhash={}
