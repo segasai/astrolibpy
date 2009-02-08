@@ -53,7 +53,6 @@ def convolve(image, psf, ft_psf=None, ft_image=None, no_ft=None, correlate=None,
    noft = no_ft
    auto = auto_correlation
    
-   # COMPILE_OPT IDL2
    sp = array(shape(psf_ft)) 
    sif = array(shape(imft))
    sim = array(shape(image))
