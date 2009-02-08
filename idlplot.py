@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
 
 plt.ion()
 
@@ -17,7 +18,6 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		bin=100
 	else:
 		bin=(max-min)/bin
-	print min,max,bin
 	hh = numpy.histogram(x,range=(min,max),bins=bin)
 	loc=hh[1]
 	hh=hh[0]
@@ -33,17 +33,15 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		tmp=oplot 
 	else:
 		tmp=plot
+	xrange=[min,max]
 	tmp(loc1,hh1,ps=0,color=color,xrange=xrange,yrange=yrange,
 		xlog=xlog,ylog=ylog, **kw)
-	print loc1
-	print hh1
     
 def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False):
 	if not noerase:
 		plt.gcf().clf()	
-		print 'x'
 		if position!=None:
 			mypos=position[:]
 			mypos[2]=position[2]-position[0]
@@ -72,6 +70,17 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		xrange=[min(x),max(x)]
 	if yrange==None:
 		yrange=[min(y),max(y)]
+#	xmajorLocator = MultipleLocator(1)
+#	xmajorFormatter = FormatStrFormatter('%d')
+#	ymajorLocator = MultipleLocator(1)
+#	ymajorFormatter = FormatStrFormatter('%d')
+	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+	#MultipleLocator(.1)
+#	yminorLocator = MultipleLocator(.5)
+	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+
+	plt.gca().xaxis.set_minor_locator(xminorLocator)
+	plt.gca().yaxis.set_minor_locator(yminorLocator)		
 		
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
@@ -85,6 +94,10 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 def oplot (x,y, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
+
+#def ploterror (x,y, err **kw):
+#	plot (x,y, **kw)
+#	plt.gca().errorbar(x,y,err)
 			
 
 	
