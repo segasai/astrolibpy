@@ -29,6 +29,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		loc1[2*a+1]=loc[a]
 		loc1[2*a+2]=loc[a+1]
 	loc1[-1]=loc1[-2]
+	loc1[0]=loc[0]
 	if overplot:
 		tmp=oplot 
 	else:
