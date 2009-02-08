@@ -34,7 +34,6 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		tmp=oplot 
 	else:
 		tmp=plot
-	xrange=[min,max]
 	tmp(loc1,hh1,ps=0,color=color,xrange=xrange,yrange=yrange,
 		xlog=xlog,ylog=ylog, **kw)
     
