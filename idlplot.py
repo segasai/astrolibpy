@@ -8,6 +8,23 @@ plt.ion()
 #    color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
 #idlplot.oplot(x,2+y/10.,ps=3,xtitle="SX",color='blue')
 
+def get_marker(ps, linestyle):
+	outlinestyle=' '
+	if ps==3:
+		marker='.'
+	elif ps==4: 
+		marker='D'
+	elif ps==7: 
+		marker='+'
+	elif ps==2: 
+		marker='*'
+	elif ps==6: 
+		marker='s'
+	else:
+		marker=' '
+		outlinestyle='-'
+	return (marker, outlinestyle)
+
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False, **kw):
 	if min==None:
@@ -52,19 +69,7 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 			plt.gca().set_xscale('log')
 		if ylog:
 			plt.gca().set_yscale('log')
-		                    
-	if ps==3:
-		sym='.'
-	elif ps==4: 
-		sym='D'
-	elif ps==7: 
-		sym='+'
-	elif ps==2: 
-		sym='*'
-	elif ps==6: 
-		sym='s'
-	else:
-		sym='-'
+	( marker, linestyle) = get_marker(ps, None)		                    
 	
 	if xrange==None:
 		xrange=[min(x),max(x)]
@@ -78,6 +83,8 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 	#MultipleLocator(.1)
 #	yminorLocator = MultipleLocator(.5)
 	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+#	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
+#							marker=marker, axes=plt.gca() )
 
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
@@ -87,7 +94,7 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 	plt.gca().set_autoscale_on(False)
 	if not overplot:
 		plt.gca().axis(xrange+yrange)#,xautcoscale_on=False)
-	plt.gca().plot(x,y,sym,linewidth=thick,color=color)
+	plt.gca().plot(x,y,marker=marker,linestyle=linestyle,linewidth=thick,color=color)
 	if plt.isinteractive():
 		plt.draw()
 	
@@ -95,9 +102,10 @@ def oplot (x,y, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
-#def ploterror (x,y, err **kw):
-#	plot (x,y, **kw)
-#	plt.gca().errorbar(x,y,err)
-			
+def ploterror (x,y, err, color='black', ps=0, ecolor='black', **kw):
+	plot (x,y,color=color, ps=ps, **kw)
+	(marker,outlinestyle)=get_marker(ps, None)
+	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,linestyle=outlinestyle)
+	plt.draw()		
 
 	
