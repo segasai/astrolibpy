@@ -3,7 +3,6 @@ import numpy
 
 def readcol(filename, delimiter=' ', format=None, skiprows=0):
 	if format==None:
-		print 'x'
 		res=numpy.loadtxt(filename, delimiter=delimiter)
 		ncols = res.shape[0]
 		nrows = res.shape[1]
@@ -31,7 +30,7 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0):
 			elif a=='S':
 				curtype="S100"#numpy.str
 			types.append(("a%d"%i,curtype))
-		print types
+		#print types
 		
 		rec=numpy.loadtxt(file(filename),dtype=types, delimiter=delimiter, 
 						skiprows=skiprows,converters=convs)
@@ -56,4 +55,3 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0):
 			for j in range(nrows):
 				stor[i][j]=rec[j][i]
 		return tuple(stor)
-#	print 'z',format,format==None
