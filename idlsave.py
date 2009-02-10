@@ -15,13 +15,25 @@ import types
 
 
 class idlsave:
+	""" The class devoted for saving and restoring the python variable in
+	files
+	"""
 	dhash={}
 	def __init(self):
 		pass
 	
 	@staticmethod
 	def save(filename=None, names=None, *args):
-
+		"""
+		Saves your variable in a file, in such a way that you can easily
+		retrieve them later. 
+		Example:
+		> x=2
+		> y=[3,4,5]
+		> idlsave.save("mydat.psav",'x,y',x,y)
+		Now you can leave python. You can later restore the x,y, variables 
+		using idlsave.restore (see there for the doc)
+		"""
 		if type(names)==types.StringType:
 			names=names.split(',')
 		if len(names)!=len(args):
@@ -37,6 +49,13 @@ class idlsave:
 
 	@staticmethod
 	def restore(filename=None):
+		"""Restores the variables stored in a file by idlsave.save routine
+		Example: 
+		> exec(idlsave.restore("mydat.psav"))
+		
+		Note that you MUST use this exact form exec(idlsave.restore(...))
+		"""
+		
 		f=open(filename,"r")
 		xx=cPickle.load(f)
 		idlsave.dhash=xx
