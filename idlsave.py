@@ -31,7 +31,7 @@ class idlsave:
 		for a in range(len(names)):
 			dhash[names[a]]=args[a]
 		f=open(filename,"w")
-		cPickle.dump(dhash,f)
+		cPickle.dump(dhash, f, 2)
 		f.close()
 		return None
 
