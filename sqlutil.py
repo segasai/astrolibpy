@@ -12,22 +12,14 @@ def get(query, db="wsdb"):
 		return None
 	line = tups[0]
 	ncols = len(line)
-	buf = "("
-	for i in range(ncols):
-		curtype = type(line[i])
+	buf = []
+	for curtype in map(lambda s: type(s),line):
 		if curtype == types.StringType:
-			exec("a%d = range(nrows)" % i)
+			buf.append(range(nrows))
 		else:
-			exec("a%d = numpy.zeros(nrows, dtype=curtype)" % i)
-		buf=buf+"a%d," % i
-	buf = buf[:-1]+")"
+			buf.append( numpy.zeros(nrows, dtype=curtype))
+
 	for i in range(nrows):
 		for j in range(ncols):
-			exec("a%d[i] = tups[i][j]" % j)
-	#print buf
-	#print a0
-	exec("ret=" + buf)
-	return ret
-		
-		
-
+			buf[j][i]=tups[i][j]
+	return tuple(buf)
