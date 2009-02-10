@@ -56,7 +56,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
     
 def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
-		xlog=False):
+		xlog=False, xr=None, yr=None):
 	if not noerase:
 		plt.gcf().clf()	
 		if position!=None:
@@ -70,7 +70,11 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		if ylog:
 			plt.gca().set_yscale('log')
 	( marker, linestyle) = get_marker(ps, None)		                    
-	
+	if xr!=None:
+		xrange=xr
+	if yr!=None:
+		yrange=yr
+
 	if xrange==None:
 		xrange=[min(x),max(x)]
 	if yrange==None:
