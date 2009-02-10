@@ -4,8 +4,8 @@ import numpy
 def readcol(filename, delimiter=' ', format=None, skiprows=0):
 	if format==None:
 		res=numpy.loadtxt(filename, delimiter=delimiter)
-		ncols = res.shape[0]
-		nrows = res.shape[1]
+		nrows = res.shape[0]
+		ncols = res.shape[1]
 		stor=[]
 		for i in range(ncols):
 			stor.append(res[:,i])
