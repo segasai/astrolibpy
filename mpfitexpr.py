@@ -17,14 +17,21 @@
 
 import mpfit 
 import re
+import numpy
+import scipy
 
 def mpfitexpr(func, x, y, err , start_params, **kw):
 	"""Fit the used defined expression to the data
 	Example:
 	params,yfit=mpfitexpr('p[0]+p[2]*(x-p[1])',x,y,err,[0,10,1])
 	
+	If you need to use numpy and scipy functions in your function, then
+		you must to use the full names of these functions, e.g.:
+		numpy.sin, numpy.cos etc.
+	
 	This function is motivated by mpfitexpr() from wonderful MPFIT IDL package
-		written by Craig Markwardt
+		written by Craig Markwardt	
+	
 	"""
 
 	def myfunc(p,fjac=None,x=None, y=None, err=None):
@@ -42,5 +49,5 @@ def mpfitexpr(func, x, y, err , start_params, **kw):
 		raise Exception("the length of the start_params != the length of the parameter verctor of the function")
 	fa={'x' : x, 'y' : y,'err' : err}
 	res = mpfit.mpfit(myfunc,start_params,functkw=fa)
-	yfit = eval(func,  {'x':x, 'p': res.params})
+	yfit = eval(func, globals(), {'x':x, 'p': res.params})
 	return (res.params, yfit)
