@@ -102,10 +102,16 @@ def oplot (x,y, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
-def ploterror (x,y, err, color='black', ps=0, ecolor='black', **kw):
-	plot (x,y,color=color, ps=ps, **kw)
+def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False, 
+			**kw):
+	if overplot:
+		noerase=True
+	else:
+		noerase=False
+	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
-	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,linestyle=outlinestyle)
+	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,
+						linestyle=outlinestyle)
 	plt.draw()		
 
 	
