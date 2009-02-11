@@ -57,6 +57,11 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None):
+	""" Plot your data in an IDL-way
+		Example:
+		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
+			color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
+	"""
 	if not noerase:
 		plt.gcf().clf()	
 		if position!=None:
@@ -79,13 +84,7 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		xrange=[min(x),max(x)]
 	if yrange==None:
 		yrange=[min(y),max(y)]
-#	xmajorLocator = MultipleLocator(1)
-#	xmajorFormatter = FormatStrFormatter('%d')
-#	ymajorLocator = MultipleLocator(1)
-#	ymajorFormatter = FormatStrFormatter('%d')
 	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-	#MultipleLocator(.1)
-#	yminorLocator = MultipleLocator(.5)
 	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 #	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
 #							marker=marker, axes=plt.gca() )
@@ -103,6 +102,10 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 		plt.draw()
 	
 def oplot (x,y, **kw):
+	""" Overplot your data in an IDL-way
+		Example:
+		idlplot.oplot(x,2+y/10.,ps=3,color='blue')
+	"""
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
