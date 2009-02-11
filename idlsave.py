@@ -60,10 +60,7 @@ class idlsave:
 		xx=cPickle.load(f)
 		idlsave.dhash=xx
 		f.close()
-		buf=""
-		for a in idlsave.dhash.iterkeys():
-			buf=buf+a+","
-		buf=buf[0:-1]
+		buf=",".join(idlsave.dhash.iterkeys())
 		buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
 		return buf
 
