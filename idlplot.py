@@ -118,4 +118,6 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 						linestyle=outlinestyle)
 	plt.draw()		
 
-	
+
+def tvaxis (image, xmin, xmax,ymin,ymax):
+	pass
