@@ -66,8 +66,6 @@ class idlsave:
 
 	@staticmethod
 	def getallvars(filename=None):
-		tup=tuple([None for i in range(len(idlsave.dhash)) ] )
-		i=0
 		tup=tuple(a for a in idlsave.dhash.itervalues())
 		dhash=None
 		return tup

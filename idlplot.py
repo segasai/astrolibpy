@@ -64,16 +64,16 @@ def plot (x,y, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
 	"""
 	if not noerase:
 		plt.gcf().clf()	
-		if position!=None:
-			mypos=position[:]
-			mypos[2]=position[2]-position[0]
-			mypos[3]=position[3]-position[1]
-			plt.axes(mypos)
-		
-		if xlog:
-			plt.gca().set_xscale('log')
-		if ylog:
-			plt.gca().set_yscale('log')
+	if position!=None:
+		mypos=position[:]
+		mypos[2]=position[2]-position[0]
+		mypos[3]=position[3]-position[1]
+		plt.axes(mypos)
+	
+	if xlog:
+		plt.gca().set_xscale('log')
+	if ylog:
+		plt.gca().set_yscale('log')
 	( marker, linestyle) = get_marker(ps, None)		                    
 	if xr!=None:
 		xrange=xr
@@ -110,11 +110,9 @@ def oplot (x,y, **kw):
 	plot (x,y, noerase=True, overplot=True, **kw)
 
 def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False, 
-			**kw):
+				noerase=False, **kw):
 	if overplot:
 		noerase=True
-	else:
-		noerase=False
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
 	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,
