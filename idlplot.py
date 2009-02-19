@@ -120,6 +120,8 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 				noerase=False, **kw):
 	if overplot:
 		noerase=True
+	if kw.get('yr') == None:
+		kw['yr'] = [(y-err).min(),(y+err).max()]
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
 	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,
