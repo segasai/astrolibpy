@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy
+import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
 
 plt.ion()
@@ -128,6 +129,20 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 
 def tvaxis (image, xmin, xmax,ymin,ymax):
 	pass
+
+def tvhist2d (x,y, xmin, xmax, ymin, ymax, bins=[100,100], xtitle="",
+				ytitle="", noerase=False, **kw):
+	""" Plots the 2D histogram of the data"""
+	if not noerase:
+		plt.gcf().clf()
+
+	hh=scipy.histogram2d(y,x,range=[[ymin,ymax],[xmin,xmax]], bins=bins)
+	plt.gca().set_xlabel(xtitle)
+	plt.gca().set_ylabel(ytitle)
+
+	plt.imshow(-hh[0],extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation='nearest')
+
+
 
 def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, yr=None, zr=None, 
 		title="", xtitle="", ytitle="", position=None, xlog=False, ylog=False, zlog=False, 
