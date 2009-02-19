@@ -61,6 +61,8 @@ class idlsave:
 		idlsave.dhash=xx
 		f.close()
 		buf=",".join(idlsave.dhash.iterkeys())
+		if len(idlsave.dhash)==1:
+			buf=buf+','
 		buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
 		return buf
 
