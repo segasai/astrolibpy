@@ -1335,8 +1335,22 @@ Keywords:
             if len(wh) > 0:
               put(self.perror, wh, sqrt(take(d, wh)))
       return
+   
+   
+   def __str__(self):
+      print {'params': self.params, 
+      	     'niter': self.niter,
+             'params': self.params,
+             'covar': self.covar,
+             'perror': self.perror,
+             'status': self.status,
+             'debug': self.debug,
+             'errmsg': self.errmsg,
+             'fastnorm': self.fastnorm,
+             'nfev': self.nfev,
+             'damp': self.damp,
+             'machar':self.machar}
 
-
    ## Default procedure to be called every iteration.  It simply prints
    ## the parameter values.
    def defiter(self, fcn, x, iter, fnorm=None, functkw=None, 
