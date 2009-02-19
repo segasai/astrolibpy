@@ -1173,12 +1173,12 @@ Keywords:
                   if (len(whl) > 0):
                      t = ((take(llim, whl) - take(x, whl)) /
                            take(wa1, whl))
-                     alpha = numpy.min(alpha, numpy.min(t))
+                     alpha = numpy.min([alpha, numpy.min(t)])
                   whu = (nonzero(((dwa1!=0.) & qulim) & ((x + wa1) > ulim)))[0]
                   if (len(whu) > 0):
                      t = ((take(ulim, whu) - take(x, whu)) /
                            take(wa1, whu))
-                     alpha = numpy.min(alpha, numpy.min(t))
+                     alpha = numpy.min([alpha, numpy.min(t)])
 
                ## Obey any max step values.
                if (qminmax):
