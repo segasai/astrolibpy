@@ -1315,6 +1315,7 @@ Keywords:
          sz = shape(fjac)
          if ((n > 0) and (sz[0] >= n) and (sz[1] >= n)
              and (len(ipvt) >= n)):
+
             catch_msg = 'computing the covariance matrix'
             cv = self.calc_covar(fjac[0:n,0:n], ipvt[0:n])
             cv.shape = [n, n]
@@ -1338,7 +1339,7 @@ Keywords:
    
    
    def __str__(self):
-      print {'params': self.params, 
+      return {'params': self.params, 
       	     'niter': self.niter,
              'params': self.params,
              'covar': self.covar,
@@ -1348,8 +1349,9 @@ Keywords:
              'errmsg': self.errmsg,
              'fastnorm': self.fastnorm,
              'nfev': self.nfev,
-             'damp': self.damp,
-             'machar':self.machar}
+             'damp': self.damp
+             #,'machar':self.machar
+             }.__str__()
 
    ## Default procedure to be called every iteration.  It simply prints
    ## the parameter values.
