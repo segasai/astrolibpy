@@ -1023,7 +1023,7 @@ Keywords:
                mperr = 0
                xnew0 = self.params.copy()
 
-               dof = numpy.max(len(fvec) - len(x), 0)
+               dof = numpy.max([len(fvec) - len(x), 0])
                status = iterfunct(fcn, self.params, self.niter, self.fnorm**2, 
                   functkw=functkw, parinfo=parinfo, quiet=quiet, 
                   dof=dof, **iterkw)
@@ -1461,7 +1461,7 @@ Keywords:
            ## Need to do this because of the possibility of over- or underflow.
            mx = numpy.max(vec)
            mn = numpy.min(vec)
-           mx = max(abs(mx), abs(mn))
+           mx = max([abs(mx), abs(mn)])
            if mx == 0: return(vec[0]*0.)
            if mx > agiant or mx < adwarf:
               ans = mx * sqrt(sum((vec/mx)*(vec/mx)))
@@ -1751,7 +1751,7 @@ Keywords:
                   a[j:,lk] = ajk - ajj * sum(ajk*ajj)/a[j,lj]
                   if ((pivot != 0) and (rdiag[k] != 0)):
                      temp = a[j,lk]/rdiag[k]
-                     rdiag[k] = rdiag[k] * sqrt(numpy.max((1.-temp**2), 0.))
+                     rdiag[k] = rdiag[k] * sqrt(numpy.max([(1.-temp**2), 0.]))
                      temp = rdiag[k]/wa[k]
                      if ((0.05*temp*temp) <= machep):
                         rdiag[k] = self.enorm(a[j+1:,lk])
