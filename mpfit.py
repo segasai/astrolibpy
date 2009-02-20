@@ -1072,7 +1072,7 @@ class mpfit:
 
 			## Compute the QR factorization of the jacobian
 			[fjac, ipvt, wa1, wa2] = self.qrfac(fjac, pivot=1)
-
+			
 			## On the first iteration if "diag" is unspecified, scale
 			## according to the norms of the columns of the initial jacobian
 			catch_msg = 'rescaling diagonal elements'
@@ -1202,7 +1202,7 @@ class mpfit:
 				# endelse
 				wa3 = diag * wa1
 				pnorm = self.enorm(wa3)
-
+				
 				## On the first iteration, adjust the initial step bound
 				if (self.niter == 1): delta = numpy.min([delta,pnorm])
 
@@ -1234,7 +1234,7 @@ class mpfit:
 				temp2 = (sqrt(alpha*par)*pnorm)/self.fnorm
 				prered = temp1*temp1 + (temp2*temp2)/0.5
 				dirder = -(temp1*temp1 + temp2*temp2)
-
+				
 				## Compute the ratio of the actual to the predicted reduction.
 				ratio = 0.
 				if (prered != 0): ratio = actred/prered
@@ -1260,7 +1260,7 @@ class mpfit:
 					xnorm = self.enorm(wa2)
 					self.fnorm = fnorm1
 					self.niter = self.niter + 1
-
+				
 				## Tests for convergence
 				if ((abs(actred) <= ftol) and (prered <= ftol)
 					 and (0.5 * ratio <= 1)): self.status = 1
@@ -1268,7 +1268,7 @@ class mpfit:
 				if ((abs(actred) <= ftol) and (prered <= ftol)
 					 and (0.5 * ratio <= 1) and (self.status == 2)): self.status = 3
 				if (self.status != 0): break
-
+				
 				## Tests for termination and stringent tolerances
 				if (self.niter >= maxiter): self.status = 5
 				if ((abs(actred) <= machep) and (prered <= machep)
@@ -1276,18 +1276,22 @@ class mpfit:
 				if delta <= machep*xnorm: self.status = 7
 				if gnorm <= machep: self.status = 8
 				if (self.status != 0): break
-
+				
 				## End of inner loop. Repeat if iteration unsuccessful
 				if (ratio >= 0.0001): break
 
-			## Check for over/underflow - SKIP FOR NOW
-			##wh = where(finite(wa1) EQ 0 OR finite(wa2) EQ 0 OR finite(x) EQ 0, ct)
-			##if ct GT 0 OR finite(ratio) EQ 0 then begin
-			##   errmsg = ('ERROR: parameter or function value(s) have become '+$
-			##	  'infinite# check model function for over- '+$
-			##	  'and underflow')
-			##   self.status = -16
-			##   break
+				## Check for over/underflow
+				## TODO, right now I only check for nans, probably 
+				## I should check for infinities too
+				if numpy.any(numpy.isnan(wa1) | numpy.isnan(wa2) |
+								numpy.isnan(x)) or numpy.isnan(ratio):
+					errmsg = ('''ERROR: parameter or function value(s) have become 
+						'infinite; check model function for over- 'and underflow''')
+					self.status = -16
+					break
+				##wh = where(finite(wa1) EQ 0 OR finite(wa2) EQ 0 OR finite(x) EQ 0, ct)
+				##if ct GT 0 OR finite(ratio) EQ 0 then begin
+
 			if (self.status != 0): break;
 		## End of outer loop.
 
