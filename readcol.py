@@ -5,7 +5,14 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0):
 	if format==None:
 		res=numpy.loadtxt(filename, delimiter=delimiter)
 		nrows = res.shape[0]
-		ncols = res.shape[1]
+		if res.ndim==2:
+			ncols = res.shape[1]
+		elif res.ndim==1:
+			ncols=1
+			res.shape=(nrows,1)
+		else:
+			raise "Exception: wrong array dimensions" 
+
 		stor=[]
 		for i in range(ncols):
 			stor.append(res[:,i])
