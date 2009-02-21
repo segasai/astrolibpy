@@ -1281,10 +1281,8 @@ class mpfit:
 				if (ratio >= 0.0001): break
 
 				## Check for over/underflow
-				## TODO, right now I only check for nans, probably 
-				## I should check for infinities too
-				if numpy.any(numpy.isnan(wa1) | numpy.isnan(wa2) |
-								numpy.isnan(x)) or numpy.isnan(ratio):
+				if ~numpy.all(numpy.isfinite(wa1) & numpy.isfinite(wa2) &
+							numpy.isfinite(x)) or ~numpy.isfinite(ratio):
 					errmsg = ('''ERROR: parameter or function value(s) have become 
 						'infinite; check model function for over- 'and underflow''')
 					self.status = -16
