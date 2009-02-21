@@ -69,6 +69,11 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle="", y
 	else:
 		x=arg1
 		y=arg2
+	if x.ndim !=1:
+		x=x.flatten()
+	if y.ndim !=1:
+		y=y.flatten()
+		
 	if not noerase:
 		plt.gcf().clf()	
 	if position!=None:
@@ -108,7 +113,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle="", y
 	if plt.isinteractive():
 		plt.draw()
 	
-def oplot (x,y, **kw):
+def oplot (x,y=None, **kw):
 	""" Overplot your data in an IDL-way
 		Example:
 		idlplot.oplot(x,2+y/10.,ps=3,color='blue')
@@ -132,17 +137,23 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 def tvaxis (image, xmin, xmax,ymin,ymax):
 	pass
 
-def tvhist2d (x,y, xmin, xmax, ymin, ymax, bins=[100,100], xtitle="",
+def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
+				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
-
-	hh=scipy.histogram2d(y,x,range=[[ymin,ymax],[xmin,xmax]], bins=bins)
+	if xmin==None or xmax==None or ymin==None or ymax==None:
+		range=None
+		range1=None
+	else:
+		range=[[ymin,ymax],[xmin,xmax]]
+		range1=(xmin,xmax,ymin,ymax)
+	hh=scipy.histogram2d(y,x,range=range, bins=bins)
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 
-	plt.imshow(-hh[0],extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation='nearest')
+	plt.imshow(-hh[0],extent=range1, aspect='auto', interpolation='nearest')
 
 
 
