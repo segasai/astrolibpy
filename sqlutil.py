@@ -1,9 +1,15 @@
 import pgdb
+import sqlite3
 import types
 import numpy
 
-def get(query, db="wsdb"):
-	con = pgdb.connect(database=db)
+def get(query, db="wsdb", driver="pgdb"):
+	if driver=='pgdb':
+		con = pgdb.connect(database=db)
+	elif driver=='sqlite3':
+		con = sqlite3.connect(db)
+	else: 
+		raise Exception("Unknown driver")
 	cur = con.cursor()
 	res = cur.execute(query)
 	tups = cur.fetchall()
