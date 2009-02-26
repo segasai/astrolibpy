@@ -92,10 +92,22 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle="", y
 	if yr!=None:
 		yrange=yr
 
-	if xrange==None:
+	if xrange is None and yrange is None:
 		xrange=[min(x),max(x)]
-	if yrange==None:
 		yrange=[min(y),max(y)]
+	elif xrange is None and yrange is not None:
+		ind=numpy.where((y<yr[1]) & (y>yr[0]))[0]
+		if len(ind)!=0:
+			xrange=[numpy.min(x[ind]),numpy.max(x[ind])]
+		else:
+			xrange=[numpy.min(x),numpy.max(x)]		
+	elif xrange is not None and yrange is None:
+		ind=numpy.where((x<xr[1]) & (x>xr[0]))[0]
+		if len(ind)!=0:
+			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
+		else:
+			yrange=[numpy.min(y),numpy.max(y)]		
+		
 	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 #	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
