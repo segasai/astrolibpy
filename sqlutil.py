@@ -16,6 +16,9 @@ def get(query, params=None, db="wsdb", driver="pgdb"):
 	else:
 		res = cur.execute(query, params)
 	tups = cur.fetchall()
+	cur.close()
+	con.commit()
+	con.close()
 	nrows = len(tups)
 	if nrows == 0:
 		return None
