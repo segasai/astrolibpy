@@ -11,14 +11,19 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 	 craigm@lheamail.gsfc.nasa.gov
 	 UPDATED VERSIONs can be found on my WEB PAGE:
 		http://cow.physics.wisc.edu/~craigm/idl/idl.html
-
+	
   Mark Rivers created this Python version from Craig's IDL version.
 	Mark Rivers, University of Chicago
 	Building 434A, Argonne National Laboratory
 	9700 South Cass Avenue, Argonne, IL 60439
 	rivers@cars.uchicago.edu
 	Updated versions can be found at http://cars.uchicago.edu/software
-
+ 
+ Sergey Koposov converted the Mark's Python version from Numeric to numpy
+	Sergey Koposov, Max Planck Institute for Astronomy
+	Heidelberg, Germany, D-69117
+	koposov@mpia.de
+	Updated versions can be found at http://code.google.com/p/astrolibpy/source/browse/trunk/
 
 								 DESCRIPTION
 
