@@ -2023,7 +2023,7 @@ class mpfit:
 		if len(wh) > 0:
 			nsing = wh[0]
 			wa1[wh[0]:] = 0
-		if nsing > 1:
+		if nsing >= 1:
 			## *** Reverse loop ***
 			for j in range(nsing-1,-1,-1):
 				wa1[j] = wa1[j]/r[j,j]
