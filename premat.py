@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from numpy import *
 
-def premat(equinox1, equinox2, fk4=None):
+def premat(equinox1, equinox2, fk4=False):
    """
     NAME:
           PREMAT
@@ -42,24 +42,12 @@ def premat(equinox1, equinox2, fk4=None):
           Converted to IDL V5.0   W. Landsman   September 1997
    """
 
-   n_params = 2
-   
-   # ON_ERROR, 2                                           #Return to caller
-   
-   npar = n_params
-   
-   if (npar < 2):   
-      
-      print 'Syntax - PREMAT, equinox1, equinox2, /FK4]'
-      return -1
-      
-   
    deg_to_rad = pi / 180.0e0
    sec_to_rad = deg_to_rad / 3600.e0
    
    t = 0.001e0 * (equinox2 - equinox1)
    
-   if bitwise_not((fk4 is not None)):   
+   if not fk4:   
       st = 0.001e0 * (equinox1 - 2000.e0)
       #  Compute 3 rotation angles
       a = sec_to_rad * t * (23062.181e0 + st * (139.656e0 + 0.0139e0 * st) + t * (30.188e0 - 0.344e0 * st + 17.998e0 * t))
