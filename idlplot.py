@@ -55,7 +55,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 	tmp(loc1,hh1,ps=0,color=color,xrange=xrange,yrange=yrange,
 		xlog=xlog,ylog=ylog, **kw)
     
-def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle="", ytitle="",
+def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None):
 	""" Plot your data in an IDL-way
@@ -103,9 +103,10 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle="", y
 
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
-		
-	plt.gca().set_xlabel(xtitle)
-	plt.gca().set_ylabel(ytitle)
+	if xtitle!=None:
+		plt.gca().set_xlabel(xtitle)
+	if ytitle!=None:
+		plt.gca().set_ylabel(ytitle)
 	plt.gca().set_autoscale_on(False)
 	if not overplot:
 		plt.gca().axis(xrange+yrange)#,xautcoscale_on=False)
