@@ -1,6 +1,9 @@
 import numpy
-def cv_coord(a,b,c,fr=None,to=None):
-	radec = 180./numpy.pi
+def cv_coord(a,b,c,fr=None,to=None,degr=False):
+	if degr:
+		radec = 180./numpy.pi
+	else:
+		radec= 1
 	if fr=='sph':
 		cosa = numpy.cos(a/radec)
 		sina = numpy.sin(a/radec)
