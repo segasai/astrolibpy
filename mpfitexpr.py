@@ -48,6 +48,6 @@ def mpfitexpr(func, x, y, err , start_params, **kw):
 	if maxp + 1 != len(start_params):
 		raise Exception("the length of the start_params != the length of the parameter verctor of the function")
 	fa={'x' : x, 'y' : y,'err' : err}
-	res = mpfit.mpfit(myfunc,start_params,functkw=fa)
+	res = mpfit.mpfit(myfunc,start_params,functkw=fa,**kw)
 	yfit = eval(func, globals(), {'x':x, 'p': res.params})
 	return (res.params, yfit)
