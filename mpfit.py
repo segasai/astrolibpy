@@ -857,6 +857,7 @@ class mpfit:
 		self.damp = damp
 		self.machar = machar(double=1)
 		machep = self.machar.machep
+		self.dof=0
 
 		if (fcn==None):
 			self.errmsg = "Usage: parms = mpfit('myfunt', ... )"
@@ -1005,7 +1006,7 @@ class mpfit:
 		if (m < n):
 			self.errmsg = 'ERROR: number of parameters must not exceed data'
 			return
-
+		self.dof = m-nfree
 		self.fnorm = self.enorm(fvec)
 
 		## Initialize Levelberg-Marquardt parameter and iteration counter
@@ -1537,7 +1538,7 @@ class mpfit:
 
 		## Reverse the sign of the step if we are up against the parameter
 		## limit, or if the user requested it.
-		mask = dside == -1
+		mask = dside[ifree] == -1
 		if len(ulimited) > 0 and len(ulimit) > 0:
 			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
 			wh = (nonzero(mask))[0]
