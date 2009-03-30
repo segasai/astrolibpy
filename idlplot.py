@@ -169,7 +169,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 
-	plt.imshow(-hh[0],extent=range1, aspect='auto', interpolation='nearest')
+	plt.imshow(-hh[0],extent=range1, aspect='auto', interpolation='nearest', **kw)
 
 
 
