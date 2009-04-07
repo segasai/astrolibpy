@@ -1136,7 +1136,9 @@ class mpfit:
 			## Test for convergence of the gradient norm
 			if (gnorm <= gtol):
 				self.status = 4
-				return
+				break
+			if maxiter == 0:
+				break
 
 			## Rescale if necessary
 			if (rescale == 0):
