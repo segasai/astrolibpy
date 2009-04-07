@@ -5,10 +5,6 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
 
 plt.ion()
 
-#idlplot.plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
-#    color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
-#idlplot.oplot(x,2+y/10.,ps=3,xtitle="SX",color='blue')
-
 def get_marker(ps, linestyle):
 	outlinestyle=' '
 	if ps==3:
@@ -147,7 +143,8 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 	(marker,outlinestyle)=get_marker(ps, None)
 	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,
 						linestyle=outlinestyle)
-	plt.draw()		
+	if plt.isinteractive():
+		plt.draw()
 
 
 def tvaxis (image, xmin, xmax,ymin,ymax):
@@ -170,6 +167,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	plt.gca().set_ylabel(ytitle)
 
 	plt.imshow(-hh[0],extent=range1, aspect='auto', interpolation='nearest', **kw)
+	if plt.isinteractive():
+		plt.draw()
 
 
 
