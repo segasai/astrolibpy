@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
+import matplotlib
 
 plt.ion()
 
@@ -147,8 +148,32 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 		plt.draw()
 
 
-def tvaxis (image, xmin, xmax,ymin,ymax):
-	pass
+def tvaxis (image, xmin, xmax,ymin,ymax, xtitle="", ytitle="", title="",
+			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False, **kw):
+
+	if xlog:
+		plt.gca().set_xscale('log')
+	if ylog:
+		plt.gca().set_yscale('log')
+
+	plt.imshow(image, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
+					aspect=aspect, **kw)
+
+	plt.gca().set_xlabel(xtitle)
+	plt.gca().set_ylabel(ytitle)
+	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+#	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
+#							marker=marker, axes=plt.gca() )
+
+	plt.gca().xaxis.set_minor_locator(xminorLocator)
+	plt.gca().yaxis.set_minor_locator(yminorLocator)		
+
+	if title!= None:
+		plt.title(title)
+
+	if plt.isinteractive():
+		plt.draw()
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
@@ -200,7 +225,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 
 # Initialize x and y if these are not provided:
 	if x==None or y==None:
-		x, y = meshgrid(arange(z.shape[0]), arange(z.shape[1]))
+		x, y = numpy.meshgrid(numpy.arange(z.shape[0]), numpy.arange(z.shape[1]))
 		
 # Define position of this plot:
 	if not noerase:
@@ -239,7 +264,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		zmin = zrange[0]
 		zmax = zrange[1]
 		dz = zmax-zmin
-		levels = zmin + dz/nlevels*arange(nlevels+1)	
+		levels = zmin + dz/nlevels*numpy.arange(nlevels+1)	
 
 # Setup frame thickness:
 	plt.gca().frame.set_linewidth(thick) 
@@ -257,14 +282,14 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		plt.gca().axis(xrange+yrange) 
 
 # Setup format of the major ticks:
-	xFormatter = ticker.FormatStrFormatter(xticklabel)
-	yFormatter = ticker.FormatStrFormatter(yticklabel)
+	xFormatter = matplotlib.ticker.FormatStrFormatter(xticklabel)
+	yFormatter = matplotlib.ticker.FormatStrFormatter(yticklabel)
 	plt.gca().xaxis.set_major_formatter(xFormatter)
 	plt.gca().yaxis.set_major_formatter(yFormatter)
 
 # Setup minor tickmarks:		
-	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])	
+	xminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+	yminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])	
 
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
@@ -283,13 +308,13 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
    		c.set_linestyle(c_line)
 
 # Add value labels on contour lines:
-	zFormatter = ticker.FormatStrFormatter(zticklabel)
+	zFormatter = matplotlib.ticker.FormatStrFormatter(zticklabel)
 	cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
                 
 # Do we need a color bar?:                
 	if bar:
 		matplotlib.rcParams['ytick.labelsize']=c_charsize				
-		plt.colorbar(cset1, ticks=[min(levels), max(levels)], shrink = 0.87, aspect=15, 
+		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)], shrink = 0.87, aspect=15, 
 			format=zFormatter)
 		
 	if plt.isinteractive():
