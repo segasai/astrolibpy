@@ -242,7 +242,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 	if ylog:
 		plt.gca().set_yscale('log')
 	if zlog:
-		z = log10(z)
+		z = numpy.log10(z)
 
 # Setup axis ranges:			
 	if xr!=None:
