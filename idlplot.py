@@ -202,35 +202,19 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		xticklabel = "%1.1f", yticklabel = "%1.1f", zticklabel = "%1.1f", levels=None, 
 		nlevels=256, c_color="black", cm ="jet", c_line="solid", c_levels=None, c_charsize=12.0, 
 		c_thick=1, thick=1, font="monospace", weight="normal", charsize=14.0, bar=True, fill=True, 
-		overplot=False, noerase=False):
-
-# Adjust some built-in parameters to make plots nicer:		
-#	matplotlib.rcParams['figure.facecolor']='white'
-#	matplotlib.rcParams['text.usetex']=True
-	matplotlib.rcParams['font.family']=font
-	matplotlib.rcParams['font.size']=charsize
-	matplotlib.rcParams['font.weight']=weight
-	matplotlib.rcParams['axes.labelsize']=charsize	
-	matplotlib.rcParams['xtick.labelsize']=charsize	
-	matplotlib.rcParams['ytick.labelsize']=charsize			
-	matplotlib.rcParams['lines.markeredgewidth']=thick-0.5	
-	matplotlib.rcParams['lines.linewidth']=thick
-	matplotlib.rcParams['lines.antialiased']=True	
-	matplotlib.rcParams['xtick.minor.size']=7
-	matplotlib.rcParams['ytick.minor.size']=7		
-	matplotlib.rcParams['xtick.major.size']=12
-	matplotlib.rcParams['ytick.major.size']=12		
-#	matplotlib.rcParams['ps.papersize']=papersize
+		overplot=False, noerase=False, c_label=True):
 
 
 # Initialize x and y if these are not provided:
-	if x==None or y==None:
-		x, y = numpy.meshgrid(numpy.arange(z.shape[0]), numpy.arange(z.shape[1]))
+	if x is None or y is None:
+		if z.ndim!=2:
+			raise Exception("The 2D array is required")
+		x, y = numpy.mgrid[0:z.shape[0],0:z.shape[1]]
 		
 # Define position of this plot:
 	if not noerase:
 		plt.gcf().clf()	
-		if position!=None:
+		if position is not None:
 			mypos=position[:]
 			mypos[2]=position[2]-position[0]
 			mypos[3]=position[3]-position[1]
@@ -260,7 +244,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		zrange=[z.min(),z.max()]		
 		
 # Setup levels for contour plot:		
-	if levels==None:
+	if levels is None:
 		zmin = zrange[0]
 		zmax = zrange[1]
 		dz = zmax-zmin
@@ -299,7 +283,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		cset1=plt.gca().contourf(x, y, z, levels, cmap=plt.cm.get_cmap(cm, nlevels))
 
 # Add contour lines:
-	if c_levels == None:
+	if c_levels is None:
 		c_levels = levels[0:len(levels):int(nlevels/12)]
 	cset2 = plt.gca().contour(x, y, z, c_levels, colors = c_color,linewidths=c_thick,hold='on')
 
@@ -309,17 +293,17 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 
 # Add value labels on contour lines:
 	zFormatter = matplotlib.ticker.FormatStrFormatter(zticklabel)
-	cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
+
+	if c_label:
+		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
                 
 # Do we need a color bar?:                
 	if bar:
-		matplotlib.rcParams['ytick.labelsize']=c_charsize				
-		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)], shrink = 0.87, aspect=15, 
+#		matplotlib.rcParams['ytick.labelsize']=c_charsize				
+		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
 			format=zFormatter)
 		
 	if plt.isinteractive():
 		plt.draw()
 		
-# Restore default matplotlib parameters:
-	matplotlib.rcdefaults()
 
