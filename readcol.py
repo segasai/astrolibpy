@@ -3,7 +3,7 @@ import numpy
 
 def readcol(filename, delimiter=' ', format=None, skiprows=0):
 	if format==None:
-		res=numpy.loadtxt(filename, delimiter=delimiter)
+		res=numpy.loadtxt(filename, delimiter=delimiter, skiprows=skiprows)
 		nrows = res.shape[0]
 		if res.ndim==2:
 			ncols = res.shape[1]
