@@ -3,6 +3,7 @@ import numpy
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
 import matplotlib
+import types
 
 plt.ion()
 
@@ -64,12 +65,14 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
 			color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
 	"""
+	listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
+
 	if arg2==None:
-		y=arg1
+		y=listtoarr(arg1)
 		x=numpy.arange(len(y))
 	else:
-		x=arg1
-		y=arg2
+		x=listtoarr(arg1)
+		y=listtoarr(arg2)
 	if x.ndim !=1:
 		x=x.flatten()
 	if y.ndim !=1:
