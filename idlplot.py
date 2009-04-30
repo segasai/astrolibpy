@@ -20,7 +20,10 @@ def get_marker(ps, linestyle):
 		marker='s'
 	else:
 		marker=' '
-		outlinestyle='-'
+		if linestyle is not None:
+			outlinestyle=linestyle
+		else:
+			outlinestyle='-'
 	return (marker, outlinestyle)
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
@@ -54,7 +57,8 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
     
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
-		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False):
+		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
+		linestyle=None):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -83,7 +87,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().set_xscale('log')
 	if ylog:
 		plt.gca().set_yscale('log')
-	( marker, linestyle) = get_marker(ps, None)		                    
+	marker, linestyle = get_marker(ps, linestyle)
 	if xr!=None:
 		xrange=xr
 	if yr!=None:
@@ -107,8 +111,6 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		
 	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-#	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
-#							marker=marker, axes=plt.gca() )
 
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
@@ -122,7 +124,8 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if title!= None:
 		plt.title(title)
 	if not nodata:
-		plt.gca().plot(x,y,marker=marker,linestyle=linestyle,linewidth=thick,color=color,label=label)
+		plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
+						linewidth=thick, color=color, label=label)
 	if plt.isinteractive():
 		plt.draw()
 	
