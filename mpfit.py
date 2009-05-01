@@ -1335,8 +1335,7 @@ class mpfit:
 				## parameters.
 				self.covar = zeros([nn, nn], dtype=float)
 				for i in range(n):
-					indices = ifree+ifree[i]*n
-					put(self.covar, indices, cv[:,i])
+					self.covar[ifree,ifree[i]] = cv[:,i]
 
 				## Compute errors in parameters
 				catch_msg = 'computing parameter errors'
