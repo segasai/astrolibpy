@@ -208,7 +208,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		xticklabel = "%1.1f", yticklabel = "%1.1f", zticklabel = "%1.1f", levels=None, 
 		nlevels=256, c_color="black", cm ="jet", c_line="solid", c_levels=None, c_charsize=12.0, 
 		c_thick=1, thick=1, font="monospace", weight="normal", charsize=14.0, bar=True, fill=True, 
-		overplot=False, noerase=False, c_label=True):
+		overplot=False, noerase=False, c_label=True, bar_fraction=0.05):
 
 
 # Initialize x and y if these are not provided:
@@ -307,7 +307,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 	if bar:
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
-			format=zFormatter)
+			fraction=bar_fraction, format=zFormatter)
 		
 	if plt.isinteractive():
 		plt.draw()
