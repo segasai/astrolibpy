@@ -983,7 +983,7 @@ class mpfit:
 		n = len(x)
 		## Check input parameters for errors
 		if ((n < 0) or (ftol <= 0) or (xtol <= 0) or (gtol <= 0)
-					or (maxiter <= 0) or (factor <= 0)):
+					or (maxiter < 0) or (factor <= 0)):
 			self.errmsg = 'ERROR: input keywords are inconsistent'
 			return
 
