@@ -1203,9 +1203,11 @@ class mpfit:
 
 					## Adjust the final output values.  If the step put us exactly
 					## on a boundary, make sure it is exact.
-					wh = (nonzero((qulim!=0.) & (wa2 >= ulim*(1-machep))))[0]
+					sgnu = (ulim >= 0) * 2. - 1.
+					sgnl = (llim >= 0) * 2. - 1.
+					wh = (nonzero((qulim!=0.) & (wa2 >= ulim*(1-sgnu*machep))))[0]
 					if (len(wh) > 0): put(wa2, wh, take(ulim, wh))
-					wh = (nonzero((qllim!=0.) & (wa2 <= llim*(1+machep))))[0]
+					wh = (nonzero((qllim!=0.) & (wa2 <= llim*(1+sgnl*machep))))[0]
 					if (len(wh) > 0): put(wa2, wh, take(llim, wh))
 				# endelse
 				wa3 = diag * wa1
