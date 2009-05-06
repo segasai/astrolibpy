@@ -2038,6 +2038,7 @@ class mpfit:
 
 		if (self.debug): print 'Entering lmpar...'
 		dwarf = self.machar.minnum
+		machep = self.machar.machep
 		sz = shape(r)
 		m = sz[0]
 		n = sz[1]
@@ -2046,7 +2047,8 @@ class mpfit:
 		## jacobian is rank-deficient, obtain a least-squares solution
 		nsing = n
 		wa1 = qtb.copy()
-		wh = (nonzero(diagonal(r) == 0))[0]
+		rthresh = numpy.max(numpy.abs(diagonal(r))) * machep
+		wh = (nonzero(diagonal(r) < lthresh))[0]
 		if len(wh) > 0:
 			nsing = wh[0]
 			wa1[wh[0]:] = 0
