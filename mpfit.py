@@ -932,7 +932,7 @@ class mpfit:
 		if (len(wh) > 0):
 			self.errmsg = 'ERROR: MPMINSTEP is greater than MPMAXSTEP'
 			return
-		wh = (nonzero((qmin!=0.) & (qmax!=0.)))[0]
+		wh = (nonzero((qmin!=0.) | (qmax!=0.)))[0]
 		qminmax = len(wh > 0)
 
 		## Finish up the free parameters
