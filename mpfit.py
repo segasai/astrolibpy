@@ -1193,8 +1193,8 @@ class mpfit:
 						nwa1 = wa1 * alpha
 						whmax = (nonzero((qmax != 0.) & (maxstep > 0)))[0]
 						if (len(whmax) > 0):
-							mrat = numpy.max(take(nwa1, whmax) /
-									   take(maxstep, whmax))
+							mrat = numpy.max(numpy.abs(take(nwa1, whmax)) /
+									   numpy.abs(take(maxstep, whmax)))
 							if (mrat > 1): alpha = alpha / mrat
 
 					## Scale the resulting vector
