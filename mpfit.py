@@ -1205,9 +1205,13 @@ class mpfit:
 					## on a boundary, make sure it is exact.
 					sgnu = (ulim >= 0) * 2. - 1.
 					sgnl = (llim >= 0) * 2. - 1.
-					wh = (nonzero((qulim!=0.) & (wa2 >= ulim*(1-sgnu*machep))))[0]
+					## Handles case of 
+					##        ... nonzero *LIM ... ...zero * LIM
+					ulim1 = ulim * (1 - sgnu * machep) - (ulim == 0) * machep
+					llim1 = llim * (1 + sgnl * machep) + (llim == 0) * machep
+					wh = (nonzero((qulim!=0) & (wa2 >= ulim1)))[0]
 					if (len(wh) > 0): put(wa2, wh, take(ulim, wh))
-					wh = (nonzero((qllim!=0.) & (wa2 <= llim*(1+sgnl*machep))))[0]
+					wh = (nonzero((qllim!=0.) & (wa2 <= llim1)))[0]					
 					if (len(wh) > 0): put(wa2, wh, take(llim, wh))
 				# endelse
 				wa3 = diag * wa1
