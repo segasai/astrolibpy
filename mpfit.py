@@ -1193,8 +1193,8 @@ class mpfit:
 						nwa1 = wa1 * alpha
 						whmax = (nonzero((qmax != 0.) & (maxstep > 0)))[0]
 						if (len(whmax) > 0):
-							mrat = numpy.max(numpy.abs(take(nwa1, whmax)) /
-									   numpy.abs(take(maxstep, whmax)))
+							mrat = numpy.max(numpy.abs(nwa1[whmax]) /
+									   numpy.abs(maxstep[ifree[whmax]]))
 							if (mrat > 1): alpha = alpha / mrat
 
 					## Scale the resulting vector
@@ -1522,12 +1522,14 @@ class mpfit:
 		h = eps * abs(x)
 
 		## if STEP is given, use that
+		## STEP includes the fixed parameters
 		if step != None:
 			stepi = take(step, ifree)
 			wh = (nonzero(stepi > 0))[0]
 			if (len(wh) > 0): put(h, wh, take(stepi, wh))
 
 		## if relative step is given, use that
+		## DSTEP includes the fixed parameters
 		if (len(dstep) > 0):
 			dstepi = take(dstep, ifree)
 			wh = (nonzero(dstepi > 0))[0]
@@ -1539,6 +1541,8 @@ class mpfit:
 
 		## Reverse the sign of the step if we are up against the parameter
 		## limit, or if the user requested it.
+		## DSIDE includes the fixed parameters (ULIMITED/ULIMIT have only
+		## varying ones)
 		mask = dside[ifree] == -1
 		if len(ulimited) > 0 and len(ulimit) > 0:
 			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
@@ -1551,7 +1555,7 @@ class mpfit:
 			[status, fp] = self.call(fcn, xp, functkw)
 			if (status < 0): return(None)
 
-			if abs(dside[j]) <= 1:
+			if abs(dside[ifree[j]]) <= 1:
 				## COMPUTE THE ONE-SIDED DERIVATIVE
 				## Note optimization fjac(0:*,j)
 				fjac[0:,j] = (fp-fvec)/h[j]
