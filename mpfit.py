@@ -1646,7 +1646,16 @@ class mpfit:
 	#	 burton s. garbow, kenneth e. hillstrom, jorge j. more
 	#
 	#	 **********
-
+	#
+	# PIVOTING / PERMUTING:
+	#
+	# Upon return, A(*,*) is in standard parameter order, A(*,IPVT) is in
+	# permuted order.
+	# 
+	# RDIAG is in permuted order.
+	# ACNORM is in standard parameter order.
+	#
+	#
 	# NOTE: in IDL the factors appear slightly differently than described
 	# above.  The matrix A is still m x n where m >= n.
 	#
@@ -1736,7 +1745,7 @@ class mpfit:
 			ajj = a[j:,lj]
 			ajnorm = self.enorm(ajj)
 			if ajnorm == 0: break
-			if a[j,j] < 0: ajnorm = -ajnorm
+			if a[j,lj] < 0: ajnorm = -ajnorm
 
 			ajj = ajj / ajnorm
 			ajj[0] = ajj[0] + 1
