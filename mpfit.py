@@ -1138,6 +1138,7 @@ class mpfit:
 				self.status = 4
 				break
 			if maxiter == 0:
+				self.status = 5
 				break
 
 			## Rescale if necessary
