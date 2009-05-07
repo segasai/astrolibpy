@@ -2048,7 +2048,7 @@ class mpfit:
 		nsing = n
 		wa1 = qtb.copy()
 		rthresh = numpy.max(numpy.abs(diagonal(r))) * machep
-		wh = (nonzero(diagonal(r) < rthresh))[0]
+		wh = (nonzero(numpy.abs(diagonal(r)) < rthresh))[0]
 		if len(wh) > 0:
 			nsing = wh[0]
 			wa1[wh[0]:] = 0
