@@ -2258,15 +2258,13 @@ class mpfit:
 class machar:
 	def __init__(self, double=1):
 		if (double == 0):
-			self.machep = 1.19209e-007
-			self.maxnum = 3.40282e+038
-			self.minnum = 1.17549e-038
-			self.maxgam = 171.624376956302725
+			info = numpy.finfo(numpy.float32)
 		else:
-			self.machep = 2.2204460e-016
-			self.maxnum = 1.7976931e+308
-			self.minnum = 2.2250739e-308
-			self.maxgam = 171.624376956302725
+			info = numpy.finfo(numpy.float64)
+
+		self.machep = info.eps
+		self.maxnum = info.max
+		self.minnum = info.tiny
 
 		self.maxlog = log(self.maxnum)
 		self.minlog = log(self.minnum)
