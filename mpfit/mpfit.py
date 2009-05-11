@@ -599,7 +599,7 @@ class mpfit:
 				 ftol=1.e-10, xtol=1.e-10, gtol=1.e-10,
 				 damp=0., maxiter=200, factor=100., nprint=1,
 				 iterfunct='default', iterkw={}, nocovar=0,
-				 fastnorm=0, rescale=0, autoderivative=1, quiet=0,
+				 rescale=0, autoderivative=1, quiet=0,
 				 diag=None, epsfcn=None, debug=0):
 		"""
   Inputs:
@@ -624,15 +624,6 @@ class mpfit:
 		   Default: set (=1)
 		   NOTE: to supply your own analytical derivatives,
 				 explicitly pass autoderivative=0
-
-	 fastnorm:
-		Set this keyword to select a faster algorithm to compute sum-of-square
-		values internally.  For systems with large numbers of data points, the
-		standard algorithm can become prohibitively slow because it cannot be
-		vectorized well.  By setting this keyword, MPFIT will run faster, but
-		it will be more prone to floating point overflows and underflows.  Thus, setting
-		this keyword may sacrifice some stability in the fitting process.
-		   Default: clear (=0)
 
 	 ftol:
 		A nonnegative input variable. Termination occurs when both the actual
@@ -852,7 +843,6 @@ class mpfit:
 		self.status = 0  # Invalid input flag set while we check inputs
 		self.debug = debug
 		self.errmsg = ''
-		self.fastnorm = fastnorm
 		self.nfev = 0
 		self.damp = damp
 		self.machar = machar(double=1)
@@ -1363,7 +1353,6 @@ class mpfit:
 			   'status': self.status,
 			   'debug': self.debug,
 			   'errmsg': self.errmsg,
-			   'fastnorm': self.fastnorm,
 			   'nfev': self.nfev,
 			   'damp': self.damp
 			   #,'machar':self.machar
