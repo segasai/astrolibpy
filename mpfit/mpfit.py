@@ -1167,9 +1167,9 @@ class mpfit:
 						# Do not allow any steps out of bounds
 						catch_msg = 'checking for a step out of bounds'
 						if nlpeg > 0:
-							wa1[whlpeg] = clip( wa1[whlpeg], 0., numpy.max(wa1))
+							wa1[whlpeg] = numpy.clip( wa1[whlpeg], 0., numpy.max(wa1))
 						if nupeg > 0:
-							wa1[whupeg] = clip(wa1[whupeg], numpy.min(wa1), 0.)
+							wa1[whupeg] = numpy.clip(wa1[whupeg], numpy.min(wa1), 0.)
 
 						dwa1 = numpy.abs(wa1) > machep
 						whl = (numpy.nonzero(((dwa1!=0.) & qllim) & ((x + wa1) < llim)))[0]
@@ -1472,7 +1472,7 @@ class mpfit:
 				# Apply the damping if requested.  This replaces the residuals
 				# with their hyperbolic tangent.  Thus residuals larger than
 				# DAMP are essentially clipped.
-				f = tanh(f/self.damp)
+				f = numpy.tanh(f/self.damp)
 			return [status, f]
 		else:
 			return fcn(x, fjac=fjac, **functkw)
@@ -1509,7 +1509,7 @@ class mpfit:
 		if autoderivative == 0:
 			mperr = 0
 			fjac = numpy.zeros(nall, dtype=float)
-			Put(fjac, ifree, 1.0)  # Specify which parameters need derivatives
+			fjac[ifree] = 1.0  # Specify which parameters need derivatives
 			[status, fp] = self.call(fcn, xall, functkw, fjac=fjac)
 
 			if len(fjac) != m*nall:
