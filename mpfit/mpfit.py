@@ -918,10 +918,10 @@ class mpfit:
 		## Maximum and minimum steps allowed to be taken in one iteration
 		maxstep = self.parinfo(parinfo, 'mpmaxstep', default=0., n=npar)
 		minstep = self.parinfo(parinfo, 'mpminstep', default=0., n=npar)
-		qmin = minstep * 0  ## Remove minstep for now!!
+		qmin = minstep != 0 
+		qmin[:] = False ## Remove minstep for now!!
 		qmax = maxstep != 0
-		wh = (nonzero(((qmin!=0.) & (qmax!=0.)) & (maxstep < minstep)))[0]
-		if len(wh) > 0:
+		if numpy.any(qmin & qmax & (maxstep<minstep)):
 			self.errmsg = 'ERROR: MPMINSTEP is greater than MPMAXSTEP'
 			return
 		wh = (nonzero((qmin!=0.) | (qmax!=0.)))[0]
@@ -943,15 +943,13 @@ class mpfit:
 		limits = self.parinfo(parinfo, 'limits', default=[0.,0.], n=npar)
 		if (limited != None) and (limits != None):
 			## Error checking on limits in parinfo
-			wh = (nonzero((limited[:,0] & (xall < limits[:,0])) |
-								 (limited[:,1] & (xall > limits[:,1]))))[0]
-			if len(wh) > 0:
+			if numpy.any((limited[:,0] & (xall < limits[:,0])) |
+								 (limited[:,1] & (xall > limits[:,1]))):
 				self.errmsg = 'ERROR: parameters are not within PARINFO limits'
 				return
-			wh = (nonzero((limited[:,0] & limited[:,1]) &
+			if numpy.any((limited[:,0] & limited[:,1]) &
 								 (limits[:,0] >= limits[:,1]) &
-								 (pfixed == 0)))[0]
-			if len(wh) > 0:
+								 (pfixed == 0)):
 				self.errmsg = 'ERROR: PARINFO parameter limits are not consistent'
 				return
 
@@ -961,8 +959,7 @@ class mpfit:
 			qllim = (limited[:,0])[ifree]
 			llim  = (limits [:,0])[ifree]
 
-			wh = (nonzero((qulim!=0.) | (qllim!=0.)))[0]
-			if len(wh) > 0:
+			if numpy.any((qulim!=0.) | (qllim!=0.)):
 				qanylim = 1
 			else:
 				qanylim = 0
@@ -985,8 +982,7 @@ class mpfit:
 			self.errmsg = 'ERROR: DIAG parameter scales are inconsistent'
 			if len(diag) < n:
 				return
-			wh = (nonzero(diag <= 0))[0]
-			if len(wh) > 0:
+			if numpy.any(diag <= 0):
 				return
 			self.errmsg = ''
 
@@ -1086,8 +1082,7 @@ class mpfit:
 			if self.niter == 1:
 				if (rescale==0) or (len(diag) < n):
 					diag = wa2.copy()
-					wh = (nonzero(diag == 0))[0]
-					put(diag, wh, 1.)
+					diag[diag == 0] = 1.
 
 				## On the first iteration, calculate the norm of the scaled x
 				## and initialize the step bound delta
