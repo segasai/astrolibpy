@@ -976,7 +976,7 @@ class mpfit:
 
 		n = len(x)
 		## Check input parameters for errors
-		if (n < 0) or (ftol <= 0) or (xtol <= 0) or (gtol <= 0)
+		if (n < 0) or (ftol <= 0) or (xtol <= 0) or (gtol <= 0) \
 					or (maxiter < 0) or (factor <= 0):
 			self.errmsg = 'ERROR: input keywords are inconsistent'
 			return
@@ -1288,12 +1288,12 @@ class mpfit:
 					self.niter = self.niter + 1
 				
 				## Tests for convergence
-				if (abs(actred) <= ftol) and (prered <= ftol)
+				if (abs(actred) <= ftol) and (prered <= ftol) \
 					 and (0.5 * ratio <= 1):
 					 self.status = 1
 				if delta <= xtol*xnorm:
 					self.status = 2
-				if (abs(actred) <= ftol) and (prered <= ftol)
+				if (abs(actred) <= ftol) and (prered <= ftol) \
 					 and (0.5 * ratio <= 1) and (self.status == 2):
 					 self.status = 3
 				if self.status != 0:
@@ -1302,7 +1302,7 @@ class mpfit:
 				## Tests for termination and stringent tolerances
 				if self.niter >= maxiter:
 					self.status = 5
-				if (abs(actred) <= machep) and (prered <= machep)
+				if (abs(actred) <= machep) and (prered <= machep) \
 					and (0.5*ratio <= 1):
 					self.status = 6
 				if delta <= machep*xnorm:
@@ -1317,7 +1317,7 @@ class mpfit:
 					break
 
 				## Check for over/underflow
-				if ~numpy.all(numpy.isfinite(wa1) & numpy.isfinite(wa2) &
+				if ~numpy.all(numpy.isfinite(wa1) & numpy.isfinite(wa2) & \
 							numpy.isfinite(x)) or ~numpy.isfinite(ratio):
 					errmsg = ('''ERROR: parameter or function value(s) have become 
 						'infinite; check model function for over- 'and underflow''')
@@ -1351,10 +1351,10 @@ class mpfit:
 		self.covar = None
 		self.perror = None
 		## (very carefully) set the covariance matrix COVAR
-		if (self.status > 0) and (nocovar==0) and (n != None)
+		if (self.status > 0) and (nocovar==0) and (n != None) \
 					   and (fjac != None) and (ipvt != None):
 			sz = shape(fjac)
-			if (n > 0) and (sz[0] >= n) and (sz[1] >= n)
+			if (n > 0) and (sz[0] >= n) and (sz[1] >= n) \
 				and (len(ipvt) >= n):
 
 				catch_msg = 'computing the covariance matrix'
@@ -2141,8 +2141,8 @@ class mpfit:
 			temp = fp
 			fp = dxnorm - delta
 
-			if (abs(fp) <= 0.1*delta) or
-			   ((parl == 0) and (fp <= temp) and (temp < 0)) or
+			if (abs(fp) <= 0.1*delta) or \
+			   ((parl == 0) and (fp <= temp) and (temp < 0)) or \
 			   (iter == 10):
 			   break;
 
