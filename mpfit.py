@@ -944,7 +944,7 @@ class mpfit:
 
 		## Compose only VARYING parameters
 		self.params = xall	  ## self.params is the set of parameters to be returned
-		x = take(self.params, ifree)  ## x is the set of free parameters
+		x = self.params[ifree]  ## x is the set of free parameters
 
 		## LIMITED parameters ?
 		limited = self.parinfo(parinfo, 'limited', default=[0,0], n=npar)
@@ -964,10 +964,10 @@ class mpfit:
 				return
 
 			## Transfer structure values to local variables
-			qulim = take(limited[:,1], ifree)
-			ulim  = take(limits [:,1], ifree)
-			qllim = take(limited[:,0], ifree)
-			llim  = take(limits [:,0], ifree)
+			qulim = (limited[:,1])[ifree]
+			ulim  = (limits [:,1])[ifree]
+			qllim = (limited[:,0])[ifree]
+			llim  = (limits [:,0])[ifree]
 
 			wh = (nonzero((qulim!=0.) | (qllim!=0.)))[0]
 			if (len(wh) > 0): qanylim = 1
@@ -1043,7 +1043,7 @@ class mpfit:
 					## If parameters were changed (grrr..) then re-tie
 					if (numpy.max(abs(xnew0-self.params)) > 0):
 						if (self.qanytied): self.params = self.tie(self.params, ptied)
-						x = take(self.params, ifree)
+						x = self.params[ifree]
 
 
 			## Calculate the jacobian matrix
@@ -1172,21 +1172,21 @@ class mpfit:
 						catch_msg = 'checking for a step out of bounds'
 						if (nlpeg > 0):
 							put(wa1, whlpeg, clip(
-							   take(wa1, whlpeg), 0., numpy.max(wa1)))
+							   wa1[whlpeg], 0., numpy.max(wa1)))
 						if (nupeg > 0):
 							put(wa1, whupeg, clip(
-							   take(wa1, whupeg), numpy.min(wa1), 0.))
+							   wa1[whupeg], numpy.min(wa1), 0.))
 
 						dwa1 = abs(wa1) > machep
 						whl = (nonzero(((dwa1!=0.) & qllim) & ((x + wa1) < llim)))[0]
 						if (len(whl) > 0):
-							t = ((take(llim, whl) - take(x, whl)) /
-								  take(wa1, whl))
+							t = ((llim[whl] - x[whl]) /
+								  wa1[whl])
 							alpha = numpy.min([alpha, numpy.min(t)])
 						whu = (nonzero(((dwa1!=0.) & qulim) & ((x + wa1) > ulim)))[0]
 						if (len(whu) > 0):
-							t = ((take(ulim, whu) - take(x, whu)) /
-								  take(wa1, whu))
+							t = ((ulim[whu] - x[whu]) /
+								  wa1[whu])
 							alpha = numpy.min([alpha, numpy.min(t)])
 
 					## Obey any max step values.
@@ -1211,9 +1211,9 @@ class mpfit:
 					ulim1 = ulim * (1 - sgnu * machep) - (ulim == 0) * machep
 					llim1 = llim * (1 + sgnl * machep) + (llim == 0) * machep
 					wh = (nonzero((qulim!=0) & (wa2 >= ulim1)))[0]
-					if (len(wh) > 0): put(wa2, wh, take(ulim, wh))
+					if (len(wh) > 0): put(wa2, wh, ulim[wh])
 					wh = (nonzero((qllim!=0.) & (wa2 <= llim1)))[0]					
-					if (len(wh) > 0): put(wa2, wh, take(llim, wh))
+					if (len(wh) > 0): put(wa2, wh, llim[wh])
 				# endelse
 				wa3 = diag * wa1
 				pnorm = self.enorm(wa3)
@@ -1350,7 +1350,7 @@ class mpfit:
 				d = diagonal(self.covar)
 				wh = (nonzero(d >= 0))[0]
 				if len(wh) > 0:
-					put(self.perror, wh, sqrt(take(d, wh)))
+					put(self.perror, wh, sqrt(d[wh]))
 		return
 
 
@@ -1531,16 +1531,16 @@ class mpfit:
 		## if STEP is given, use that
 		## STEP includes the fixed parameters
 		if step != None:
-			stepi = take(step, ifree)
+			stepi = step[ifree]
 			wh = (nonzero(stepi > 0))[0]
-			if (len(wh) > 0): put(h, wh, take(stepi, wh))
+			if (len(wh) > 0): put(h, wh, stepi[wh])
 
 		## if relative step is given, use that
 		## DSTEP includes the fixed parameters
 		if (len(dstep) > 0):
-			dstepi = take(dstep, ifree)
+			dstepi = dstep[ifree]
 			wh = (nonzero(dstepi > 0))[0]
-			if len(wh) > 0: put(h, wh, abs(take(dstepi,wh)*take(x,wh)))
+			if len(wh) > 0: put(h, wh, abs(dstepi[wh]*x[wh]))
 
 		## In case any of the step values are zero
 		wh = (nonzero(h == 0))[0]
@@ -1554,7 +1554,7 @@ class mpfit:
 		if len(ulimited) > 0 and len(ulimit) > 0:
 			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
 			wh = (nonzero(mask))[0]
-			if len(wh) > 0: put(h, wh, -take(h, wh))
+			if len(wh) > 0: put(h, wh, - h[wh])
 		## Loop through parameters, computing the derivative for each
 		for j in range(n):
 			xp = xall.copy()
@@ -2077,7 +2077,7 @@ class mpfit:
 
 		parl = 0.
 		if nsing >= n:
-			wa1 = take(diag, ipvt)*take(wa2, ipvt)/dxnorm
+			wa1 = diag[ipvt] * wa2[ipvt] / dxnorm
 			wa1[0] = wa1[0] / r[0,0] ## Degenerate case
 			for j in range(1,n):   ## Note "1" here, not zero
 				sum0 = sum(r[0:j,j]*wa1[0:j])
@@ -2120,7 +2120,7 @@ class mpfit:
 			   (iter == 10)): break;
 
 			## Compute the newton correction
-			wa1 = take(diag, ipvt)*take(wa2, ipvt)/dxnorm
+			wa1 = diag[ipvt] * wa2[ipvt] / dxnorm
 
 			for j in range(n-1):
 				wa1[j] = wa1[j]/sdiag[j]
