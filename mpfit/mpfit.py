@@ -410,7 +410,7 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 from numpy import *
 import numpy
 import types
-
+import scipy.lib.blas
 
 #	 Original FORTRAN documentation
 #	 **********
@@ -1420,6 +1420,7 @@ class mpfit:
 		if (n == 0) and (parinfo != None): n = len(parinfo)
 		if (n == 0):
 			values = default
+	
 			return(values)
 		values = []
 		for i in range(n):
@@ -1456,33 +1457,8 @@ class mpfit:
 	
 	
 	def enorm(self, vec):
-
-		if (self.debug): print 'Entering enorm...'
-		## NOTE: it turns out that, for systems that have a lot of data
-		## points, this routine is a big computing bottleneck.  The extended
-		## computations that need to be done cannot be effectively
-		## vectorized.  The introduction of the FASTNORM configuration
-		## parameter allows the user to select a faster routine, which is
-		## based on TOTAL() alone.
-
-		# Very simple-minded sum-of-squares
-		if (self.fastnorm):
-			ans = sqrt(sum(vec*vec))
-		else:
-			agiant = self.machar.rgiant / len(vec)
-			adwarf = self.machar.rdwarf * len(vec)
-
-			## This is hopefully a compromise between speed and robustness.
-			## Need to do this because of the possibility of over- or underflow.
-			mx = numpy.max(vec)
-			mn = numpy.min(vec)
-			mx = max([abs(mx), abs(mn)])
-			if mx == 0: return(vec[0]*0.)
-			if mx > agiant or mx < adwarf:
-				ans = mx * sqrt(sum((vec/mx)*(vec/mx)))
-			else:
-				ans = sqrt(sum(vec*vec))
-
+		blas_enorm, = scipy.lib.blas.get_blas_funcs(['nrm2'],vec)
+		ans = blas_enorm(vec)
 		return(ans)
 	
 	
