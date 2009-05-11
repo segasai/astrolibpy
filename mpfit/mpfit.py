@@ -1013,7 +1013,7 @@ class mpfit:
 		while(1):
 
 			# If requested, call fcn to enable printing of iterates
-			put(self.params, ifree, x)
+			self.params[ifree] = x
 			if self.qanytied:
 				self.params = self.tie(self.params, ptied)
 
@@ -1168,11 +1168,9 @@ class mpfit:
 						# Do not allow any steps out of bounds
 						catch_msg = 'checking for a step out of bounds'
 						if nlpeg > 0:
-							put(wa1, whlpeg, clip(
-							   wa1[whlpeg], 0., numpy.max(wa1)))
+							wa1[whlpeg] = clip( wa1[whlpeg], 0., numpy.max(wa1))
 						if nupeg > 0:
-							put(wa1, whupeg, clip(
-							   wa1[whupeg], numpy.min(wa1), 0.))
+							wa1[whupeg] = clip(wa1[whupeg], numpy.min(wa1), 0.)
 
 						dwa1 = abs(wa1) > machep
 						whl = (nonzero(((dwa1!=0.) & qllim) & ((x + wa1) < llim)))[0]
@@ -1210,10 +1208,10 @@ class mpfit:
 					llim1 = llim * (1 + sgnl * machep) + (llim == 0) * machep
 					wh = (nonzero((qulim!=0) & (wa2 >= ulim1)))[0]
 					if len(wh) > 0:
-						put(wa2, wh, ulim[wh])
+						wa2[wh] = ulim[wh]
 					wh = (nonzero((qllim!=0.) & (wa2 <= llim1)))[0]					
 					if len(wh) > 0:
-						put(wa2, wh, llim[wh])
+						wa2[wh] = llim[wh]
 				# endelse
 				wa3 = diag * wa1
 				pnorm = self.enorm(wa3)
@@ -1222,7 +1220,7 @@ class mpfit:
 				if self.niter == 1:
 					delta = numpy.min([delta,pnorm])
 
-				put(self.params, ifree, wa2)
+				self.params[ifree] = wa2
 
 				# Evaluate the function at x+p and calculate its norm
 				mperr = 0
@@ -1332,7 +1330,7 @@ class mpfit:
 		if nfree == 0:
 			self.params = xall.copy()
 		else:
-			put(self.params, ifree, x)
+			self.params[ifree] = x
 		if (nprint > 0) and (self.status > 0):
 			catch_msg = 'calling ' + str(fcn)
 			[status, fvec] = self.call(fcn, self.params, functkw)
@@ -1369,7 +1367,7 @@ class mpfit:
 				d = diagonal(self.covar)
 				wh = (nonzero(d >= 0))[0]
 				if len(wh) > 0:
-					put(self.perror, wh, sqrt(d[wh]))
+					self.perror[wh] = sqrt(d[wh])
 		return
 
 
@@ -1540,7 +1538,7 @@ class mpfit:
 			stepi = step[ifree]
 			wh = (nonzero(stepi > 0))[0]
 			if len(wh) > 0:
-				put(h, wh, stepi[wh])
+				h[wh] = stepi[wh]
 
 		# if relative step is given, use that
 		# DSTEP includes the fixed parameters
@@ -1548,12 +1546,10 @@ class mpfit:
 			dstepi = dstep[ifree]
 			wh = (nonzero(dstepi > 0))[0]
 			if len(wh) > 0:
-				put(h, wh, abs(dstepi[wh]*x[wh]))
+				h[wh] = abs(dstepi[wh]*x[wh])
 
 		# In case any of the step values are zero
-		wh = (nonzero(h == 0))[0]
-		if len(wh) > 0:
-			put(h, wh, eps)
+		h[h == 0] = eps
 
 		# Reverse the sign of the step if we are up against the parameter
 		# limit, or if the user requested it.
@@ -1564,7 +1560,7 @@ class mpfit:
 			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
 			wh = (nonzero(mask))[0]
 			if len(wh) > 0:
-				put(h, wh, - h[wh])
+				h[wh] = - h[wh]
 		# Loop through parameters, computing the derivative for each
 		for j in range(n):
 			xp = xall.copy()
@@ -1951,7 +1947,7 @@ class mpfit:
 				wa[j] = (wa[j]-sum0)/sdiag[j]
 
 		# Permute the components of z back to components of x
-		put(x, ipvt, wa)
+		x[ipvt] = wa
 		return (r, x, sdiag)
 
 
@@ -2078,7 +2074,7 @@ class mpfit:
 					wa1[0:j] = wa1[0:j] - r[0:j,j]*wa1[j]
 
 		# Note: ipvt here is a permutation array
-		put(x, ipvt, wa1)
+		x[ipvt] = wa1
 
 		# Initialize the iteration counter.  Evaluate the function at the
 		# origin, and test for acceptance of the gauss-newton direction
