@@ -853,7 +853,8 @@ class mpfit:
 			self.errmsg = "Usage: parms = mpfit('myfunt', ... )"
 			return
 
-		if (iterfunct == 'default'): iterfunct = self.defiter
+		if (iterfunct == 'default'):
+			iterfunct = self.defiter
 
 		## Parameter damping doesn't work when user is providing their own
 		## gradients.
@@ -899,7 +900,8 @@ class mpfit:
 		self.qanytied = 0
 		for i in range(npar):
 			ptied[i] = ptied[i].strip()
-			if (ptied[i] != ''): self.qanytied = 1
+			if (ptied[i] != ''):
+				self.qanytied = 1
 		self.ptied = ptied
 
 		## FIXED parameters ?
@@ -960,8 +962,10 @@ class mpfit:
 			llim  = (limits [:,0])[ifree]
 
 			wh = (nonzero((qulim!=0.) | (qllim!=0.)))[0]
-			if (len(wh) > 0): qanylim = 1
-			else: qanylim = 0
+			if (len(wh) > 0):
+				qanylim = 1
+			else:
+				qanylim = 0
 		else:
 			## Fill in local variables with dummy values
 			qulim = zeros(nfree)
@@ -979,9 +983,11 @@ class mpfit:
 
 		if (rescale != 0):
 			self.errmsg = 'ERROR: DIAG parameter scales are inconsistent'
-			if (len(diag) < n): return
+			if (len(diag) < n):
+				return
 			wh = (nonzero(diag <= 0))[0]
-			if (len(wh) > 0): return
+			if (len(wh) > 0):
+				return
 			self.errmsg = ''
 
 		# Make sure x is a Numeric array of type Float
@@ -1012,7 +1018,8 @@ class mpfit:
 
 			## If requested, call fcn to enable printing of iterates
 			put(self.params, ifree, x)
-			if (self.qanytied): self.params = self.tie(self.params, ptied)
+			if (self.qanytied):
+				self.params = self.tie(self.params, ptied)
 
 			if (nprint > 0) and (iterfunct != None):
 				if (((self.niter-1) % nprint) == 0):
@@ -1023,7 +1030,8 @@ class mpfit:
 					status = iterfunct(fcn, self.params, self.niter, self.fnorm**2,
 					   functkw=functkw, parinfo=parinfo, quiet=quiet,
 					   dof=dof, **iterkw)
-					if (status != None): self.status = status
+					if (status != None):
+						self.status = status
 
 					## Check for user termination
 					if (self.status < 0):
@@ -1032,7 +1040,8 @@ class mpfit:
 
 					## If parameters were changed (grrr..) then re-tie
 					if (numpy.max(abs(xnew0-self.params)) > 0):
-						if (self.qanytied): self.params = self.tie(self.params, ptied)
+						if (self.qanytied):
+							self.params = self.tie(self.params, ptied)
 						x = self.params[ifree]
 
 
@@ -1059,12 +1068,14 @@ class mpfit:
 					## Total derivative of sum wrt lower pegged parameters
 					for i in range(nlpeg):
 						sum0 = sum(fvec * fjac[:,whlpeg[i]])
-						if (sum0 > 0): fjac[:,whlpeg[i]] = 0
+						if (sum0 > 0):
+							fjac[:,whlpeg[i]] = 0
 				if (nupeg > 0):
 					## Total derivative of sum wrt upper pegged parameters
 					for i in range(nupeg):
 						sum0 = sum(fvec * fjac[:,whupeg[i]])
-						if (sum0 < 0): fjac[:,whupeg[i]] = 0
+						if (sum0 < 0):
+							fjac[:,whupeg[i]] = 0
 
 			## Compute the QR factorization of the jacobian
 			[fjac, ipvt, wa1, wa2] = self.qrfac(fjac, pivot=1)
@@ -1083,7 +1094,8 @@ class mpfit:
 				wa3 = diag * x
 				xnorm = self.enorm(wa3)
 				delta = factor*xnorm
-				if (delta == 0.): delta = factor
+				if (delta == 0.):
+					delta = factor
 
 			## Form (q transpose)*fvec and store the first n components in qtf
 			catch_msg = 'forming (q transpose)*fvec'
@@ -1157,36 +1169,37 @@ class mpfit:
 					## The step should take us right to the limit in that case.
 					alpha = 1.
 
-					if (qanylim):
+					if qanylim:
 						## Do not allow any steps out of bounds
 						catch_msg = 'checking for a step out of bounds'
-						if (nlpeg > 0):
+						if nlpeg > 0:
 							put(wa1, whlpeg, clip(
 							   wa1[whlpeg], 0., numpy.max(wa1)))
-						if (nupeg > 0):
+						if nupeg > 0:
 							put(wa1, whupeg, clip(
 							   wa1[whupeg], numpy.min(wa1), 0.))
 
 						dwa1 = abs(wa1) > machep
 						whl = (nonzero(((dwa1!=0.) & qllim) & ((x + wa1) < llim)))[0]
-						if (len(whl) > 0):
+						if len(whl) > 0:
 							t = ((llim[whl] - x[whl]) /
 								  wa1[whl])
 							alpha = numpy.min([alpha, numpy.min(t)])
 						whu = (nonzero(((dwa1!=0.) & qulim) & ((x + wa1) > ulim)))[0]
-						if (len(whu) > 0):
+						if len(whu) > 0:
 							t = ((ulim[whu] - x[whu]) /
 								  wa1[whu])
 							alpha = numpy.min([alpha, numpy.min(t)])
 
 					## Obey any max step values.
-					if (qminmax):
+					if qminmax:
 						nwa1 = wa1 * alpha
 						whmax = (nonzero((qmax != 0.) & (maxstep > 0)))[0]
-						if (len(whmax) > 0):
+						if len(whmax) > 0:
 							mrat = numpy.max(numpy.abs(nwa1[whmax]) /
 									   numpy.abs(maxstep[ifree[whmax]]))
-							if (mrat > 1): alpha = alpha / mrat
+							if mrat > 1:
+								alpha = alpha / mrat
 
 					## Scale the resulting vector
 					wa1 = wa1 * alpha
@@ -1201,15 +1214,18 @@ class mpfit:
 					ulim1 = ulim * (1 - sgnu * machep) - (ulim == 0) * machep
 					llim1 = llim * (1 + sgnl * machep) + (llim == 0) * machep
 					wh = (nonzero((qulim!=0) & (wa2 >= ulim1)))[0]
-					if (len(wh) > 0): put(wa2, wh, ulim[wh])
+					if len(wh) > 0:
+						put(wa2, wh, ulim[wh])
 					wh = (nonzero((qllim!=0.) & (wa2 <= llim1)))[0]					
-					if (len(wh) > 0): put(wa2, wh, llim[wh])
+					if len(wh) > 0:
+						put(wa2, wh, llim[wh])
 				# endelse
 				wa3 = diag * wa1
 				pnorm = self.enorm(wa3)
 				
 				## On the first iteration, adjust the initial step bound
-				if (self.niter == 1): delta = numpy.min([delta,pnorm])
+				if self.niter == 1:
+					delta = numpy.min([delta,pnorm])
 
 				put(self.params, ifree, wa2)
 
@@ -1217,7 +1233,7 @@ class mpfit:
 				mperr = 0
 				catch_msg = 'calling '+str(fcn)
 				[self.status, wa4] = self.call(fcn, self.params, functkw)
-				if (self.status < 0):
+				if self.status < 0:
 					self.errmsg = 'WARNING: premature termination by "'+fcn+'"'
 					return
 				fnorm1 = self.enorm(wa4)
@@ -1225,7 +1241,8 @@ class mpfit:
 				## Compute the scaled actual reduction
 				catch_msg = 'computing convergence criteria'
 				actred = -1.
-				if ((0.1 * fnorm1) < self.fnorm): actred = - (fnorm1/self.fnorm)**2 + 1.
+				if (0.1 * fnorm1) < self.fnorm:
+					actred = - (fnorm1/self.fnorm)**2 + 1.
 
 				## Compute the scaled predicted reduction and the scaled directional
 				## derivative
@@ -1242,13 +1259,17 @@ class mpfit:
 				
 				## Compute the ratio of the actual to the predicted reduction.
 				ratio = 0.
-				if (prered != 0): ratio = actred/prered
+				if prered != 0:
+					ratio = actred/prered
 
 				## Update the step bound
-				if (ratio <= 0.25):
-					if (actred >= 0): temp = .5
-					else: temp = .5*dirder/(dirder + .5*actred)
-					if ((0.1*fnorm1) >= self.fnorm) or (temp < 0.1): temp = 0.1
+				if ratio <= 0.25:
+					if actred >= 0:
+						temp = .5
+					else:
+						temp = .5*dirder/(dirder + .5*actred)
+					if ((0.1*fnorm1) >= self.fnorm) or (temp < 0.1):
+						temp = 0.1
 					delta = temp*numpy.min([delta,pnorm/0.1])
 					par = par/temp
 				else:
@@ -1257,7 +1278,7 @@ class mpfit:
 						par = .5*par
 
 				## Test for successful iteration
-				if (ratio >= 0.0001):
+				if ratio >= 0.0001:
 					## Successful iteration.  Update x, fvec, and their norms
 					x = wa2
 					wa2 = diag * x
@@ -1268,22 +1289,32 @@ class mpfit:
 				
 				## Tests for convergence
 				if ((abs(actred) <= ftol) and (prered <= ftol)
-					 and (0.5 * ratio <= 1)): self.status = 1
-				if delta <= xtol*xnorm: self.status = 2
+					 and (0.5 * ratio <= 1)):
+					 self.status = 1
+				if delta <= xtol*xnorm:
+					self.status = 2
 				if ((abs(actred) <= ftol) and (prered <= ftol)
-					 and (0.5 * ratio <= 1) and (self.status == 2)): self.status = 3
-				if (self.status != 0): break
+					 and (0.5 * ratio <= 1) and (self.status == 2)):
+					 self.status = 3
+				if (self.status != 0):
+					break
 				
 				## Tests for termination and stringent tolerances
-				if (self.niter >= maxiter): self.status = 5
+				if (self.niter >= maxiter):
+					self.status = 5
 				if ((abs(actred) <= machep) and (prered <= machep)
-					and (0.5*ratio <= 1)): self.status = 6
-				if delta <= machep*xnorm: self.status = 7
-				if gnorm <= machep: self.status = 8
-				if (self.status != 0): break
+					and (0.5*ratio <= 1)):
+					self.status = 6
+				if delta <= machep*xnorm:
+					self.status = 7
+				if gnorm <= machep:
+					self.status = 8
+				if self.status != 0:
+					break
 				
 				## End of inner loop. Repeat if iteration unsuccessful
-				if (ratio >= 0.0001): break
+				if ratio >= 0.0001:
+					break
 
 				## Check for over/underflow
 				if ~numpy.all(numpy.isfinite(wa1) & numpy.isfinite(wa2) &
@@ -1295,15 +1326,18 @@ class mpfit:
 				##wh = where(finite(wa1) EQ 0 OR finite(wa2) EQ 0 OR finite(x) EQ 0, ct)
 				##if ct GT 0 OR finite(ratio) EQ 0 then begin
 
-			if (self.status != 0): break;
+			if self.status != 0:
+				break;
 		## End of outer loop.
 
 		catch_msg = 'in the termination phase'
 		## Termination, either normal or user imposed.
-		if (len(self.params) == 0):
+		if len(self.params) == 0:
 			return
-		if (nfree == 0): self.params = xall.copy()
-		else: put(self.params, ifree, x)
+		if nfree == 0:
+			self.params = xall.copy()
+		else:
+			put(self.params, ifree, x)
 		if (nprint > 0) and (self.status > 0):
 			catch_msg = 'calling ' + str(fcn)
 			[status, fvec] = self.call(fcn, self.params, functkw)
@@ -1364,9 +1398,11 @@ class mpfit:
 					   quiet=0, iterstop=None, parinfo=None,
 					   format=None, pformat='%.10g', dof=1):
 
-		if (self.debug): print 'Entering defiter...'
-		if (quiet): return
-		if (fnorm == None):
+		if self.debug:
+			print 'Entering defiter...'
+		if quiet:
+			return
+		if fnorm == None:
 			[status, fvec] = self.call(fcn, x, functkw)
 			fnorm = self.enorm(fvec)**2
 
@@ -1382,9 +1418,9 @@ class mpfit:
 				iprint = parinfo[i]['mpprint']
 			else:
 				iprint = 1
-			if (iprint):
+			if iprint:
 				print p + (pformat % x[i]) + '  '
-		return(0)
+		return 0
 
 	##  DO_ITERSTOP:
 	##  if keyword_set(iterstop) then begin
@@ -1405,12 +1441,14 @@ class mpfit:
 	
 	## Procedure to parse the parameter values in PARINFO, which is a list of dictionaries
 	def parinfo(self, parinfo=None, key='a', default=None, n=0):
-		if (self.debug): print 'Entering parinfo...'
-		if (n == 0) and (parinfo != None): n = len(parinfo)
-		if (n == 0):
+		if self.debug:
+			print 'Entering parinfo...'
+		if (n == 0) and (parinfo != None):
+			n = len(parinfo)
+		if n == 0:
 			values = default
 	
-			return(values)
+			return values
 		values = []
 		for i in range(n):
 			if ((parinfo != None) and (parinfo[i].has_key(key))):
@@ -1420,47 +1458,55 @@ class mpfit:
 
 		# Convert to numeric arrays if possible
 		test = default
-		if (type(default) == types.ListType): test=default[0]
-		if (isinstance(test, types.IntType)):
+		if type(default) == types.ListType:
+			test=default[0]
+		if isinstance(test, types.IntType):
 			values = asarray(values, int)
-		elif (isinstance(test, types.FloatType)):
+		elif isinstance(test, types.FloatType):
 			values = asarray(values, float)
-		return(values)
+		return values
 	
 	## Call user function or procedure, with _EXTRA or not, with
 	## derivatives or not.
 	def call(self, fcn, x, functkw, fjac=None):
-		if (self.debug): print 'Entering call...'
-		if (self.qanytied): x = self.tie(x, self.ptied)
+		if self.debug:
+			print 'Entering call...'
+		if self.qanytied:
+			x = self.tie(x, self.ptied)
 		self.nfev = self.nfev + 1
-		if (fjac == None):
+		if fjac == None:
 			[status, f] = fcn(x, fjac=fjac, **functkw)
-			if (self.damp > 0):
+			if self.damp > 0:
 				## Apply the damping if requested.  This replaces the residuals
 				## with their hyperbolic tangent.  Thus residuals larger than
 				## DAMP are essentially clipped.
 				f = tanh(f/self.damp)
-			return([status, f])
+			return [status, f]
 		else:
-			return(fcn(x, fjac=fjac, **functkw))
+			return fcn(x, fjac=fjac, **functkw)
 	
 	
 	def enorm(self, vec):
 		blas_enorm, = scipy.lib.blas.get_blas_funcs(['nrm2'],vec)
 		ans = blas_enorm(vec)
-		return(ans)
+		return ans
 	
 	
 	def fdjac2(self, fcn, x, fvec, step=None, ulimited=None, ulimit=None, dside=None,
 			   epsfcn=None, autoderivative=1,
 			   functkw=None, xall=None, ifree=None, dstep=None):
 
-		if (self.debug): print 'Entering fdjac2...'
+		if self.debug:
+			print 'Entering fdjac2...'
 		machep = self.machar.machep
-		if epsfcn == None:  epsfcn = machep
-		if xall == None:	xall = x
-		if ifree == None:   ifree = arange(len(xall))
-		if step == None:	step = x * 0.
+		if epsfcn == None:
+			epsfcn = machep
+		if xall == None:
+			xall = x
+		if ifree == None:
+			ifree = arange(len(xall))
+		if step == None:
+			step = x * 0.
 		nall = len(xall)
 
 		eps = sqrt(numpy.max([epsfcn, machep]))
@@ -1468,7 +1514,7 @@ class mpfit:
 		n = len(x)
 
 		## Compute analytical derivative if requested
-		if (autoderivative == 0):
+		if autoderivative == 0:
 			mperr = 0
 			fjac = zeros(nall, dtype=float)
 			Put(fjac, ifree, 1.0)  ## Specify which parameters need derivatives
@@ -1476,7 +1522,7 @@ class mpfit:
 
 			if len(fjac) != m*nall:
 				print 'ERROR: Derivative matrix was not computed properly.'
-				return(None)
+				return None
 
 			## This definition is consistent with CURVEFIT
 			## Sign error found (thanks Jesus Fernandez <fernande@irm.chu-caen.fr>)
@@ -1487,7 +1533,7 @@ class mpfit:
 			if len(ifree) < nall:
 				fjac = fjac[:,ifree]
 				fjac.shape = [m, n]
-				return(fjac)
+				return fjac
 
 		fjac = zeros([m, n], dtype=float)
 
@@ -1498,18 +1544,21 @@ class mpfit:
 		if step != None:
 			stepi = step[ifree]
 			wh = (nonzero(stepi > 0))[0]
-			if (len(wh) > 0): put(h, wh, stepi[wh])
+			if (len(wh) > 0):
+				put(h, wh, stepi[wh])
 
 		## if relative step is given, use that
 		## DSTEP includes the fixed parameters
-		if (len(dstep) > 0):
+		if len(dstep) > 0:
 			dstepi = dstep[ifree]
 			wh = (nonzero(dstepi > 0))[0]
-			if len(wh) > 0: put(h, wh, abs(dstepi[wh]*x[wh]))
+			if len(wh) > 0:
+				put(h, wh, abs(dstepi[wh]*x[wh]))
 
 		## In case any of the step values are zero
 		wh = (nonzero(h == 0))[0]
-		if len(wh) > 0: put(h, wh, eps)
+		if len(wh) > 0:
+			put(h, wh, eps)
 
 		## Reverse the sign of the step if we are up against the parameter
 		## limit, or if the user requested it.
@@ -1519,13 +1568,15 @@ class mpfit:
 		if len(ulimited) > 0 and len(ulimit) > 0:
 			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
 			wh = (nonzero(mask))[0]
-			if len(wh) > 0: put(h, wh, - h[wh])
+			if len(wh) > 0:
+				put(h, wh, - h[wh])
 		## Loop through parameters, computing the derivative for each
 		for j in range(n):
 			xp = xall.copy()
 			xp[ifree[j]] = xp[ifree[j]] + h[j]
 			[status, fp] = self.call(fcn, xp, functkw)
-			if (status < 0): return(None)
+			if status < 0:
+				return None
 
 			if abs(dside[ifree[j]]) <= 1:
 				## COMPUTE THE ONE-SIDED DERIVATIVE
@@ -1538,11 +1589,12 @@ class mpfit:
 
 				mperr = 0
 				[status, fm] = self.call(fcn, xp, functkw)
-				if (status < 0): return(None)
+				if status < 0:
+					return None
 
 				## Note optimization fjac(0:*,j)
 				fjac[0:,j] = (fp-fm)/(2*h[j])
-		return(fjac)
+		return fjac
 	
 	
 	
@@ -1680,7 +1732,7 @@ class mpfit:
 
 	def qrfac(self, a, pivot=0):
 
-		if (self.debug): print 'Entering qrfac...'
+		if self.debug: print 'Entering qrfac...'
 		machep = self.machar.machep
 		sz = shape(a)
 		m = sz[0]
@@ -1697,7 +1749,7 @@ class mpfit:
 		## Reduce a to r with householder transformations
 		minmn = numpy.min([m,n])
 		for j in range(minmn):
-			if (pivot != 0):
+			if pivot != 0:
 				## Bring the column of largest norm into the pivot position
 				rmax = numpy.max(rdiag[j:])
 				kmax = (nonzero(rdiag[j:] == rmax))[0]
@@ -1720,8 +1772,10 @@ class mpfit:
 			lj = ipvt[j]
 			ajj = a[j:,lj]
 			ajnorm = self.enorm(ajj)
-			if ajnorm == 0: break
-			if a[j,lj] < 0: ajnorm = -ajnorm
+			if ajnorm == 0:
+				break
+			if a[j,lj] < 0:
+				ajnorm = -ajnorm
 
 			ajj = ajj / ajnorm
 			ajj[0] = ajj[0] + 1
@@ -1734,7 +1788,7 @@ class mpfit:
 			## NOTE to SELF: tried to optimize this by removing the loop,
 			## but it actually got slower.  Reverted to "for" loop to keep
 			## it simple.
-			if (j+1 < n):
+			if j+1 < n:
 				for k in range(j+1, n):
 					lk = ipvt[k]
 					ajk = a[j:,lk]
@@ -1746,11 +1800,11 @@ class mpfit:
 							temp = a[j,lk]/rdiag[k]
 							rdiag[k] = rdiag[k] * sqrt(numpy.max([(1.-temp**2), 0.]))
 							temp = rdiag[k]/wa[k]
-							if ((0.05*temp*temp) <= machep):
+							if (0.05*temp*temp) <= machep:
 								rdiag[k] = self.enorm(a[j+1:,lk])
 								wa[k] = rdiag[k]
 			rdiag[j] = -ajnorm
-		return([a, ipvt, rdiag, acnorm])
+		return [a, ipvt, rdiag, acnorm]
 
 	
 	#	 Original FORTRAN documentation
@@ -1832,7 +1886,8 @@ class mpfit:
 	#
 	
 	def qrsolv(self, r, ipvt, diag, qtb, sdiag):
-		if (self.debug): print 'Entering qrsolv...'
+		if self.debug:
+			print 'Entering qrsolv...'
 		sz = shape(r)
 		m = sz[0]
 		n = sz[1]
@@ -1848,7 +1903,8 @@ class mpfit:
 		## Eliminate the diagonal matrix d using a givens rotation
 		for j in range(n):
 			l = ipvt[j]
-			if (diag[l] == 0): break
+			if diag[l] == 0:
+				break
 			sdiag[j:] = 0
 			sdiag[j] = diag[l]
 
@@ -1858,8 +1914,9 @@ class mpfit:
 
 			qtbpj = 0.
 			for k in range(j,n):
-				if (sdiag[k] == 0): break
-				if (abs(r[k,k]) < abs(sdiag[k])):
+				if sdiag[k] == 0:
+					break
+				if abs(r[k,k]) < abs(sdiag[k]):
 					cotan  = r[k,k]/sdiag[k]
 					sine   = 0.5/sqrt(.25 + .25*cotan*cotan)
 					cosine = sine*cotan
@@ -1876,7 +1933,7 @@ class mpfit:
 				wa[k] = temp
 
 				## Accumulate the transformation in the row of s
-				if (n > k+1):
+				if n > k+1:
 					temp = cosine*r[k+1:n,k] + sine*sdiag[k+1:n]
 					sdiag[k+1:n] = -sine*r[k+1:n,k] + cosine*sdiag[k+1:n]
 					r[k+1:n,k] = temp
@@ -1887,11 +1944,11 @@ class mpfit:
 		## then obtain a least squares solution
 		nsing = n
 		wh = (nonzero(sdiag == 0))[0]
-		if (len(wh) > 0):
+		if len(wh) > 0:
 			nsing = wh[0]
 			wa[nsing:] = 0
 
-		if (nsing >= 1):
+		if nsing >= 1:
 			wa[nsing-1] = wa[nsing-1]/sdiag[nsing-1] ## Degenerate case
 			## *** Reverse loop ***
 			for j in range(nsing-2,-1,-1):
@@ -1900,7 +1957,7 @@ class mpfit:
 
 		## Permute the components of z back to components of x
 		put(x, ipvt, wa)
-		return(r, x, sdiag)
+		return (r, x, sdiag)
 
 
 
@@ -2001,7 +2058,8 @@ class mpfit:
 	
 	def lmpar(self, r, ipvt, diag, qtb, delta, x, sdiag, par=None):
 
-		if (self.debug): print 'Entering lmpar...'
+		if self.debug:
+			print 'Entering lmpar...'
 		dwarf = self.machar.minnum
 		machep = self.machar.machep
 		sz = shape(r)
@@ -2021,7 +2079,7 @@ class mpfit:
 			## *** Reverse loop ***
 			for j in range(nsing-1,-1,-1):
 				wa1[j] = wa1[j]/r[j,j]
-				if (j-1 >= 0):
+				if j-1 >= 0:
 					wa1[0:j] = wa1[0:j] - r[0:j,j]*wa1[j]
 
 		## Note: ipvt here is a permutation array
@@ -2033,8 +2091,8 @@ class mpfit:
 		wa2 = diag * x
 		dxnorm = self.enorm(wa2)
 		fp = dxnorm - delta
-		if (fp <= 0.1*delta):
-			return[r, 0., x, sdiag]
+		if fp <= 0.1*delta:
+			return [r, 0., x, sdiag]
 
 		## If the jacobian is not rank deficient, the newton step provides a
 		## lower bound, parl, for the zero of the function.  Otherwise set
@@ -2057,21 +2115,24 @@ class mpfit:
 			wa1[j] = sum0/diag[ipvt[j]]
 		gnorm = self.enorm(wa1)
 		paru = gnorm/delta
-		if paru == 0: paru = dwarf/numpy.min([delta,0.1])
+		if paru == 0:
+			paru = dwarf/numpy.min([delta,0.1])
 
 		## If the input par lies outside of the interval (parl,paru), set
 		## par to the closer endpoint
 
 		par = numpy.max([par,parl])
 		par = numpy.min([par,paru])
-		if par == 0: par = gnorm/dxnorm
+		if par == 0:
+			par = gnorm/dxnorm
 
 		## Beginning of an interation
 		while(1):
 			iter = iter + 1
 
 			## Evaluate the function at the current value of par
-			if par == 0: par = numpy.max([dwarf, paru*0.001])
+			if par == 0:
+				par = numpy.max([dwarf, paru*0.001])
 			temp = sqrt(par)
 			wa1 = temp * diag
 			[r, x, sdiag] = self.qrsolv(r, ipvt, wa1, qtb, sdiag)
@@ -2082,7 +2143,8 @@ class mpfit:
 
 			if ((abs(fp) <= 0.1*delta) or
 			   ((parl == 0) and (fp <= temp) and (temp < 0)) or
-			   (iter == 10)): break;
+			   (iter == 10)):
+			   break;
 
 			## Compute the newton correction
 			wa1 = diag[ipvt] * wa2[ipvt] / dxnorm
@@ -2096,8 +2158,10 @@ class mpfit:
 			parc = ((fp/delta)/temp)/temp
 
 			## Depending on the sign of the function, update parl or paru
-			if fp > 0: parl = numpy.max([parl,par])
-			if fp < 0: paru = numpy.min([paru,par])
+			if fp > 0:
+				parl = numpy.max([parl,par])
+			if fp < 0:
+				paru = numpy.min([paru,par])
 
 			## Compute an improved estimate for par
 			par = numpy.max([parl, par+parc])
@@ -2105,18 +2169,21 @@ class mpfit:
 			## End of an iteration
 
 		## Termination
-		return[r, par, x, sdiag]
+		return [r, par, x, sdiag]
 
 	
 	## Procedure to tie one parameter to another.
 	def tie(self, p, ptied=None):
-		if (self.debug): print 'Entering tie...'
-		if (ptied == None): return
+		if self.debug:
+			print 'Entering tie...'
+		if ptied == None:
+			return
 		for i in range(len(ptied)):
-			if ptied[i] == '': continue
+			if ptied[i] == '':
+				continue
 			cmd = 'p[' + str(i) + '] = ' + ptied[i]
 			exec(cmd)
-		return(p)
+		return p
 
 	
 	#	 Original FORTRAN documentation
@@ -2188,17 +2255,19 @@ class mpfit:
 	
 	def calc_covar(self, rr, ipvt=None, tol=1.e-14):
 
-		if (self.debug): print 'Entering calc_covar...'
+		if self.debug:
+			print 'Entering calc_covar...'
 		if rank(rr) != 2:
 			print 'ERROR: r must be a two-dimensional matrix'
-			return(-1)
+			return -1
 		s = shape(rr)
 		n = s[0]
 		if s[0] != s[1]:
 			print 'ERROR: r must be a square matrix'
-			return(-1)
+			return -1
 
-		if (ipvt == None): ipvt = arange(n)
+		if ipvt == None:
+			ipvt = arange(n)
 		r = rr.copy()
 		r.shape = [n,n]
 
@@ -2206,7 +2275,8 @@ class mpfit:
 		l = -1
 		tolr = tol * abs(r[0,0])
 		for k in range(n):
-			if (abs(r[k,k]) <= tolr): break
+			if abs(r[k,k]) <= tolr:
+				break
 			r[k,k] = 1./r[k,k]
 			for j in range(k):
 				temp = r[k,k] * r[j,k]
@@ -2231,10 +2301,13 @@ class mpfit:
 			jj = ipvt[j]
 			sing = j > l
 			for i in range(j+1):
-				if sing: r[i,j] = 0.
+				if sing:
+					r[i,j] = 0.
 				ii = ipvt[i]
-				if ii > jj: r[ii,jj] = r[i,j]
-				if ii < jj: r[jj,ii] = r[i,j]
+				if ii > jj:
+					r[ii,jj] = r[i,j]
+				if ii < jj:
+					r[jj,ii] = r[i,j]
 			wa[jj] = r[j,j]
 
 		## Symmetrize the covariance matrix in r
@@ -2242,11 +2315,11 @@ class mpfit:
 			r[0:j+1,j] = r[j,0:j+1]
 			r[j,j] = wa[j]
 
-		return(r)
+		return r
 
 class machar:
 	def __init__(self, double=1):
-		if (double == 0):
+		if double == 0:
 			info = numpy.finfo(numpy.float32)
 		else:
 			info = numpy.finfo(numpy.float64)
