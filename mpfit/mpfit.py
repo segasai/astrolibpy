@@ -1557,7 +1557,7 @@ class mpfit:
 		# varying ones)
 		mask = dside[ifree] == -1
 		if len(ulimited) > 0 and len(ulimit) > 0:
-			mask = logical_or((mask!=0), logical_and((ulimited!=0),(x > ulimit-h)))
+			mask = (mask | ((ulimited!=0) & (x > ulimit-h)))
 			wh = (nonzero(mask))[0]
 			if len(wh) > 0:
 				h[wh] = - h[wh]
