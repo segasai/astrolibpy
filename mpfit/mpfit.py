@@ -849,11 +849,11 @@ class mpfit:
 		machep = self.machar.machep
 		self.dof=0
 
-		if (fcn==None):
+		if fcn==None:
 			self.errmsg = "Usage: parms = mpfit('myfunt', ... )"
 			return
 
-		if (iterfunct == 'default'):
+		if iterfunct == 'default':
 			iterfunct = self.defiter
 
 		## Parameter damping doesn't work when user is providing their own
@@ -868,12 +868,12 @@ class mpfit:
 			return
 
 		## Be sure that PARINFO is of the right type
-		if (parinfo != None):
-			if (type(parinfo) != types.ListType):
+		if parinfo != None:
+			if type(parinfo) != types.ListType:
 				self.errmsg = 'ERROR: PARINFO must be a list of dictionaries.'
 				return
 			else:
-				if (type(parinfo[0]) != types.DictionaryType):
+				if type(parinfo[0]) != types.DictionaryType:
 					self.errmsg = 'ERROR: PARINFO must be a list of dictionaries.'
 					return
 			if ((xall != None) and (len(xall) != len(parinfo))):
@@ -882,9 +882,9 @@ class mpfit:
 
 		## If the parameters were not specified at the command line, then
 		## extract them from PARINFO
-		if (xall == None):
+		if xall == None:
 			xall = self.parinfo(parinfo, 'value')
-			if (xall == None):
+			if xall == None:
 				self.errmsg = 'ERROR: either P or PARINFO(*)["value"] must be supplied.'
 				return
 
@@ -900,7 +900,7 @@ class mpfit:
 		self.qanytied = 0
 		for i in range(npar):
 			ptied[i] = ptied[i].strip()
-			if (ptied[i] != ''):
+			if ptied[i] != '':
 				self.qanytied = 1
 		self.ptied = ptied
 
@@ -921,7 +921,7 @@ class mpfit:
 		qmin = minstep * 0  ## Remove minstep for now!!
 		qmax = maxstep != 0
 		wh = (nonzero(((qmin!=0.) & (qmax!=0.)) & (maxstep < minstep)))[0]
-		if (len(wh) > 0):
+		if len(wh) > 0:
 			self.errmsg = 'ERROR: MPMINSTEP is greater than MPMAXSTEP'
 			return
 		wh = (nonzero((qmin!=0.) | (qmax!=0.)))[0]
@@ -945,13 +945,13 @@ class mpfit:
 			## Error checking on limits in parinfo
 			wh = (nonzero((limited[:,0] & (xall < limits[:,0])) |
 								 (limited[:,1] & (xall > limits[:,1]))))[0]
-			if (len(wh) > 0):
+			if len(wh) > 0:
 				self.errmsg = 'ERROR: parameters are not within PARINFO limits'
 				return
 			wh = (nonzero((limited[:,0] & limited[:,1]) &
 								 (limits[:,0] >= limits[:,1]) &
 								 (pfixed == 0)))[0]
-			if (len(wh) > 0):
+			if len(wh) > 0:
 				self.errmsg = 'ERROR: PARINFO parameter limits are not consistent'
 				return
 
@@ -962,7 +962,7 @@ class mpfit:
 			llim  = (limits [:,0])[ifree]
 
 			wh = (nonzero((qulim!=0.) | (qllim!=0.)))[0]
-			if (len(wh) > 0):
+			if len(wh) > 0:
 				qanylim = 1
 			else:
 				qanylim = 0
@@ -976,17 +976,17 @@ class mpfit:
 
 		n = len(x)
 		## Check input parameters for errors
-		if ((n < 0) or (ftol <= 0) or (xtol <= 0) or (gtol <= 0)
-					or (maxiter < 0) or (factor <= 0)):
+		if (n < 0) or (ftol <= 0) or (xtol <= 0) or (gtol <= 0)
+					or (maxiter < 0) or (factor <= 0):
 			self.errmsg = 'ERROR: input keywords are inconsistent'
 			return
 
-		if (rescale != 0):
+		if rescale != 0:
 			self.errmsg = 'ERROR: DIAG parameter scales are inconsistent'
-			if (len(diag) < n):
+			if len(diag) < n:
 				return
 			wh = (nonzero(diag <= 0))[0]
-			if (len(wh) > 0):
+			if len(wh) > 0:
 				return
 			self.errmsg = ''
 
@@ -994,12 +994,12 @@ class mpfit:
 		x = asarray(x, float)
 
 		[self.status, fvec] = self.call(fcn, self.params, functkw)
-		if (self.status < 0):
+		if self.status < 0:
 			self.errmsg = 'ERROR: first call to "'+str(fcn)+'" failed'
 			return
 
 		m = len(fvec)
-		if (m < n):
+		if m < n:
 			self.errmsg = 'ERROR: number of parameters must not exceed data'
 			return
 		self.dof = m-nfree
@@ -1018,11 +1018,11 @@ class mpfit:
 
 			## If requested, call fcn to enable printing of iterates
 			put(self.params, ifree, x)
-			if (self.qanytied):
+			if self.qanytied:
 				self.params = self.tie(self.params, ptied)
 
 			if (nprint > 0) and (iterfunct != None):
-				if (((self.niter-1) % nprint) == 0):
+				if ((self.niter-1) % nprint) == 0:
 					mperr = 0
 					xnew0 = self.params.copy()
 
@@ -1030,17 +1030,17 @@ class mpfit:
 					status = iterfunct(fcn, self.params, self.niter, self.fnorm**2,
 					   functkw=functkw, parinfo=parinfo, quiet=quiet,
 					   dof=dof, **iterkw)
-					if (status != None):
+					if status != None:
 						self.status = status
 
 					## Check for user termination
-					if (self.status < 0):
+					if self.status < 0:
 						self.errmsg = 'WARNING: premature termination by ' + str(iterfunct)
 						return
 
 					## If parameters were changed (grrr..) then re-tie
-					if (numpy.max(abs(xnew0-self.params)) > 0):
-						if (self.qanytied):
+					if numpy.max(abs(xnew0-self.params)) > 0:
+						if self.qanytied:
 							self.params = self.tie(self.params, ptied)
 						x = self.params[ifree]
 
@@ -1052,29 +1052,29 @@ class mpfit:
 						  epsfcn=epsfcn,
 						  autoderivative=autoderivative, dstep=dstep,
 						  functkw=functkw, ifree=ifree, xall=self.params)
-			if (fjac == None):
+			if fjac == None:
 				self.errmsg = 'WARNING: premature termination by FDJAC2'
 				return
 
 			## Determine if any of the parameters are pegged at the limits
-			if (qanylim):
+			if qanylim:
 				catch_msg = 'zeroing derivatives of pegged parameters'
 				whlpeg = (nonzero(qllim & (x == llim)))[0]
 				nlpeg = len(whlpeg)
 				whupeg = (nonzero(qulim & (x == ulim)))[0]
 				nupeg = len(whupeg)
 				## See if any "pegged" values should keep their derivatives
-				if (nlpeg > 0):
+				if nlpeg > 0:
 					## Total derivative of sum wrt lower pegged parameters
 					for i in range(nlpeg):
 						sum0 = sum(fvec * fjac[:,whlpeg[i]])
-						if (sum0 > 0):
+						if sum0 > 0:
 							fjac[:,whlpeg[i]] = 0
-				if (nupeg > 0):
+				if nupeg > 0:
 					## Total derivative of sum wrt upper pegged parameters
 					for i in range(nupeg):
 						sum0 = sum(fvec * fjac[:,whupeg[i]])
-						if (sum0 < 0):
+						if sum0 < 0:
 							fjac[:,whupeg[i]] = 0
 
 			## Compute the QR factorization of the jacobian
@@ -1083,8 +1083,8 @@ class mpfit:
 			## On the first iteration if "diag" is unspecified, scale
 			## according to the norms of the columns of the initial jacobian
 			catch_msg = 'rescaling diagonal elements'
-			if (self.niter == 1):
-				if ((rescale==0) or (len(diag) < n)):
+			if self.niter == 1:
+				if (rescale==0) or (len(diag) < n):
 					diag = wa2.copy()
 					wh = (nonzero(diag == 0))[0]
 					put(diag, wh, 1.)
@@ -1094,7 +1094,7 @@ class mpfit:
 				wa3 = diag * x
 				xnorm = self.enorm(wa3)
 				delta = factor*xnorm
-				if (delta == 0.):
+				if delta == 0.:
 					delta = factor
 
 			## Form (q transpose)*fvec and store the first n components in qtf
@@ -1103,7 +1103,7 @@ class mpfit:
 			for j in range(n):
 				lj = ipvt[j]
 				temp3 = fjac[j,lj]
-				if (temp3 != 0):
+				if temp3 != 0:
 					fj = fjac[j:,lj]
 					wj = wa4[j:]
 					## *** optimization wa4(j:*)
@@ -1128,15 +1128,15 @@ class mpfit:
 			## Compute the norm of the scaled gradient
 			catch_msg = 'computing the scaled gradient'
 			gnorm = 0.
-			if (self.fnorm != 0):
+			if self.fnorm != 0:
 				for j in range(n):
 					l = ipvt[j]
-					if (wa2[l] != 0):
+					if wa2[l] != 0:
 						sum0 = sum(fjac[0:j+1,j]*qtf[0:j+1])/self.fnorm
 						gnorm = numpy.max([gnorm,abs(sum0/wa2[l])])
 
 			## Test for convergence of the gradient norm
-			if (gnorm <= gtol):
+			if gnorm <= gtol:
 				self.status = 4
 				break
 			if maxiter == 0:
@@ -1144,7 +1144,7 @@ class mpfit:
 				break
 
 			## Rescale if necessary
-			if (rescale == 0):
+			if rescale == 0:
 				diag = choose(diag>wa2, (wa2, diag))
 
 			## Beginning of the inner loop
@@ -1288,22 +1288,22 @@ class mpfit:
 					self.niter = self.niter + 1
 				
 				## Tests for convergence
-				if ((abs(actred) <= ftol) and (prered <= ftol)
-					 and (0.5 * ratio <= 1)):
+				if (abs(actred) <= ftol) and (prered <= ftol)
+					 and (0.5 * ratio <= 1):
 					 self.status = 1
 				if delta <= xtol*xnorm:
 					self.status = 2
-				if ((abs(actred) <= ftol) and (prered <= ftol)
-					 and (0.5 * ratio <= 1) and (self.status == 2)):
+				if (abs(actred) <= ftol) and (prered <= ftol)
+					 and (0.5 * ratio <= 1) and (self.status == 2):
 					 self.status = 3
-				if (self.status != 0):
+				if self.status != 0:
 					break
 				
 				## Tests for termination and stringent tolerances
-				if (self.niter >= maxiter):
+				if self.niter >= maxiter:
 					self.status = 5
-				if ((abs(actred) <= machep) and (prered <= machep)
-					and (0.5*ratio <= 1)):
+				if (abs(actred) <= machep) and (prered <= machep)
+					and (0.5*ratio <= 1):
 					self.status = 6
 				if delta <= machep*xnorm:
 					self.status = 7
@@ -1344,18 +1344,18 @@ class mpfit:
 			catch_msg = 'in the termination phase'
 			self.fnorm = self.enorm(fvec)
 
-		if ((self.fnorm != None) and (fnorm1 != None)):
+		if (self.fnorm != None) and (fnorm1 != None):
 			self.fnorm = numpy.max([self.fnorm, fnorm1])
 			self.fnorm = self.fnorm**2.
 
 		self.covar = None
 		self.perror = None
 		## (very carefully) set the covariance matrix COVAR
-		if ((self.status > 0) and (nocovar==0) and (n != None)
-					   and (fjac != None) and (ipvt != None)):
+		if (self.status > 0) and (nocovar==0) and (n != None)
+					   and (fjac != None) and (ipvt != None):
 			sz = shape(fjac)
-			if ((n > 0) and (sz[0] >= n) and (sz[1] >= n)
-				and (len(ipvt) >= n)):
+			if (n > 0) and (sz[0] >= n) and (sz[1] >= n)
+				and (len(ipvt) >= n):
 
 				catch_msg = 'computing the covariance matrix'
 				cv = self.calc_covar(fjac[0:n,0:n], ipvt[0:n])
@@ -1451,7 +1451,7 @@ class mpfit:
 			return values
 		values = []
 		for i in range(n):
-			if ((parinfo != None) and (parinfo[i].has_key(key))):
+			if (parinfo != None) and (parinfo[i].has_key(key)):
 				values.append(parinfo[i][key])
 			else:
 				values.append(default)
@@ -1544,7 +1544,7 @@ class mpfit:
 		if step != None:
 			stepi = step[ifree]
 			wh = (nonzero(stepi > 0))[0]
-			if (len(wh) > 0):
+			if len(wh) > 0:
 				put(h, wh, stepi[wh])
 
 		## if relative step is given, use that
@@ -1796,7 +1796,7 @@ class mpfit:
 					## (corrected 20 Jul 2000)
 					if a[j,lj] != 0:
 						a[j:,lk] = ajk - ajj * sum(ajk*ajj)/a[j,lj]
-						if ((pivot != 0) and (rdiag[k] != 0)):
+						if (pivot != 0) and (rdiag[k] != 0):
 							temp = a[j,lk]/rdiag[k]
 							rdiag[k] = rdiag[k] * sqrt(numpy.max([(1.-temp**2), 0.]))
 							temp = rdiag[k]/wa[k]
@@ -2141,9 +2141,9 @@ class mpfit:
 			temp = fp
 			fp = dxnorm - delta
 
-			if ((abs(fp) <= 0.1*delta) or
+			if (abs(fp) <= 0.1*delta) or
 			   ((parl == 0) and (fp <= temp) and (temp < 0)) or
-			   (iter == 10)):
+			   (iter == 10):
 			   break;
 
 			## Compute the newton correction
