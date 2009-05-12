@@ -62,7 +62,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
-		linestyle=None):
+		linestyle=None, markersize=None):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -130,8 +130,13 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if title!= None:
 		plt.title(title)
 	if not nodata:
-		plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
-						linewidth=thick, color=color, label=label)
+		if markersize is None:
+			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
+							linewidth=thick, color=color, label=label)
+		else:
+			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
+							linewidth=thick, color=color, label=label,
+							markersize=markersize)	
 	if plt.isinteractive():
 		plt.draw()
 	
