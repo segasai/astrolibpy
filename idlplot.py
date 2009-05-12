@@ -20,11 +20,14 @@ def get_marker(ps, linestyle):
 	elif ps==6: 
 		marker='s'
 	else:
-		marker=' '
-		if linestyle is not None:
-			outlinestyle=linestyle
+		if isinstance(ps,types.StringType):
+			marker=ps
 		else:
-			outlinestyle='-'
+			marker=' '
+			if linestyle is not None:
+				outlinestyle=linestyle
+			else:
+				outlinestyle='-'
 	return (marker, outlinestyle)
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
