@@ -90,9 +90,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.axes(mypos)
 	
 	if xlog:
-		plt.gca().set_xscale('log')
+		plt.gca().set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
-		plt.gca().set_yscale('log')
+		plt.gca().set_yscale('log',suby=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	marker, linestyle = get_marker(ps, linestyle)
 	if xr!=None:
 		xrange=xr
@@ -114,12 +114,15 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
 		else:
 			yrange=[numpy.min(y),numpy.max(y)]		
-		
-	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 
-	plt.gca().xaxis.set_minor_locator(xminorLocator)
-	plt.gca().yaxis.set_minor_locator(yminorLocator)		
+	if not overplot:
+		if not xlog:
+			xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+			plt.gca().xaxis.set_minor_locator(xminorLocator)
+		if not ylog:
+			yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
+			plt.gca().yaxis.set_minor_locator(yminorLocator)		
+
 	if xtitle!=None:
 		plt.gca().set_xlabel(xtitle)
 	if ytitle!=None:
