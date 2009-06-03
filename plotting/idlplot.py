@@ -315,7 +315,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
                 
 # Do we need a color bar?:                
-	if bar:
+	if fill & bar:
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
 			fraction=bar_fraction, format=zFormatter)
