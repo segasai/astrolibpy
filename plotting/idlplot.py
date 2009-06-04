@@ -100,20 +100,25 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		yrange=yr
 
 	if xrange is None and yrange is None:
-		xrange=[min(x),max(x)]
-		yrange=[min(y),max(y)]
+		ind = numpy.isfinite(x)
+		xrange=[min(x[ind]),max(x[ind])]
+		ind = numpy.isfinite(y)
+		yrange=[min(y[ind]),max(y[ind])]
+		del ind
 	elif xrange is None and yrange is not None:
-		ind=numpy.where((y<yr[1]) & (y>yr[0]))[0]
+		ind=(y<yr[1]) & (y>yr[0]) & numpy.isfinite(x)
 		if len(ind)!=0:
 			xrange=[numpy.min(x[ind]),numpy.max(x[ind])]
 		else:
-			xrange=[numpy.min(x),numpy.max(x)]		
+			xrange=[numpy.min(x),numpy.max(x)]
+		del ind
 	elif xrange is not None and yrange is None:
-		ind=numpy.where((x<xr[1]) & (x>xr[0]))[0]
+		ind=(x<xr[1]) & (x>xr[0]) & numpy.isfinite(y)
 		if len(ind)!=0:
 			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
 		else:
-			yrange=[numpy.min(y),numpy.max(y)]		
+			yrange=[numpy.min(y),numpy.max(y)]
+		del ind
 
 	if not overplot:
 		if not xlog:
