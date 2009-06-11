@@ -31,9 +31,14 @@ class idlsave:
 		> x=2
 		> y=[3,4,5]
 		> idlsave.save("mydat.psav",'x,y',x,y)
+		or 
+		> exec(idlsave.save("myday.psav",'x,y'))
 		Now you can leave python. You can later restore the x,y, variables 
 		using idlsave.restore (see there for the doc)
 		"""
+		if len(args)==0:
+			return "idlsave.save(\"%s\",\"%s\",%s)"%(filename,names,names)
+
 		if type(names)==types.StringType:
 			names=names.split(',')
 		if len(names)!=len(args):
