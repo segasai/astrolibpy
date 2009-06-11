@@ -209,11 +209,14 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	else:
 		range=[[ymin,ymax],[xmin,xmax]]
 		range1=(xmin,xmax,ymin,ymax)
-	hh=scipy.histogram2d(y,x,range=range, bins=bins)
+	hh,xedges,yedges=scipy.histogram2d(y,x,range=range, bins=bins)
+	if range1 is None:
+		range1=(yedges[0],yedges[-1],xedges[0],xedges[-1])
+		print range1
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 
-	plt.imshow(-hh[0],extent=range1, aspect='auto', interpolation='nearest', **kw)
+	plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
 	if plt.isinteractive():
 		plt.draw()
 
