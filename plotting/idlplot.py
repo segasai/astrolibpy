@@ -134,7 +134,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().set_ylabel(ytitle)
 	plt.gca().set_autoscale_on(False)
 	if not overplot:
-		plt.gca().axis(xrange+yrange)#,xautcoscale_on=False)
+		plt.gca().axis(numpy.concatenate((xrange,yrange)))
 	if title!= None:
 		plt.title(title)
 	if not nodata:
