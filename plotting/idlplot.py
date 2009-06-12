@@ -224,7 +224,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, yr=None, zr=None, 
 		title="", xtitle="", ytitle="", position=None, xlog=False, ylog=False, zlog=False, 
-		xticklabel = "%1.1f", yticklabel = "%1.1f", zticklabel = "%1.1f", levels=None, 
+		xticklabel = None, yticklabel = None, zticklabel = None, levels=None,
 		nlevels=256, c_color="black", cm ="jet", c_line="solid", c_levels=None, c_charsize=12.0, 
 		c_thick=1, thick=1, font="monospace", weight="normal", charsize=14.0, bar=True, fill=True, 
 		overplot=False, noerase=False, c_label=True, bar_fraction=0.05):
@@ -291,10 +291,12 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 		plt.gca().axis(xrange+yrange) 
 
 # Setup format of the major ticks:
-	xFormatter = matplotlib.ticker.FormatStrFormatter(xticklabel)
-	yFormatter = matplotlib.ticker.FormatStrFormatter(yticklabel)
-	plt.gca().xaxis.set_major_formatter(xFormatter)
-	plt.gca().yaxis.set_major_formatter(yFormatter)
+	if xticklabel is not None:
+		xFormatter = matplotlib.ticker.FormatStrFormatter(xticklabel)
+		plt.gca().xaxis.set_major_formatter(xFormatter)
+	if yticklabel is not None:
+		yFormatter = matplotlib.ticker.FormatStrFormatter(yticklabel)
+		plt.gca().yaxis.set_major_formatter(yFormatter)
 
 # Setup minor tickmarks:		
 	xminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
@@ -317,8 +319,11 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
    		c.set_linestyle(c_line)
 
 # Add value labels on contour lines:
-	zFormatter = matplotlib.ticker.FormatStrFormatter(zticklabel)
-
+	if zticklabel is not None:
+		zFormatter = matplotlib.ticker.FormatStrFormatter(zticklabel)
+	else:
+		zFormatter = None
+			
 	if c_label:
 		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
                 
