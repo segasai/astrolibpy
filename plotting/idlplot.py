@@ -171,13 +171,21 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 
 
 def tvaxis (image, xmin, xmax,ymin,ymax, xtitle="", ytitle="", title="",
-			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False, **kw):
+			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
+			position=None, noerase=False, **kw):
 
 	if xlog:
 		plt.gca().set_xscale('log')
 	if ylog:
 		plt.gca().set_yscale('log')
+	if not noerase:
+		plt.clf()
 
+	if position is not None:
+		mypos=position[:]
+		mypos[2]=position[2]-position[0]
+		mypos[3]=position[3]-position[1]
+		plt.axes(mypos)
 	plt.imshow(image, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, **kw)
 
