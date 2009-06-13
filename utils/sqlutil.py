@@ -33,15 +33,16 @@ def get(query, params=None, db="wsdb", driver="pgdb"):
 	line = tups[0]
 	ncols = len(line)
 	buf = []
-	for curtype in map(lambda s: type(s),line):
+	for i,curtype in enumerate(map(lambda s: type(s),line)):
+		name = 'x%d'%i
 		if curtype == types.StringType or curtype == types.UnicodeType:
 			#TODO I'm now using the strings which are 100 char long 
 			# probably it should be hardcoded that way.. 
-			buf.append(numpy.zeros(nrows, dtype='|S100'))
+			buf.append((name,'|S100'))
 		else:
-			buf.append( numpy.zeros(nrows, dtype=curtype))
+			buf.append((name,curtype))
+	#doesn't really work because numpy.array wants the list of tuples, while
+	#pgdb returns the list of list... 
+	res = numpy.array(tups, dtype=numpy.dtype(buf))
 
-	for i in range(nrows):
-		for j in range(ncols):
-			buf[j][i]=tups[i][j]
-	return tuple(buf)
+	return [res['x%d'%i] for i in range(ncols)]
