@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from numpy import *
+import numpy
 
 def premat(equinox1, equinox2, fk4=False):
    """
@@ -42,7 +42,7 @@ def premat(equinox1, equinox2, fk4=False):
           Converted to IDL V5.0   W. Landsman   September 1997
    """
 
-   deg_to_rad = pi / 180.0e0
+   deg_to_rad = numpy.pi / 180.0e0
    sec_to_rad = deg_to_rad / 3600.e0
    
    t = 0.001e0 * (equinox2 - equinox1)
@@ -68,13 +68,17 @@ def premat(equinox1, equinox2, fk4=False):
       c = sec_to_rad * t * (20046.85e0 - st * (85.33e0 + 0.37e0 * st) + t * (-42.67e0 - 0.37e0 * st - 41.8e0 * t))
       
    
-   sina = sin(a) ;  sinb = sin(b)  ; sinc = sin(c)
-   cosa = cos(a) ;  cosb = cos(b)  ; cosc = cos(c)
+   sina = numpy.sin(a)
+   sinb = numpy.sin(b)
+   sinc = numpy.sin(c)
+   cosa = numpy.cos(a)
+   cosb = numpy.cos(b)
+   cosc = numpy.cos(c)
    
-   r = zeros((3, 3))
-   r[0,:] = array([cosa * cosb * cosc - sina * sinb, sina * cosb + cosa * sinb * cosc, cosa * sinc])
-   r[1,:] = array([-cosa * sinb - sina * cosb * cosc, cosa * cosb - sina * sinb * cosc, -sina * sinc])
-   r[2,:] = array([-cosb * sinc, -sinb * sinc, cosc])
+   r = numpy.zeros((3, 3))
+   r[0,:] = numpy.array([cosa * cosb * cosc - sina * sinb, sina * cosb + cosa * sinb * cosc, cosa * sinc])
+   r[1,:] = numpy.array([-cosa * sinb - sina * cosb * cosc, cosa * cosb - sina * sinb * cosc, -sina * sinc])
+   r[2,:] = numpy.array([-cosb * sinc, -sinb * sinc, cosc])
    
    return r
 
