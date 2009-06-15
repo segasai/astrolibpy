@@ -1,4 +1,4 @@
-from numpy import *
+import numpy
 
 def euler(ai, bi, select=1, fk4=False):
    """
@@ -61,9 +61,8 @@ def euler(ai, bi, select=1, fk4=False):
 #   print '    AO,BO - Output longitude, latitude in degrees'
 #   print '    SELECT - Scalar (1-6) specifying transformation type'
    
-   twopi = 2.0e0 * pi
-   fourpi = 4.0e0 * pi
-   deg_to_rad = 180.0e0 / pi
+   twopi = 2.0e0 * numpy.pi
+   fourpi = 4.0e0 * numpy.pi
    
    #   J2000 coordinate conversions are based on the following constants
    #   (see the Hipparcos explanatory supplement).
@@ -77,26 +76,27 @@ def euler(ai, bi, select=1, fk4=False):
    
    if fk4:   
       equinox = '(B1950)'
-      psi = array ([0.57595865315e0, 4.9261918136e0, 0.00000000000e0, 0.0000000000e0, 0.11129056012e0, 4.7005372834e0])
-      stheta = array ([0.88781538514e0, -0.88781538514e0, 0.39788119938e0, -0.39788119938e0, 0.86766174755e0, -0.86766174755e0])
-      ctheta = array([0.46019978478e0, 0.46019978478e0, 0.91743694670e0, 0.91743694670e0, 0.49715499774e0, 0.49715499774e0])
-      phi = array([4.9261918136e0, 0.57595865315e0, 0.0000000000e0, 0.00000000000e0, 4.7005372834e0, 0.11129056012e0])
+      psi = numpy.array ([0.57595865315e0, 4.9261918136e0, 0.00000000000e0, 0.0000000000e0, 0.11129056012e0, 4.7005372834e0])
+      stheta = numpy.array ([0.88781538514e0, -0.88781538514e0, 0.39788119938e0, -0.39788119938e0, 0.86766174755e0, -0.86766174755e0])
+      ctheta = numpy.array([0.46019978478e0, 0.46019978478e0, 0.91743694670e0, 0.91743694670e0, 0.49715499774e0, 0.49715499774e0])
+      phi = numpy.array([4.9261918136e0, 0.57595865315e0, 0.0000000000e0, 0.00000000000e0, 4.7005372834e0, 0.11129056012e0])
    else:   
       equinox = '(J2000)'
-      psi = array([0.57477043300e0, 4.9368292465e0, 0.00000000000e0, 0.0000000000e0, 0.11142137093e0, 4.71279419371e0])
-      stheta = array([0.88998808748e0, -0.88998808748e0, 0.39777715593e0, -0.39777715593e0, 0.86766622025e0, -0.86766622025e0])
-      ctheta = array([0.45598377618e0, 0.45598377618e0, 0.91748206207e0, 0.91748206207e0, 0.49714719172e0, 0.49714719172e0])
-      phi = array([4.9368292465e0, 0.57477043300e0, 0.0000000000e0, 0.00000000000e0, 4.71279419371e0, 0.11142137093e0])
+      psi = numpy.array([0.57477043300e0, 4.9368292465e0, 0.00000000000e0, 0.0000000000e0, 0.11142137093e0, 4.71279419371e0])
+      stheta = numpy.array([0.88998808748e0, -0.88998808748e0, 0.39777715593e0, -0.39777715593e0, 0.86766622025e0, -0.86766622025e0])
+      ctheta = numpy.array([0.45598377618e0, 0.45598377618e0, 0.91748206207e0, 0.91748206207e0, 0.49714719172e0, 0.49714719172e0])
+      phi = numpy.array([4.9368292465e0, 0.57477043300e0, 0.0000000000e0, 0.00000000000e0, 4.71279419371e0, 0.11142137093e0])
       
    i = select - 1                         # IDL offset
-   a = ai / deg_to_rad - phi[i]
-   b = bi / deg_to_rad
-   sb = sin(b) ;	cb = cos(b)
-   cbsa = cb * sin(a)
+   a = numpy.deg2rad(ai) - phi[i]
+   b = numpy.deg2rad(bi)
+   sb = numpy.sin(b)
+   cb = numpy.cos(b)
+   cbsa = cb * numpy.sin(a)
    b = -stheta[i] * cbsa + ctheta[i] * sb
-   bo = arcsin(minimum(b, 1.0e0)) * deg_to_rad
+   bo = numpy.rad2deg(numpy.arcsin(numpy.minimum(b, 1.0e0)))
 
-   a = arctan2(ctheta[i] * cbsa + stheta[i] * sb, cb * cos(a))
-   ao = ((a + psi[i] + fourpi) % twopi) * deg_to_rad
+   a = numpy.arctan2(ctheta[i] * cbsa + stheta[i] * sb, cb * numpy.cos(a))
+   ao = numpy.rad2deg(((a + psi[i] + fourpi) % twopi) )
 
    return (ao,bo)
