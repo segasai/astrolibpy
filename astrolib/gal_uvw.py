@@ -1,6 +1,4 @@
-from numpy import *
-
-_radeg = 180.0 / pi
+import numpy
 
 def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, vrad=None, plx=None):
    """
@@ -84,23 +82,23 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
 #   dec= array(dec,copy=False)
 
    if ra==None or dec==None:   
-      message('ERROR - The RA, Dec (J2000) position keywords must be supplied (degrees)')
+      raise Exception('ERROR - The RA, Dec (J2000) position keywords must be supplied (degrees)')
    if plx == None and distance == None:
-      message('ERROR - Either a parallax or distance must be specified')
+      raise Exception('ERROR - Either a parallax or distance must be specified')
    if distance!=None:
-      if any(distance==0):
-         message('ERROR - All distances must be > 0')
+      if numpy.any(distance==0):
+         raise Exception('ERROR - All distances must be > 0')
       plx = 1e3 / distance          #Parallax in milli-arcseconds
-   if plx!=None and any(plx==0):   
-      message('ERROR - Parallaxes must be > 0')
+   if plx!=None and numpy.any(plx==0):   
+      raise Exception('ERROR - Parallaxes must be > 0')
    
-   cosd = cos(dec / _radeg)
-   sind = sin(dec / _radeg)
-   cosa = cos(ra / _radeg)
-   sina = sin(ra / _radeg)
+   cosd = numpy.cos(numpy.deg2rad(dec))
+   sind = numpy.sin(numpy.deg2rad(dec))
+   cosa = numpy.cos(numpy.deg2rad(ra))
+   sina = numpy.sin(numpy.deg2rad(ra))
    
    k = 4.74047     #Equivalent of 1 A.U/yr in km/s   
-   a_g = array([[0.0548755604, +0.4941094279, -0.8676661490],
+   a_g = numpy.array([[0.0548755604, +0.4941094279, -0.8676661490],
                 [0.8734370902, -0.4448296300, -0.1980763734], 
                 [0.4838350155, 0.7469822445, +0.4559837762]])
    
@@ -112,7 +110,7 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
    v = (a_g[0,1] * cosa * cosd + a_g[1,1] * sina * cosd + a_g[2,1] * sind) * vec1 + (-a_g[0,1] * sina + a_g[1,1] * cosa) * vec2 + (-a_g[0,1] * cosa * sind - a_g[1,1] * sina * sind + a_g[2,1] * cosd) * vec3
    w = (a_g[0,2] * cosa * cosd + a_g[1,2] * sina * cosd + a_g[2,2] * sind) * vec1 + (-a_g[0,2] * sina + a_g[1,2] * cosa) * vec2 + (-a_g[0,2] * cosa * sind - a_g[1,2] * sina * sind + a_g[2,2] * cosd) * vec3
    
-   lsr_vel = array([-10.00, 5.25, 7.17])
+   lsr_vel = numpy.array([-10.00, 5.25, 7.17])
    if (lsr is not None):   
       u = u + lsr_vel[0]
       v = v + lsr_vel[1]
