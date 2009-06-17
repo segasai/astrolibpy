@@ -34,9 +34,9 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
 			nan=False, **kw):
 	if min==None:
-		min=x.min()
+		min=numpy.nanmin(x)
 	if max==None:
-		max=x.max()
+		max=numpy.nanmax(x)
 	if bin==None:
 		bin=100
 	else:
