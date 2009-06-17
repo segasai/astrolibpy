@@ -1,9 +1,9 @@
 import scipy.io
 import numpy 
 
-def readcol(filename, delimiter=' ', format=None, skiprows=0):
+def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 	if format==None:
-		res=numpy.loadtxt(filename, delimiter=delimiter, skiprows=skiprows)
+		res=numpy.loadtxt(filename, delimiter=delimiter, skiprows=skiprows, **kw)
 		nrows = res.shape[0]
 		if res.ndim==2:
 			ncols = res.shape[1]
