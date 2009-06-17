@@ -53,7 +53,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		func = oplot 
 	else:
 		func = plot
-	tmp(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
+	func(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
     
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
