@@ -31,7 +31,8 @@ def get_marker(ps, linestyle):
 	return (marker, outlinestyle)
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
-			overplot=False,color='black', xlog=False, ylog=False, **kw):
+			overplot=False,color='black', xlog=False, ylog=False,
+			nan=False, **kw):
 	if min==None:
 		min=x.min()
 	if max==None:
@@ -40,7 +41,12 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		bin=100
 	else:
 		bin=(max-min)/bin
-	hh, loc = numpy.histogram(x,range=(min,max),bins=bin)
+	if nan:
+		ind = numpy.isfinite(x)
+		dat = x[ind]
+	else:
+		dat = x
+	hh, loc = numpy.histogram(dat, range=(min, max), bins=bin)
 	hh1 = numpy.zeros(2*len(hh)+2)
 	loc1 = numpy.zeros_like(hh1)
 	hh1[1:-1:2]=hh
