@@ -40,24 +40,21 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		bin=100
 	else:
 		bin=(max-min)/bin
-	hh = numpy.histogram(x,range=(min,max),bins=bin)
-	loc=hh[1]
-	hh=hh[0]
+	hh, loc = numpy.histogram(x,range=(min,max),bins=bin)
 	hh1 = numpy.zeros(2*len(hh)+2)
-	loc1 = numpy.zeros(2*len(hh)+2)
-	for a in range(len(hh)):
-		hh1[2*a+1]=hh[a]
-		hh1[2*a+2]=hh[a]
-		loc1[2*a+1]=loc[a]
-		loc1[2*a+2]=loc[a+1]
+	loc1 = numpy.zeros_like(hh1)
+	hh1[1:-1:2]=hh
+	hh1[2::2]=hh
+	loc1[1:-1:2]=loc[:-1]
+	loc1[2::2]=loc[1:]
 	loc1[-1]=loc1[-2]
 	loc1[0]=loc[0]
 	if overplot:
-		tmp=oplot 
+		func = oplot 
 	else:
-		tmp=plot
-	tmp(loc1,hh1,ps=0,color=color,xrange=xrange,yrange=yrange,
-		xlog=xlog,ylog=ylog, **kw)
+		func = plot
+	tmp(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
+		xlog=xlog, ylog=ylog, **kw)
     
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
