@@ -65,7 +65,8 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
-		linestyle=None, markersize=None):
+		linestyle=None, markersize=None, xaxis_formatter=None,
+		yaxis_formatter=None):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -96,6 +97,11 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
 		plt.gca().set_yscale('log',suby=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+	if xaxis_formatter is not None:
+		plt.gca().xaxis.set_major_formatter(xaxis_formatter)
+	if yaxis_formatter is not None:
+		plt.gca().yaxis.set_major_formatter(yaxis_formatter)
+	
 	marker, linestyle = get_marker(ps, linestyle)
 	if xr!=None:
 		xrange=xr
@@ -233,13 +239,15 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 
 
-def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, yr=None, zr=None, 
-		title="", xtitle="", ytitle="", position=None, xlog=False, ylog=False, zlog=False, 
-		xticklabel = None, yticklabel = None, zticklabel = None, levels=None,
-		nlevels=256, c_color="black", cm ="jet", c_line="solid", c_levels=None, c_charsize=12.0, 
-		c_thick=1, thick=1, font="monospace", weight="normal", charsize=14.0, bar=True, fill=True, 
-		overplot=False, noerase=False, c_label=True, bar_fraction=0.05):
-
+def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
+		xr=None, yr=None, zr=None, title="", xtitle="", ytitle="",
+		position=None, xlog=False, ylog=False, zlog=False, xticklabel = None,
+		yticklabel = None, zticklabel = None, levels=None, nlevels=256,
+		c_color="black", cm ="jet", c_line="solid", c_levels=None,
+		c_charsize=12.0, c_thick=1, thick=1, font="monospace",
+		weight="normal", charsize=14.0, bar=True, fill=True, overplot=False,
+		noerase=False, c_label=True, bar_fraction=0.05, xaxis_formatter=None,
+		yaxis_formatter=None):
 
 # Initialize x and y if these are not provided:
 	if x is None or y is None:
@@ -308,6 +316,10 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None, xr=None, 
 	if yticklabel is not None:
 		yFormatter = matplotlib.ticker.FormatStrFormatter(yticklabel)
 		plt.gca().yaxis.set_major_formatter(yFormatter)
+	if xaxis_formatter is not None:
+		plt.gca().xaxis.set_major_formatter(xaxis_formatter)
+	if yaxis_formatter is not None:
+		plt.gca().yaxis.set_major_formatter(yaxis_formatter)
 
 # Setup minor tickmarks:		
 	xminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
