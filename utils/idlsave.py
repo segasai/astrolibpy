@@ -53,23 +53,28 @@ class idlsave:
 		return None
 
 	@staticmethod
-	def restore(filename=None):
+	def restore(filename=None, names=None):
 		"""Restores the variables stored in a file by idlsave.save routine
 		Example: 
 		> exec(idlsave.restore("mydat.psav"))
-		
+		> ra,dec = idlsave.restore("mysav.psav","ra,dec")
 		Note that you MUST use this exact form exec(idlsave.restore(...))
 		"""
-		
 		f=open(filename,"r")
 		xx=cPickle.load(f)
 		idlsave.dhash=xx
 		f.close()
-		buf=",".join(idlsave.dhash.iterkeys())
-		if len(idlsave.dhash)==1:
-			buf=buf+','
-		buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
-		return buf
+		if names is None:
+			buf=",".join(idlsave.dhash.iterkeys())
+			if len(idlsave.dhash)==1:
+				buf=buf+','
+			buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
+			return buf
+		else:
+			names=names.split(',')
+			res=[idlsave.dhash[a] for a in names]
+			del idlsave.dhash
+			return res
 
 	@staticmethod
 	def getallvars(filename=None):
