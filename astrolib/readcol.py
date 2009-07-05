@@ -55,7 +55,7 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 			elif a=='D':
 				tmp=numpy.zeros(nrows,dtype=numpy.float64)
 			elif a=='S':
-				tmp=numpy.zeros(nrows,dtype=numpy.str)
+				tmp=numpy.zeros(nrows,dtype="S100")
 			stor.append(tmp)
 
 		for i in range(ncols):
