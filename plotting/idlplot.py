@@ -348,7 +348,11 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		zFormatter = None
 			
 	if c_label:
-		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fmt=zticklabel, fontsize=c_charsize)
+		if zticklabel is not None:
+			args = {'fmt':zticklabel}
+		else:
+			args = {}
+		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fontsize=c_charsize, **args)
                 
 # Do we need a color bar?:                
 	if fill & bar:
