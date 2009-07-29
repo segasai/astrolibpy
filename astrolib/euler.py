@@ -10,7 +10,7 @@ def euler(ai, bi, select=1, fk4=False):
         Use the procedure ASTRO to use this routine interactively
    
     CALLING SEQUENCE:
-         EULER, AI, BI, AO, BO, [ SELECT, /FK4, SELECT = ]
+         AO, BO = EULER(AI, BI, [SELECT=1, FK4=False])
    
     INPUTS:
           AI - Input Longitude in DEGREES, scalar or vector.  If only two
@@ -51,16 +51,6 @@ def euler(ai, bi, select=1, fk4=False):
           Add option to specify SELECT as a keyword W. Landsman March 2003
    """
 
-   n_params = 5
-   select1 = select
-   
-   # ON_ERROR, 2
-   
-#   print 'Syntax - EULER, AI, BI, A0, B0, [ SELECT, /FK4, SELECT= ]'
-#   print '    AI,BI - Input longitude,latitude in degrees'
-#   print '    AO,BO - Output longitude, latitude in degrees'
-#   print '    SELECT - Scalar (1-6) specifying transformation type'
-   
    twopi = 2.0e0 * numpy.pi
    fourpi = 4.0e0 * numpy.pi
    
@@ -87,16 +77,17 @@ def euler(ai, bi, select=1, fk4=False):
       ctheta = numpy.array([0.45598377618e0, 0.45598377618e0, 0.91748206207e0, 0.91748206207e0, 0.49714719172e0, 0.49714719172e0])
       phi = numpy.array([4.9368292465e0, 0.57477043300e0, 0.0000000000e0, 0.00000000000e0, 4.71279419371e0, 0.11142137093e0])
       
-   i = select - 1                         # IDL offset
+   i = select - 1
    a = numpy.deg2rad(ai) - phi[i]
    b = numpy.deg2rad(bi)
    sb = numpy.sin(b)
    cb = numpy.cos(b)
    cbsa = cb * numpy.sin(a)
    b = -stheta[i] * cbsa + ctheta[i] * sb
-   bo = numpy.rad2deg(numpy.arcsin(numpy.minimum(b, 1.0e0)))
-
+   bo = numpy.rad2deg(numpy.arcsin(numpy.minimum(b, 1.0)))
+   del b
    a = numpy.arctan2(ctheta[i] * cbsa + stheta[i] * sb, cb * numpy.cos(a))
+   del cb, cbsa, sb
    ao = numpy.rad2deg(((a + psi[i] + fourpi) % twopi) )
 
-   return (ao,bo)
+   return (ao, bo)
