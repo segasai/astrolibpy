@@ -2,6 +2,11 @@ import numpy
 import scipy.weave, scipy.weave.converters
 
 def quick_hist(arrs, range=None, nbins=None):
+	"""
+	arr -- tuple of N-arrays
+	range -- list of tuples of ranges
+	nbins -- list of lengths	
+	"""
 	from __builtin__ import range as xrange
 	nd = len(arrs)
 	nx = len(arrs[0])
