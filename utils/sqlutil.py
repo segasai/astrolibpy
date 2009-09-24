@@ -1,7 +1,8 @@
 import types
 import numpy
 
-def get(query, params=None, db="wsdb", driver="pgdb"):
+def get(query, params=None, db="wsdb", driver="pgdb", user=None,
+										password=None, host=None):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -12,10 +13,10 @@ def get(query, params=None, db="wsdb", driver="pgdb"):
 	'''
 	if driver=='pgdb':
 		import pgdb
-		con = pgdb.connect(database=db)
+		con = pgdb.connect(database=db, user=user, password=password, host=host)
 	elif driver=='sqlite3':
 		import sqlite3
-		con = sqlite3.connect(db)
+		con = sqlite3.connect(db, user=user, password=password, host=host)
 	else: 
 		raise Exception("Unknown driver")
 	cur = con.cursor()
