@@ -32,7 +32,7 @@ def get_marker(ps, linestyle):
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
-			nan=False, **kw):
+			nan=False, weights=None, **kw):
 	if min==None:
 		min=numpy.nanmin(x)
 	if max==None:
@@ -46,7 +46,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		dat = x[ind]
 	else:
 		dat = x
-	hh, loc = numpy.histogram(dat, range=(min, max), bins=bin)
+	hh, loc = numpy.histogram(dat, range=(min, max), bins=bin, weights=weights)
 	hh1 = numpy.zeros(2*len(hh)+2)
 	loc1 = numpy.zeros_like(hh1)
 	hh1[1:-1:2]=hh
@@ -216,7 +216,8 @@ def tvaxis (image, xmin, xmax,ymin,ymax, xtitle="", ytitle="", title="",
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
-				ytitle="", noerase=False, **kw):
+				ytitle="", noerase=False, weights=None,
+				**kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -226,7 +227,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	else:
 		range=[[ymin,ymax],[xmin,xmax]]
 		range1=(xmin,xmax,ymin,ymax)
-	hh,xedges,yedges=scipy.histogram2d(y,x,range=range, bins=bins)
+	hh,xedges,yedges=scipy.histogram2d(y,x,range=range, bins=bins, weights=weights)
 	if range1 is None:
 		range1=(yedges[0],yedges[-1],xedges[0],xedges[-1])
 		print range1
@@ -295,7 +296,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		levels = zmin + dz/nlevels*numpy.arange(nlevels+1)	
 
 # Setup frame thickness:
-	plt.gca().frame.set_linewidth(thick) 
+#	plt.gca().frame.set_linewidth(thick) 
 
 # Setup x-, y-titles and the main title:
 	plt.gca().set_xlabel(xtitle)
