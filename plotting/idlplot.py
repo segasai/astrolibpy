@@ -179,7 +179,7 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 		plt.draw()
 
 
-def tvaxis (image, xmin, xmax,ymin,ymax, xtitle="", ytitle="", title="",
+def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, **kw):
 
@@ -195,7 +195,16 @@ def tvaxis (image, xmin, xmax,ymin,ymax, xtitle="", ytitle="", title="",
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
-	plt.imshow(image, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
+	if xmin is None:
+		xmin=0
+	if ymin is None:
+		ymin=0
+	if xmax is None:
+		xmax=image.shape[0]
+	if ymax is None:
+		ymax=image.shape[1]
+
+	plt.imshow(image.transpose(), extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, **kw)
 
 	plt.gca().set_xlabel(xtitle)
