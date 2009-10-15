@@ -269,7 +269,18 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		if z.ndim!=2:
 			raise Exception("The 2D array is required")
 		x, y = numpy.mgrid[0:z.shape[0],0:z.shape[1]]
-		
+	else:
+		if x.ndim==1:
+			x_new=x[:,numpy.newaxis]*(y*0+1)
+		else:
+			x_new=x
+		if y.ndim==1:
+			y_new=((x*0+1)*y[:,numpy.newaxis]).transpose()
+		else:
+			y_new=y
+		x=x_new
+		y=y_new
+				
 # Define position of this plot:
 	if not noerase:
 		plt.gcf().clf()	
