@@ -78,18 +78,15 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
       print '         U, V, W - output Galactic space velocities (km/s)'
       return None
    
-#   ra= array(ra,copy=False)
-#   dec= array(dec,copy=False)
-
-   if ra==None or dec==None:   
+   if ra is None or dec is None:   
       raise Exception('ERROR - The RA, Dec (J2000) position keywords must be supplied (degrees)')
-   if plx == None and distance == None:
+   if plx is None and distance is None:
       raise Exception('ERROR - Either a parallax or distance must be specified')
-   if distance!=None:
+   if distance is not None:
       if numpy.any(distance==0):
          raise Exception('ERROR - All distances must be > 0')
       plx = 1e3 / distance          #Parallax in milli-arcseconds
-   if plx!=None and numpy.any(plx==0):   
+   if plx is not None and numpy.any(plx==0):   
       raise Exception('ERROR - Parallaxes must be > 0')
    
    cosd = numpy.cos(numpy.deg2rad(dec))
