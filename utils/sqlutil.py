@@ -27,8 +27,6 @@ def fetchmany(curs, size=None, keep=False):
 		result = curs._src.fetch(size)
 	except Error, err:
 		raise pgdb.DatabaseError(str(err))
-	row_factory = curs.row_factory
-	typecast = curs._type_cache.typecast
 	coltypes = [desc[1] for desc in curs.description]
 	types=[_cast.get(a) for a in coltypes]
 	return result,types #[list(row) for row in result]
