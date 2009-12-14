@@ -12,14 +12,24 @@ def cv_coord(a,b,c,fr=None,to=None,degr=False):
 		x=c*cosa*cosb
 		y=c*sina*cosb
 		z=c*sinb
-	if fr=='rect':
+	elif fr=='rect':
 		x=a
 		y=b
 		z=c
+	elif fr is None:
+		raise Exception('Please specify the input coordinate system')
+	else:
+		raise Exception('Unknown input coordinate system')
 	if to=='rect':
 		return (x,y,z)
-	if to=='sph':
+	elif to=='sph':
 		ra = numpy.arctan2(y,x)*radec
 		dec = numpy.arctan2(z,numpy.sqrt(x**2+y**2))*radec
 		rad = numpy.sqrt(x**2+y**2+z**2)
 		return (ra,dec,rad)
+	elif to is None:
+		raise Exception('Please specify the output coordinate system')
+	else:
+		raise Exception('Unknown output coordinate system')
+
+		
