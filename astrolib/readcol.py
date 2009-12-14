@@ -37,11 +37,9 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 			elif a=='S':
 				curtype="S100"#numpy.str
 			types.append(("a%d"%i,curtype))
-		#print types
 		
 		rec=numpy.loadtxt(file(filename),dtype=types, delimiter=delimiter, 
 						skiprows=skiprows,converters=convs)
-		print rec[0]
 		ncols=len(rec[0])
 		nrows=len(rec)
 
