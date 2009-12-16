@@ -594,6 +594,10 @@ import scipy.lib.blas
 #	 **********
 
 class mpfit:
+
+	blas_enorm, = scipy.lib.blas.get_blas_funcs(['nrm2'])
+
+
 	def __init__(self, fcn, xall=None, functkw={}, parinfo=None,
 				 ftol=1.e-10, xtol=1.e-10, gtol=1.e-10,
 				 damp=0., maxiter=200, factor=100., nprint=1,
@@ -1479,8 +1483,7 @@ class mpfit:
 	
 	
 	def enorm(self, vec):
-		blas_enorm, = scipy.lib.blas.get_blas_funcs(['nrm2'],vec)
-		ans = blas_enorm(vec)
+		ans = mpfit.blas_enorm(vec)
 		return ans
 	
 	
