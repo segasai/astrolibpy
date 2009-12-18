@@ -938,7 +938,7 @@ class mpfit:
 			return
 
 		# Compose only VARYING parameters
-		self.params = xall	  # self.params is the set of parameters to be returned
+		self.params = xall.copy()	  # self.params is the set of parameters to be returned
 		x = self.params[ifree]  # x is the set of free parameters
 
 		# LIMITED parameters ?
