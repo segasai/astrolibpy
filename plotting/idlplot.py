@@ -105,9 +105,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().yaxis.set_major_formatter(yaxis_formatter)
 	
 	marker, linestyle = get_marker(ps, linestyle)
-	if xr!=None:
+	if xr is not None:
 		xrange=xr
-	if yr!=None:
+	if yr is not None:
 		yrange=yr
 
 	if xrange is None and yrange is None:
@@ -130,7 +130,8 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		else:
 			yrange=[numpy.min(y),numpy.max(y)]
 		del ind
-
+	if len(yrange)!=2 or len(xrange)!=2:
+		raise ValueError("Wrong xrange or yrange")
 	if not overplot:
 		if not xlog:
 			xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
