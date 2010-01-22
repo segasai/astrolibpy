@@ -68,7 +68,7 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 	for curtype in [numpy.float64,numpy.float32,numpy.int16,numpy.int32,numpy.int64]:
 		if numpy.array([a ==curtype  for a in types]).all():
 			res= numpy.asfarray(tups,types[0])
-			return res
+			return res.transpose()
 
 	res = numpy.array(tups)
 	nrows,ncols=res.shape
