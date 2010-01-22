@@ -32,7 +32,7 @@ def get_marker(ps, linestyle):
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
-			nan=False, weights=None, **kw):
+			nan=False, weights=None, norm=False, **kw):
 	if min==None:
 		min=numpy.nanmin(x)
 	if max==None:
@@ -59,6 +59,8 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		func = oplot 
 	else:
 		func = plot
+	if norm:
+		hh1=hh1*1./hh1.max()
 	func(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
     
