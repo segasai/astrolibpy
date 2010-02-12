@@ -244,8 +244,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		ymax = y.max()
 	range=[[ymin,ymax],[xmin,xmax]]
 	range1=(xmin,xmax,ymin,ymax)
-
-	hh,xedges,yedges=scipy.histogram2d(y,x,range=range, bins=bins, weights=weights)
+	
+	hh,xedges,yedges=scipy.histogram2d(y.flatten(),x.flatten(),range=range, bins=bins, weights=weights)
 	if range1 is None:
 		range1=(yedges[0],yedges[-1],xedges[0],xedges[-1])
 		print range1
