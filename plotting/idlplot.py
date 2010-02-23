@@ -229,29 +229,30 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
-				ytitle="", noerase=False, weights=None,
+				ytitle="", noerase=False, weights=None, zlog=False,
 				**kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
 	if xmin is None:
-		xmin = x.min()
+		xmin = x.nanmin()
 	if ymin is None:
-		ymin = y.min()
+		ymin = y.nanmin()
 	if xmax is None:
-		xmax = x.max()
+		xmax = x.nanmax()
 	if ymax is None:
-		ymax = y.max()
+		ymax = y.nanmax()
 	range=[[ymin,ymax],[xmin,xmax]]
 	range1=(xmin,xmax,ymin,ymax)
-	
-	hh,xedges,yedges=scipy.histogram2d(y.flatten(),x.flatten(),range=range, bins=bins, weights=weights)
+	ind=numpy.isfinite(x) & numpy.isfinite(y)
+	hh,xedges,yedges=scipy.histogram2d(y.flatten()[ind],x.flatten()[ind],range=range, bins=bins, weights=weights)
 	if range1 is None:
 		range1=(yedges[0],yedges[-1],xedges[0],xedges[-1])
 		print range1
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
-
+	if zlog:
+		hh=numpy.log10(hh)
 	plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
 	if plt.isinteractive():
 		plt.draw()
