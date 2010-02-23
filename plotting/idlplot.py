@@ -230,6 +230,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
+				xflip=False, yflip=False,
 				**kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
@@ -246,9 +247,13 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	range1=(xmin,xmax,ymin,ymax)
 	ind=numpy.isfinite(x) & numpy.isfinite(y)
 	hh,xedges,yedges=scipy.histogram2d(y.flatten()[ind],x.flatten()[ind],range=range, bins=bins, weights=weights)
-	if range1 is None:
-		range1=(yedges[0],yedges[-1],xedges[0],xedges[-1])
-		print range1
+	if xflip:
+		range1=(range1[1],range1[0],range1[2],range1[3])
+		hh=numpy.fliplr(hh)
+	if yflip:
+		range1=(range1[0],range1[1],range1[3],range1[2])
+		hh=numpy.flipud(hh)
+
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 	if zlog:
