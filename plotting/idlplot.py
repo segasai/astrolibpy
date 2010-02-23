@@ -236,17 +236,17 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
+	ind=numpy.isfinite(x) & numpy.isfinite(y)
 	if xmin is None:
-		xmin = x.nanmin()
+		xmin = x[ind].min()
 	if ymin is None:
-		ymin = y.nanmin()
+		ymin = y[ind].min()
 	if xmax is None:
-		xmax = x.nanmax()
+		xmax = x[ind].max()
 	if ymax is None:
-		ymax = y.nanmax()
+		ymax = y[ind].max()
 	range=[[ymin,ymax],[xmin,xmax]]
 	range1=(xmin,xmax,ymin,ymax)
-	ind=numpy.isfinite(x) & numpy.isfinite(y)
 	hh,xedges,yedges=scipy.histogram2d(y.flatten()[ind],x.flatten()[ind],range=range, bins=bins, weights=weights)
 	if xflip:
 		range1=(range1[1],range1[0],range1[2],range1[3])
