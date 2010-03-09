@@ -19,7 +19,6 @@ def mwrfits(filename, arraylist, namelist=None):
 			iter= arraylist.iteritems()
 
 	for name, arr in iter:
-		print name
 		if arr.dtype==numpy.int16:
 			format='I'
 		elif arr.dtype==numpy.int32:
