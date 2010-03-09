@@ -261,7 +261,8 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
  fields within the PARINFO structure, and they will be ignored.
 
  PARINFO Example:
- parinfo = [{'value':0., 'fixed':0, 'limited':[0,0], 'limits':[0.,0.]}]*5
+ parinfo = [{'value':0., 'fixed':0, 'limited':[0,0], 'limits':[0.,0.]} 
+ 												for i in range(5)]
  parinfo[0]['fixed'] = 1
  parinfo[4]['limited'][0] = 1
  parinfo[4]['limits'][0]  = 50.
