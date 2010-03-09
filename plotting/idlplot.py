@@ -185,7 +185,8 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
-			position=None, noerase=False, bar=False, **kw):
+			position=None, noerase=False, bar=False, bar_label='',
+			bar_fraction=0.05, **kw):
 
 	if xlog:
 		plt.gca().set_xscale('log')
@@ -224,7 +225,8 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	if title!= None:
 		plt.title(title)
 	if bar:
-		plt.colorbar()
+		cb=plt.colorbar(fraction=bar_fraction)
+		cb.set_label(bar_label)
 	if plt.isinteractive():
 		plt.draw()
 
