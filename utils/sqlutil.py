@@ -47,7 +47,7 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 		con = pgdb.connect(database=db, user=user, password=password, host=host)
 	elif driver=='sqlite3':
 		import sqlite3
-		con = sqlite3.connect(db, user=user, password=password, host=host)
+		con = sqlite3.connect(db)
 	else: 
 		raise Exception("Unknown driver")
 	cur = con.cursor()
@@ -56,7 +56,21 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 	else:
 		res = cur.execute(query, params)
 
-	tups,types = fetchmany(cur,-1, False)
+	if driver=='pgdb':
+		tups,typelist = fetchmany(cur,-1, False)
+	elif driver=='sqlite3':
+		tups=cur.fetchall()
+		if len(tups)>0:
+			_cast = {types.BooleanType: numpy.bool,
+				types.IntType: numpy.int32,
+				types.LongType: numpy.int64,
+				types.FloatType: numpy.float64,
+				types.StringType: numpy.str}
+			try:
+				typelist=[_cast[type(tmp)] for tmp in tups[0]]
+			except KeyError:
+				raise Exception("Unknown datatype")
+		
 
 	cur.close()
 	con.commit()
@@ -66,14 +80,14 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 	if nrows == 0:
 		return None
 	for curtype in [numpy.float64,numpy.float32,numpy.int16,numpy.int32,numpy.int64]:
-		if numpy.array([a ==curtype  for a in types]).all():
-			res= numpy.asfarray(tups,types[0])
+		if numpy.array([a ==curtype  for a in typelist]).all():
+			res= numpy.asfarray(tups,typelist[0])
 			return res.transpose()
 
 	res = numpy.array(tups)
 	nrows,ncols=res.shape
 	result = []
-	for  i, cur_type in zip(range(ncols),types):
+	for  i, cur_type in zip(range(ncols),typelist):
 		if cur_type == numpy.str:
 			result.append(numpy.fromiter(res[:,i],dtype='|S100'))
 			(result[-1])[result[-1]=='None']=''
