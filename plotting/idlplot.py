@@ -233,8 +233,8 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
-				xflip=False, yflip=False,
-				**kw):
+				xflip=False, yflip=False, bar=False, bar_label='',
+                bar_fraction=0.05, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -262,6 +262,9 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if zlog:
 		hh=numpy.log10(hh)
 	plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
+	if bar:
+		cb=plt.colorbar(fraction=bar_fraction)
+		cb.set_label(bar_label)
 	if plt.isinteractive():
 		plt.draw()
 
