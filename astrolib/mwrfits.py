@@ -29,6 +29,8 @@ def mwrfits(filename, arraylist, namelist=None):
 			format='E'
 		elif arr.dtype==numpy.float64:
 			format='D'
+		elif arr.dtype.type==numpy.string_:
+			format='A'
 		else:
 			raise Exception("Oops unknown datatype %s"%arr.dtype)
 		tmplist.append(pyfits.Column(name=name, array=arr, format=format))
