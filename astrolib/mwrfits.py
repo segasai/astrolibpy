@@ -1,6 +1,6 @@
 import numpy, pyfits, types, itertools
 
-def mwrfits(filename, arraylist, namelist=None):
+def mwrfits(filename, arraylist, namelist=None, header=None):
 	""" 
 	Writes the list of numpy.arrays arraylist as a FITS table filename
 	using namelist as list of names. 
@@ -30,7 +30,7 @@ def mwrfits(filename, arraylist, namelist=None):
 		elif arr.dtype==numpy.float64:
 			format='D'
 		elif arr.dtype.type==numpy.string_:
-			format='A'
+			format='%dA'%arr.dtype.itemsize
 		else:
 			raise Exception("Oops unknown datatype %s"%arr.dtype)
 		tmplist.append(pyfits.Column(name=name, array=arr, format=format))
