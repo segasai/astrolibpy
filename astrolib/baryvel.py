@@ -13,7 +13,7 @@ def baryvel(dje, deq):
           radial velocity work to an accuracy of  ~1 m/s.
    
     CALLING SEQUENCE:
-          BARYVEL, dje, deq, dvelh, dvelb, [ JPL =  ]
+          dvel_hel, dvel_bary = baryvel(dje, deq)
    
     INPUTS:
           DJE - (scalar) Julian ephemeris date.
