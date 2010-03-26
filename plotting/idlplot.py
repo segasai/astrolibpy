@@ -64,7 +64,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		hh1=hh1*1./hh1.max()
 	func(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
-    
+	 
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
@@ -173,12 +173,16 @@ def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overpl
 				noerase=False, **kw):
 	if overplot:
 		noerase=True
+	if err1 is None:
+		erry = err0
+	else:
+		erry = err1
 	if kw.get('yr') == None:
-		kw['yr'] = [(y-err).min(),(y+err).max()]
+		kw['yr'] = [(y-erry).min(),(y+erry).max()]
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
 	if err1 is None:
-		plt.gca().errorbar(x,y,yerr=err0,color=color,ecolor=ecolor,marker=marker,
+		plt.gca().errorbar(x,y,err0,color=color,ecolor=ecolor,marker=marker,
 						linestyle=outlinestyle)
 	else:
 		plt.gca().errorbar(x,y,xerr=err0,color=color,ecolor=ecolor,marker=marker,
