@@ -169,7 +169,7 @@ def oplot (x,y=None, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
-def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False, 
+def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overplot=False, 
 				noerase=False, **kw):
 	if overplot:
 		noerase=True
@@ -177,8 +177,15 @@ def ploterror (x,y, err, color='black', ps=0, ecolor='black', overplot=False,
 		kw['yr'] = [(y-err).min(),(y+err).max()]
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
-	plt.gca().errorbar(x,y,err,color=color,ecolor=ecolor,marker=marker,
+	if err1 is None:
+		plt.gca().errorbar(x,y,yerr=err0,color=color,ecolor=ecolor,marker=marker,
 						linestyle=outlinestyle)
+	else:
+		plt.gca().errorbar(x,y,xerr=err0,color=color,ecolor=ecolor,marker=marker,
+						linestyle=outlinestyle)
+		plt.gca().errorbar(x,y,yerr=err1,color=color,ecolor=ecolor,marker=marker,
+						linestyle=outlinestyle)
+	
 	if plt.isinteractive():
 		plt.draw()
 
@@ -234,7 +241,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
-                bar_fraction=0.05, **kw):
+				bar_fraction=0.05, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -397,8 +404,8 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		else:
 			args = {}
 		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fontsize=c_charsize, **args)
-                
-# Do we need a color bar?:                
+				
+# Do we need a color bar?:
 	if fill & bar:
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
