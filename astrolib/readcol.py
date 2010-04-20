@@ -36,6 +36,8 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 				convs[i]=retnull
 			elif a=='S':
 				curtype="S100"#numpy.str
+			else:
+				raise Exception("Sorry, Unknown type in the format string\n The allowed types are S,I,F,D (string, int, float, double)")
 			types.append(("a%d"%i,curtype))
 		
 		rec=numpy.loadtxt(file(filename),dtype=types, delimiter=delimiter, 
