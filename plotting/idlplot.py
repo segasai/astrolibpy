@@ -170,7 +170,7 @@ def oplot (x,y=None, **kw):
 	plot (x,y, noerase=True, overplot=True, **kw)
 
 def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overplot=False, 
-				noerase=False, **kw):
+				noerase=False, elinewidth=None, **kw):
 	if overplot:
 		noerase=True
 	if err1 is None:
@@ -183,12 +183,12 @@ def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overpl
 	(marker,outlinestyle)=get_marker(ps, None)
 	if err1 is None:
 		plt.gca().errorbar(x,y,err0,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle)
+						linestyle=outlinestyle,elinewidth=elinewidth)
 	else:
 		plt.gca().errorbar(x,y,xerr=err0,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle)
+						linestyle=outlinestyle,elinewidth=elinewidth)
 		plt.gca().errorbar(x,y,yerr=err1,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle)
+						linestyle=outlinestyle,elinewidth=elinewidth)
 	
 	if plt.isinteractive():
 		plt.draw()
