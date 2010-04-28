@@ -69,7 +69,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
-		yaxis_formatter=None):
+		yaxis_formatter=None, autoscalex=False, autoscaley=False):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -145,7 +145,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().set_xlabel(xtitle)
 	if ytitle!=None:
 		plt.gca().set_ylabel(ytitle)
-	plt.gca().set_autoscale_on(False)
+        
+	plt.gca().set_autoscalex_on(autoscalex)
+	plt.gca().set_autoscaley_on(autoscaley)
 	if not overplot:
 		plt.gca().axis(numpy.concatenate((xrange,yrange)))
 	if title!= None:
