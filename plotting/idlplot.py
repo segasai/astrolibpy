@@ -113,9 +113,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 
 	if xrange is None and yrange is None:
 		ind = numpy.isfinite(x)
-		xrange=[min(x[ind]),max(x[ind])]
+		xrange=[numpy.min(x[ind]),numpy.max(x[ind])]
 		ind = numpy.isfinite(y)
-		yrange=[min(y[ind]),max(y[ind])]
+		yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
 		del ind
 	elif xrange is None and yrange is not None:
 		ind=(y<numpy.maximum(yr[1],yr[0])) & (y>numpy.minimum(yr[0],yr[1])) & numpy.isfinite(x)
