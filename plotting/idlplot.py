@@ -38,11 +38,11 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		dat = x[ind]
 	else:
 		dat = x
-	if min==None:
+	if min is None:
 		min=numpy.min(dat)
-	if max==None:
+	if max is None:
 		max=numpy.max(dat)
-	if bin==None:
+	if bin is None:
 		bin=100
 	else:
 		bin=(max-min)/bin
@@ -77,7 +77,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	"""
 	listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
 
-	if arg2==None:
+	if arg2 is None:
 		y=listtoarr(arg1)
 		x=numpy.arange(len(y))
 	else:
@@ -90,7 +90,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		
 	if not noerase:
 		plt.gcf().clf()	
-	if position!=None:
+	if position is not None:
 		mypos=position[:]
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
@@ -141,16 +141,16 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 			plt.gca().yaxis.set_minor_locator(yminorLocator)		
 
-	if xtitle!=None:
+	if xtitle is not None:
 		plt.gca().set_xlabel(xtitle)
-	if ytitle!=None:
+	if ytitle is not None:
 		plt.gca().set_ylabel(ytitle)
         
 	plt.gca().set_autoscalex_on(autoscalex)
 	plt.gca().set_autoscaley_on(autoscaley)
 	if not overplot:
 		plt.gca().axis(numpy.concatenate((xrange,yrange)))
-	if title!= None:
+	if title is not None:
 		plt.title(title)
 	if not nodata:
 		if markersize is None:
@@ -179,7 +179,7 @@ def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overpl
 		erry = err0
 	else:
 		erry = err1
-	if kw.get('yr') == None:
+	if kw.get('yr') is None:
 		kw['yr'] = [(y-erry).min(),(y+erry).max()]
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
@@ -235,7 +235,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
 
-	if title!= None:
+	if title is not None:
 		plt.title(title)
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
@@ -330,18 +330,18 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		z = numpy.log10(z)
 
 # Setup axis ranges:			
-	if xr!=None:
+	if xr is not None:
 		xrange=xr
-	if yr!=None:
+	if yr is not None:
 		yrange=yr
-	if zr!=None:
+	if zr is not None:
 		zrange=zr
 
-	if xrange==None:
+	if xrange is None:
 		xrange=[x.min(),x.max()]
-	if yrange==None:
+	if yrange is None:
 		yrange=[y.min(),y.max()]
-	if zrange==None:
+	if zrange is None:
 		zrange=[z.min(),z.max()]		
 		
 # Setup levels for contour plot:		
