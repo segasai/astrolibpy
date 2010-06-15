@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from numpy import *
+from numpy import sin, cos, array, reshape, transpose, dot, pi, sqrt
 from premat import premat
 def baryvel(dje, deq=0):
    """
@@ -70,6 +70,7 @@ def baryvel(dje, deq=0):
           Converted to IDL V5.0   W. Landsman   September 1997
           Added /JPL keyword  W. Landsman   July 2001
           Documentation update W. Landsman Dec 2005
+          Converted to Python S. Koposov 2009-2010
    """
 
    
@@ -151,7 +152,7 @@ def baryvel(dje, deq=0):
    pertld = 0.0
    pertr = 0.0
    pertrd = 0.0
-   for k in arange(0, 15):
+   for k in range(0, 15):
       a = (dcargs[k,0] + dt * dcargs[k,1]) % dc2pi
       cosa = cos(a)
       sina = sin(a)
@@ -186,7 +187,7 @@ def baryvel(dje, deq=0):
    pertld = 0.0
    pertp = 0.0
    pertpd = 0.0
-   for k in arange(0, 3):
+   for k in range(0, 3):
       a = (dcargm[k,0] + dt * dcargm[k,1]) % dc2pi
       sina = sin(a)
       cosa = cos(a)
@@ -210,7 +211,7 @@ def baryvel(dje, deq=0):
    dxbd = dxhd * dc1mme
    dybd = dyhd * dc1mme
    dzbd = dzhd * dc1mme
-   for k in arange(0, 4):
+   for k in range(0, 4):
       plon = forbel[k + 3]
       pomg = sorbel[k + 1]
       pecc = sorbel[k + 9]
