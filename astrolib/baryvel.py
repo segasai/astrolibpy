@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from numpy import *
 from premat import premat
-def baryvel(dje, deq):
+def baryvel(dje, deq=0):
    """
     NAME:
           BARYVEL
@@ -233,7 +233,7 @@ def baryvel(dje, deq):
    if deq == 0:   
       dvelh = au * (array([dxhd, dyahd, dzahd]))
       dvelb = au * (array([dxbd, dyabd, dzabd]))
-      return _ret()
+      return (dvelh,dvelb)
    
    #General precession from epoch dje to deq.
    deqdat = (dje - dcto - dcbes) / dctrop + dc1900
