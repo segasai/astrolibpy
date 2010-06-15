@@ -11,7 +11,8 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 	if isinstance(arraylist,numpy.ndarray):
 		if arraylist.dtype.type is numpy.void:
 			keys=arraylist.dtype.fields.iterkeys()
-			iter=itertools.izip(keys, itertools.imap (arraylist.__getitem__ , keys))
+			keys1=arraylist.dtype.fields.iterkeys()
+			iter=itertools.izip(keys, itertools.imap (arraylist.__getitem__ , keys1))
 	else:
 		if isinstance(arraylist,types.ListType):
 			iter= zip(namelist, arraylist)
