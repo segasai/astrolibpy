@@ -20,9 +20,9 @@ Perform Levenberg-Marquardt least-squares minimization, based on MINPACK-1.
 	Updated versions can be found at http://cars.uchicago.edu/software
  
  Sergey Koposov converted the Mark's Python version from Numeric to numpy
-	Sergey Koposov, Max Planck Institute for Astronomy
-	Heidelberg, Germany, D-69117
-	koposov@mpia.de
+	Sergey Koposov, University of Cambridge, Institute of Astronomy,
+	Madingley road, CB3 0HA, Cambridge, UK
+	koposov@ast.cam.ac.uk
 	Updated versions can be found at http://code.google.com/p/astrolibpy/source/browse/trunk/
 
 								 DESCRIPTION
