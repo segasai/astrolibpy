@@ -82,7 +82,8 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 				types.IntType: numpy.int32,
 				types.LongType: numpy.int64,
 				types.FloatType: numpy.float64,
-				types.StringType: numpy.str}
+				types.StringType: numpy.str,
+				types.UnicodeType: numpy.str}
 			try:
 				typelist=[_cast[type(tmp)] for tmp in tups[0]]
 			except KeyError:
