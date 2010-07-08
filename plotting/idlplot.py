@@ -19,6 +19,8 @@ import matplotlib.pyplot as plt
 import numpy
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
+import scipy.ndimage.filters
+
 import matplotlib
 import types
 
@@ -264,7 +266,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
-				bar_fraction=0.05, **kw):
+				bar_fraction=0.05, smooth=None, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -291,6 +293,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
+	if smooth is not None:
+	    hh=scipy.ndimage.filters.gaussian_filter(hh,[smooth,smooth])
 	if zlog:
 		hh=numpy.log10(hh)
 	plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
