@@ -10,9 +10,7 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 	tmplist=[]
 	if isinstance(arraylist,numpy.ndarray):
 		if arraylist.dtype.type is numpy.void:
-			keys=arraylist.dtype.fields.iterkeys()
-			keys1=arraylist.dtype.fields.iterkeys()
-			iter=itertools.izip(keys, itertools.imap (arraylist.__getitem__ , keys1))
+			iter=itertools.izip(arraylist.dtype.names, itertools.imap (arraylist.__getitem__ , arraylist.dtype.names))
 	else:
 		if isinstance(arraylist,types.ListType):
 			iter= zip(namelist, arraylist)
@@ -20,15 +18,17 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 			iter= arraylist.iteritems()
 
 	for name, arr in iter:
-		if arr.dtype==numpy.int16:
+		if arr.dtype.type==numpy.int8:
 			format='I'
-		elif arr.dtype==numpy.int32:
+		elif arr.dtype.type==numpy.int16:
+			format='I'
+		elif arr.dtype.type==numpy.int32:
 			format='J'
-		elif arr.dtype==numpy.int64:
+		elif arr.dtype.type==numpy.int64:
 			format='K'
-		elif arr.dtype==numpy.float32:
+		elif arr.dtype.type==numpy.float32:
 			format='E'
-		elif arr.dtype==numpy.float64:
+		elif arr.dtype.type==numpy.float64:
 			format='D'
 		elif arr.dtype.type==numpy.string_:
 			format='%dA'%arr.dtype.itemsize
