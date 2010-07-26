@@ -1,6 +1,7 @@
-from numpy import array,cos,sin,tan,pi,poly1d
+from numpy import array, cos, sin, tan, pi, poly1d, deg2rad
 from xyz import xyz
 from bprecess import bprecess
+
 def helio_jd(date, ra, dec, b1950=False, time_diff=False):
    """
     NAME:
@@ -55,33 +56,32 @@ def helio_jd(date, ra, dec, b1950=False, time_diff=False):
     2000-03-01T10:26:31.8  14 28 36.7 -20 42 11.  243.7        243.7
     2100-02-26T09:18:24.2  08 26 51.7 +85 47 28.  104.0        108.8
     PROCEDURES CALLED:
-          bprecess, xyz, zparcheck
+          bprecess, xyz
    
     REVISION HISTORY:
           Algorithm from the book Astronomical Photometry by Henden, p. 114
           Written,   W. Landsman       STX     June, 1989
           Make J2000 default equinox, add B1950, /TIME_DIFF keywords, compute
           variation of the obliquity      W. Landsman   November 1999
+          Converted to python 	Sergey Koposov July 2010
    """
    
    #Because XYZ uses default B1950 coordinates, we'll convert everything to B1950
    
    if not b1950:
-      ra1,dec1=bprecess(ra, dec)
+      ra1, dec1 = bprecess(ra, dec)
    else:   
       ra1 = ra
       dec1 = dec
    
-   radeg = 180.0 / pi
-#   zparcheck('HELIO_JD', date, 1, concatenate([3, 4, 5]), concatenate([0, 1]), 'Reduced Julian Date')
    
    delta_t = (array(date).astype(float) - 33282.42345905e0) / 36525.0e0
    epsilon_sec = poly1d([44.836e0, -46.8495, -0.00429, 0.00181][::-1])(delta_t)
-   epsilon = (23.433333e0 + epsilon_sec / 3600.0e0) / radeg
-   ra1 = ra1 / radeg
-   dec1 = dec1 / radeg
+   epsilon = deg2rad(23.433333e0 + epsilon_sec / 3600.0e0)
+   ra1 = deg2rad(ra1)
+   dec1 = deg2rad(dec1)
    
-   x,y,z,tmp,tmp,tmp=xyz(date)
+   x, y, z, tmp, tmp, tmp = xyz(date)
    
    #Find extra distance light must travel in AU, multiply by 1.49598e13 cm/AU,
    #and divide by the speed of light, and multiply by 86400 second/year
