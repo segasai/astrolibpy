@@ -53,16 +53,14 @@ def daycnv(xjd):
    jd = array(xjd).astype(int)                         #Truncate to integral day
    frac = array(xjd).astype(float) - jd + 0.5          #Fractional part of calendar day
    after_noon = (frac >= 1.0)
-   if next > 0:                   #Is it really the next calendar day?
-      if after_noon.any():
-         if frac.ndim>0:
-            frac[after_noon] = frac[after_noon] - 1.0
-         else:
-            frac=frac-1.0
-         if jd.ndim>0:
-            jd[after_noon] = jd[after_noon] + 1
-         else:
-            jd=jd+1
+   
+   if after_noon.any(): #Is it really the next calendar day?
+      if frac.ndim>0: # proper array
+         frac[after_noon] = frac[after_noon] - 1.0
+         jd[after_noon] = jd[after_noon] + 1
+      else:  # scalar
+         frac =frac - 1.0
+         jd = jd + 1
    hr = frac * 24.0
    l = jd + 68569
    n = 4 * l / 146097
@@ -75,5 +73,3 @@ def daycnv(xjd):
    mn = mn + 2 - 12 * l
    yr = 100 * (n - 49) + yr + l
    return (yr, mn, day, hr)
-   
-
