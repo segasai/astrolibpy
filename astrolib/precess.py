@@ -1,6 +1,7 @@
-from numpy import *
+from numpy import sin, cos, deg2rad, transpose, dot, arcsin, arctan2, zeros
 from premat import premat
-def precess(ra0, dec0, equinox1, equinox2, doprint=None, fk4=None, radian=False):
+
+def precess(ra0, dec0, equinox1, equinox2, doprint=False, fk4=False, radian=False):
    """
     NAME:
          PRECESS
@@ -77,48 +78,31 @@ def precess(ra0, dec0, equinox1, equinox2, doprint=None, fk4=None, radian=False)
           Converted to IDL V5.0   W. Landsman   September 1997
           Correct negative output RA values when /RADIAN used    March 1999
           Work for arrays, not just vectors  W. Landsman    September 2003
+          Convert to Python 			Sergey Koposov	July 2010
    """
+   scal = True
    if isinstance(ra0, ndarray):
       ra = ra0.copy()  
       dec = dec0.copy()
-      npts = min( ra.size,dec.size)
-      xarray = ra.ndim >= 2
-      if xarray:   
-         dimen = ra.ndim
+      scal = False
    else:
       ra=array([ra0])
       dec=array([dec0])
-      npts=1
-      xarray=False
-   deg_to_rad = pi / 180.0e0
-   
-   if npts == 0:   
-      print('ERROR - Input RA and DEC must be vectors or scalars')
-      return
+   npts = ra.size 
    
    if not radian:   
-      ra_rad = ra * deg_to_rad     #Convert to double precision if not already
-      dec_rad = dec * deg_to_rad
+      ra_rad = deg2rad(ra)     #Convert to double precision if not already
+      dec_rad = deg2rad(dec)
    else:   
-      ra_rad = array(ra).astype(float)
-      dec_rad = array(dec).astype(float)
+      ra_rad = ra
+      dec_rad = dec
    
    a = cos(dec_rad)
    
-   _expr = npts                    #Is RA a vector or scalar?
-   
-   if _expr == 1:   
-      x = concatenate([a * cos(ra_rad), a * sin(ra_rad), sin(dec_rad)]) #input direction 
-   else:   
-      
-      x = numpy.zeros((npts, 3))
-      x[:,0] = a * cos(ra_rad)
-      x[:,1] = a * sin(ra_rad)
-      x[:,2] = sin(dec_rad)
-      x = transpose(x)
-      
-   
-   sec_to_rad = deg_to_rad / 3600.e0
+   x = zeros((npts, 3))
+   x[:,0] = a * cos(ra_rad)
+   x[:,1] = a * sin(ra_rad)
+   x[:,2] = sin(dec_rad)
    
    # Use PREMAT function to get precession matrix from Equinox1 to Equinox2
    
@@ -126,31 +110,21 @@ def precess(ra0, dec0, equinox1, equinox2, doprint=None, fk4=None, radian=False)
    
    x2 = transpose(dot(transpose(r), transpose(x)))      #rotate to get output direction cosines
    
-   if npts == 1:                    #Scalar
-      
-      ra_rad = arctan2(x2[1], x2[0])
-      dec_rad = arcsin(x2[2])
-      
-   else:                   #Vector     
-      
-      ra_rad = zeros(npts) + arctan2(x2[:,1], x2[:,0])
-      dec_rad = zeros(npts) + arcsin(x2[:,2])
-      
+   ra_rad = zeros(npts) + arctan2(x2[:,1], x2[:,0])
+   dec_rad = zeros(npts) + arcsin(x2[:,2])
    
    if not radian:   
-      ra = ra_rad / deg_to_rad
+      ra = rad2deg(ra_rad)
       ra = ra + (ra < 0.) * 360.e0            #RA between 0 and 360 degrees
-      dec = dec_rad / deg_to_rad
+      dec = rad2deg(dec_rad)
    else:   
-      ra = ra_rad ; dec = dec_rad
+      ra = ra_rad
+      dec = dec_rad
       ra = ra + (ra < 0.) * 2.0e0 * pi
    
-#   if array:   
-#      ra = reform(ra, dimen, over=True)
-#      dec = reform(dec, dimen, over=True)
-   
-   if (doprint is not None):   
-      print 'Equinox (' + strtrim(equinox2, 2) + '): ', adstring(ra, dec, 1)
-   
-   return ra,dec
+   if doprint:   
+      print 'Equinox (%.2f): %f,%f' % (equinox2, ra, dec)
+   if scal:
+      ra, dec = ra[0], dec[0]
+   return ra, dec
 
