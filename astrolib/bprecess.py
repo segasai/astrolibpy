@@ -1,4 +1,6 @@
-from numpy import *
+from numpy import array, sqrt, zeros, sin, cos, arange, arcsin,\
+      arctan2, transpose, concatenate, ndarray, pi, dot, deg2rad,\
+      rad2deg
 
 def bprecess(ra0, dec0, mu_radec=None, parallax=None, rad_vel=None, epoch=None):
    """
@@ -80,45 +82,44 @@ def bprecess(ra0, dec0, mu_radec=None, parallax=None, rad_vel=None, epoch=None):
           Converted to IDL V5.0   W. Landsman   September 1997
           Fixed bug where A term not initialized for vector input
                W. Landsman        February 2000
-   
+         Converted to python 			Sergey Koposov july 2010   
    """
 
-   scal=True
-   if isinstance(ra0,ndarray):
-      ra=ra0
-      dec=dec0
+   scal = True
+   if isinstance(ra0, ndarray):
+      ra = ra0
+      dec = dec0
       n = ra.size
-      scal=False
+      scal = False
    else:
-      n=1
-      ra=array([ra0])
-      dec=array([dec0])
+      n = 1
+      ra = array([ra0])
+      dec = array([dec0])
       
-   if n == 0:   
-      message('ERROR - First parameter (RA vector) is undefined')
-   
    if rad_vel is None:   
       rad_vel = zeros(n)
-   else:   
-      rad_vel = rad_vel * 1.
-      if array(rad_vel).size != n:   
-         print('ERROR - RAD_VEL keyword vector must contain ' + strtrim(n, 2) + ' values')
+   else:
+      if not isinstance(rad_vel, ndarray):
+         rad_vel = array([rad_vel],dtype=float)
+      if rad_vel.size != n:   
+         raise Exception('ERROR - RAD_VEL keyword vector must be of the same length as RA and DEC')
    
    if (mu_radec is not None):   
       if (array(mu_radec).size != 2 * n):   
-         message('ERROR - MU_RADEC keyword (proper motion) be dimensioned (2,' + strtrim(n, 2) + ')')
+         raise Exception('ERROR - MU_RADEC keyword (proper motion) be dimensioned (2,' + strtrim(n, 2) + ')')
       mu_radec = mu_radec * 1.
    
    if parallax is None:   
       parallax = zeros(n)
    else:   
-      parallax = parallax * 1.
+      if not isinstance(parallax, ndarray):
+         parallax = array([parallax],dtype=float)
    
    if epoch is None:   
       epoch = 2000.0e0
    
    radeg = 180.e0 / pi
-   sec_to_radian = 1.e0 / radeg / 3600.e0
+   sec_to_radian = lambda x : deg2rad(x/3600.)
    
    m = array([array([+0.9999256795e0, -0.0111814828e0, -0.0048590040e0, -0.000551e0, -0.238560e0, +0.435730e0]),
    array([+0.0111814828e0, +0.9999374849e0, -0.0000271557e0, +0.238509e0, -0.002667e0, -0.008541e0]),
@@ -129,14 +130,17 @@ def bprecess(ra0, dec0, mu_radec=None, parallax=None, rad_vel=None, epoch=None):
    
    a_dot = 1e-3 * array([1.244e0, -1.579e0, -0.660e0])           #in arc seconds per century
    
-   ra_rad = ra / radeg       ;      dec_rad = dec / radeg
-   cosra = cos(ra_rad)  ;       sinra = sin(ra_rad)
-   cosdec = cos(dec_rad) ;      sindec = sin(dec_rad)
+   ra_rad = deg2rad(ra)
+   dec_rad = deg2rad(dec)
+   cosra = cos(ra_rad)
+   sinra = sin(ra_rad)
+   cosdec = cos(dec_rad)
+   sindec = sin(dec_rad)
    
    dec_1950 = dec * 0.
    ra_1950 = ra * 0.
    
-   for i in arange(0, (n - 1)+(1)):
+   for i in range(n):
    
    # Following statement moved inside loop in Feb 2000.
       a = 1e-6 * array([-1.62557e0, -0.31919e0, -0.13843e0])        #in radians
@@ -161,8 +165,8 @@ def bprecess(ra0, dec0, mu_radec=None, parallax=None, rad_vel=None, epoch=None):
       r1_dot = r_1[3:6]
       
       if mu_radec is None:   
-         r1 = r1 + sec_to_radian * r1_dot * (epoch - 1950.0e0) / 100.
-         a = a + sec_to_radian * a_dot * (epoch - 1950.0e0) / 100.
+         r1 = r1 + sec_to_radian ( r1_dot * (epoch - 1950.0e0) / 100. )
+         a = a + sec_to_radian ( a_dot * (epoch - 1950.0e0) / 100. )
       
       x1 = r_1[0]   ;   y1 = r_1[1]    ;  z1 = r_1[2]
       rmag = sqrt(x1 ** 2 + y1 ** 2 + z1 ** 2)
@@ -195,13 +199,10 @@ def bprecess(ra0, dec0, mu_radec=None, parallax=None, rad_vel=None, epoch=None):
    if neg.any() > 0:   
       ra_1950[neg] = ra_1950[neg] + 2.e0 * pi
    
-   ra_1950 = ra_1950 * radeg ; dec_1950 = dec_1950 * radeg
+   ra_1950 = rad2deg(ra_1950)
+   dec_1950 = rad2deg(dec_1950)
    
    # Make output scalar if input was scalar
-   
- #  sz = size(ra)
- #  if sz[0] == 0:   
- #     ra_1950 = ra_1950[0]     ;      dec_1950 = dec_1950[0]
    if scal:
       return ra_1950[0],dec_1950[0]
    else:
