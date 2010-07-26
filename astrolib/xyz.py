@@ -1,5 +1,6 @@
-from numpy import *
-import precess_xyz
+from numpy import sqrt, pi, cos, sin
+from precess_xyz import precess_xyz
+
 def xyz(date, equinox=None):
    """
     NAME:
@@ -65,21 +66,6 @@ def xyz(date, equinox=None):
              P. Plait/ACC March 24, 1999
    """
 
-   n_params = 7
-   _opt = (equinox,)
-#   def _ret():
-#      _optrv = zip(_opt, [equinox])
-#      _rv = [date, x, y, z, xvel, yvel, zvel]
-#      _rv += [_o[1] for _o in _optrv if _o[0] is not None]
-#      return tuple(_rv)
-   
-   # ON_ERROR, 2
-   
-   if (n_params == 0):   
-      print 'Syntax - XYZ, date, x, y, z, [ xvel, yvel, zvel, EQUINOX= ]'
-      print '     (date is REDUCED Julian date (JD - 2400000.0) )'
-      return _ret()
-   
    picon = pi / 180.0e0
    t = (date - 15020.0e0) / 36525.0e0         #Relative Julian century from 1900
    
@@ -128,11 +114,8 @@ def xyz(date, equinox=None):
    z = 0.397825e0 * sin(el) + 0.009998e0 * sin(g - el) + 0.003332e0 * sin(g + el) + 0.000042e0 * sin(g + g + el) - 0.000025e0 * t * sin(g - el) - 0.000014e0 * sin(g + g - el) - 0.000010e0 * cos(g - el - j)
    
    #Precess_to new equator?
-   if (equinox is not None):   
-      precess_xyz(x, y, z, 1950, equinox)
-   
-   if n_params <= 3:   
-      return _ret()
+   if equinox is not None:   
+      x, y, z = precess_xyz(x, y, z, 1950, equinox)
    
    xvel = -0.017200e0 * sin(el) - 0.000288e0 * sin(g + el) - 0.000005e0 * sin(2.e0 * g + el) - 0.000004e0 * sin(c) + 0.000003e0 * sin(c - 2.e0 * el) + 0.000001e0 * t * sin(g + el) - 0.000001e0 * sin(2.e0 * g - el)
    
@@ -142,8 +125,8 @@ def xyz(date, equinox=None):
    
    #Precess to new equator?
    
-   if (equinox is not None):   
-      precess_xyz.precess_xyz(xvel, yvel, zvel, 1950, equinox)
+   if equinox is not None:   
+      xvel, yvel, zvel = precess_xyz(xvel, yvel, zvel, 1950, equinox)
    
-   return x,y,z,xvel,yvel,zvel
+   return x, y, z, xvel, yvel, zvel
 

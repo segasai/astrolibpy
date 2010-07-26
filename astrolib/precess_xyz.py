@@ -1,4 +1,5 @@
-from numpy import *
+from numpy import sin, cos, arctan2, sqrt, arcsin
+from precess import precess
 
 def precess_xyz(x, y, z, equinox1, equinox2):
 #+
@@ -37,21 +38,15 @@ def precess_xyz(x, y, z, equinox1, equinox2):
 #       Use two parameter call to ATAN   W. Landsman    June 2001
 #-
 #check inputs
-   n_params = 5
-   def _ret():  return (x, y, z, equinox1, equinox2)
-   
-   if n_params != 5:   
-      print 'Syntax - PRECESS_XYZ,x,y,z,equinox1,equinox2'
-      return _ret()
    
    #take input coords and convert to ra and dec (in radians)
    
-   ra = atan(y, x)
+   ra = arctan2(y, x)
    _del = sqrt(x * x + y * y + z * z)  #magnitude of distance to Sun
-   dec = asin(z / _del)
+   dec = arcsin(z / _del)
    
    #   precess the ra and dec
-   precess(ra, dec, equinox1, equinox2, radian=True)
+   ra,dec = precess(ra, dec, equinox1, equinox2, radian=True)
    
    #convert back to x, y, z
    xunit = cos(ra) * cos(dec)
@@ -62,6 +57,6 @@ def precess_xyz(x, y, z, equinox1, equinox2):
    y = yunit * _del
    z = zunit * _del
    
-   return _ret()
+   return x,y,z
 
 
