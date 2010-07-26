@@ -1,4 +1,4 @@
-from numpy import *
+from numpy import array
 
 def daycnv(xjd):
    """
@@ -40,14 +40,6 @@ def daycnv(xjd):
           Converted to IDL V5.0   W. Landsman   September 1997
    """
 
-   def _ret():  return (xjd, yr, mn, day, hr)
-   
-   # ON_ERROR, 2
-   
-#      print 'Syntax - DAYCNV, xjd, yr, mn, day, hr'
-#      print '  Julian date, xjd, should be specified in double precision'
-#      return None
-   
    # Adjustment needed because Julian day starts at noon, calendar day at midnight
    
    jd = array(xjd).astype(int)                         #Truncate to integral day
@@ -59,7 +51,7 @@ def daycnv(xjd):
          frac[after_noon] = frac[after_noon] - 1.0
          jd[after_noon] = jd[after_noon] + 1
       else:  # scalar
-         frac =frac - 1.0
+         frac = frac - 1.0
          jd = jd + 1
    hr = frac * 24.0
    l = jd + 68569
