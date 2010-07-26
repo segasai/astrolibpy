@@ -16,8 +16,10 @@
 
 
 import scipy.spatial.kdtree, numpy
+from scipy import version
 from numpy import sin,cos,deg2rad,rad2deg,arcsin
 
+scipy_version  = float('.'.join(version.version.split('.')[0:2]))
 
 def match_lists(ra1, dec1, ra2, dec2, dist):
 	# crossmatches the list of objects (ra1,dec1) with
@@ -35,12 +37,15 @@ def match_lists(ra1, dec1, ra2, dec2, dist):
 	getxyz = lambda r, d: [cosd(r)*cosd(d), sind(r)*cosd(d), sind(d)]
 	xyz1 = numpy.array(getxyz(ra1, dec1))
 	xyz2 = numpy.array(getxyz(ra2, dec2))
-
-# At the moment I'm using Python version of the KDTree instead of 
-# cKDTtree because there is a bug in the cKDTree
-# http://projects.scipy.org/scipy/ticket/1178
-	tree2 = scipy.spatial.KDTree(xyz2.transpose())
-	ret = tree2.query(xyz1.transpose(), 1, 0, 2, mindist)
+	
+	if scipy_version<0.8:
+	# If old scipy version is detected then we use KDTree instead of 
+	# cKDTtree because there is a bug in the cKDTree
+	# http://projects.scipy.org/scipy/ticket/1178
+		tree2 = scipy.spatial.KDTree(xyz2.T)
+	else:
+		tree2 = scipy.spatial.cKDTree(xyz2.T)
+	ret = tree2.query(xyz1.T, 1, 0, 2, mindist)
 	dist, ind = ret
 	dist = rad2deg(2*arcsin(dist/2))
 	return dist, ind
