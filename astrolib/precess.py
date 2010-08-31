@@ -1,4 +1,5 @@
-from numpy import sin, cos, deg2rad, transpose, dot, arcsin, arctan2, zeros
+from numpy import sin, cos, deg2rad, transpose, dot, arcsin, arctan2, zeros,\
+                  ndarray, array, rad2deg
 from premat import premat
 
 def precess(ra0, dec0, equinox1, equinox2, doprint=False, fk4=False, radian=False):
