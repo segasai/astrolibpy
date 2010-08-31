@@ -283,7 +283,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		ymax = y1[ind].max()
 	range=[[ymin,ymax],[xmin,xmax]]
 	range1=(xmin,xmax,ymin,ymax)
-	hh,xedges,yedges=scipy.histogram2d(y1[ind],x1[ind],range=range, bins=bins, weights=weights)
+	hh,yedges,xedges=scipy.histogram2d(y1[ind],x1[ind],range=range, bins=bins, weights=weights)
 	if xflip:
 		range1=(range1[1],range1[0],range1[2],range1[3])
 		hh=numpy.fliplr(hh)
