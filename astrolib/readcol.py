@@ -2,6 +2,15 @@ import scipy.io
 import numpy 
 
 def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
+	""" This routine reads the data from the ascii file
+	a,b,c=readcol('dat.txt',delimiter='|')
+	you can skip a certain number of rows in the top of the file by
+	specifying skiprows=X option.
+	The format option is needed if you have datatypes different from float in your table
+	In that case format string should be comma delimted set of I (int) F(float) D (double) 
+	S (string) characters. E.g.
+	a,b,c=readcol('dat.txt',format='I,S,D') 
+	"""
 	if format==None:
 		res=numpy.loadtxt(filename, delimiter=delimiter, skiprows=skiprows, **kw)
 		nrows = res.shape[0]
