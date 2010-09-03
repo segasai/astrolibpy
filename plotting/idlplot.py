@@ -218,7 +218,7 @@ def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overpl
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
-			bar_fraction=0.05, **kw):
+			bar_fraction=0.05, smooth=None, **kw):
 
 	if xlog:
 		plt.gca().set_xscale('log')
@@ -240,8 +240,11 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		xmax=image.shape[0]
 	if ymax is None:
 		ymax=image.shape[1]
-
-	plt.imshow(image.transpose(), extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
+	im = image.T
+	if smooth is not None:
+		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
+	
+	plt.imshow(im, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, **kw)
 
 	plt.gca().set_xlabel(xtitle)
