@@ -244,7 +244,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	if smooth is not None:
 		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
 	
-	plt.imshow(im, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
+	axim = plt.imshow(im, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, **kw)
 
 	plt.gca().set_xlabel(xtitle)
@@ -264,6 +264,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		cb.set_label(bar_label)
 	if plt.isinteractive():
 		plt.draw()
+	return axim
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
@@ -304,13 +305,13 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	    hh=scipy.ndimage.filters.gaussian_filter(hh,[smooth,smooth])
 	if zlog:
 		hh=numpy.log10(hh)
-	plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
+	axim=plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
 		cb.set_label(bar_label)
 	if plt.isinteractive():
 		plt.draw()
-
+	return axim
 
 
 def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
