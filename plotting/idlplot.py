@@ -269,7 +269,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
-				bar_fraction=0.05, smooth=None, **kw):
+				bar_fraction=0.05, smooth=None, quick=False, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -286,7 +286,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		ymax = y1[ind].max()
 	range=[[ymin,ymax],[xmin,xmax]]
 	range1=(xmin,xmax,ymin,ymax)
-	hh,yedges,xedges=scipy.histogram2d(y1[ind],x1[ind],range=range, bins=bins, weights=weights)
+	if not quick:
+		hh,yedges,xedges=scipy.histogram2d(y1[ind],x1[ind],range=range, bins=bins, weights=weights)
+	else:
+		import quick_hist
+		hh=quick_hist.quick_hist((y1[ind],x1[ind]),range=range,nbins=bins)
 	if xflip:
 		range1=(range1[1],range1[0],range1[2],range1[3])
 		hh=numpy.fliplr(hh)
