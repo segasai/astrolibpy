@@ -53,9 +53,10 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
 	newlen = len(poss)
 	if weights is None:
-		weights_str='1'
+		weights_str = '1'
 	else:
-		weights_str='weights(i)'
+		weightsind = weights[ind]
+		weights_str = 'weightsind(i)'
 
 	code = """
 	int i;
@@ -68,7 +69,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 			scipy.weave.inline(code, ['res', 'poss', 'newlen'],
 				type_converters=scipy.weave.converters.blitz)
 		else:
-			scipy.weave.inline(code, ['res', 'poss', 'newlen','weights'],
+			scipy.weave.inline(code, ['res', 'poss', 'newlen','weightsind'],
 				type_converters=scipy.weave.converters.blitz)			
 	except Exception:
 		print "Sorry the compiled version didn't work :("
