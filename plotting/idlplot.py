@@ -286,24 +286,26 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		xmax = x1[ind].max()
 	if ymax is None:
 		ymax = y1[ind].max()
-	range=[[ymin,ymax],[xmin,xmax]]
-	range1=(xmin,xmax,ymin,ymax)
+	range = [[ymin, ymax],[xmin, xmax]]
+	range1 = (xmin, xmax, ymin, ymax)
 	if not quick:
-		hh,yedges,xedges=scipy.histogram2d(y1[ind],x1[ind],range=range, bins=bins, weights=weights)
+		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
+		                                        bins=bins, weights=weights)
 	else:
 		import quick_hist
-		hh=quick_hist.quick_hist((y1[ind],x1[ind]),range=range,nbins=bins)
+		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
+                                weights=weights)
 	if xflip:
-		range1=(range1[1],range1[0],range1[2],range1[3])
-		hh=numpy.fliplr(hh)
+		range1 = (range1[1], range1[0], range1[2], range1[3])
+		hh = numpy.fliplr(hh)
 	if yflip:
-		range1=(range1[0],range1[1],range1[3],range1[2])
-		hh=numpy.flipud(hh)
+		range1 = (range1[0], range1[1], range1[3], range1[2])
+		hh = numpy.flipud(hh)
 
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 	if smooth is not None:
-	    hh=scipy.ndimage.filters.gaussian_filter(hh,[smooth,smooth])
+	    hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
 	else:
