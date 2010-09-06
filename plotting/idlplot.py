@@ -267,16 +267,17 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	return axim
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
-				bins=[100,100], xtitle="",
+				vmin=None, vmax=None, bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
-				bar_fraction=0.05, smooth=None, quick=False, **kw):
+				bar_fraction=0.05, smooth=None, quick=False,
+				cmap='gray_r', **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
-	x1= x.flat
-	y1=y.flat
-	ind=numpy.isfinite(x1) & numpy.isfinite(y1)
+	x1 = x.flat
+	y1 = y.flat
+	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 	if xmin is None:
 		xmin = x1[ind].min()
 	if ymin is None:
@@ -304,8 +305,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if smooth is not None:
 	    hh=scipy.ndimage.filters.gaussian_filter(hh,[smooth,smooth])
 	if zlog:
-		hh=numpy.log10(hh)
-	axim=plt.imshow(-hh,extent=range1, aspect='auto', interpolation='nearest', **kw)
+		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
+	else:
+		norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)		
+	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation='nearest',
+					cmap=cmap, norm=norm, **kw)
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
 		cb.set_label(bar_label)
