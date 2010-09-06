@@ -18,7 +18,7 @@
 import numpy
 import scipy.weave, scipy.weave.converters
 
-def quick_hist(arrs, range=None, nbins=None):
+def quick_hist(arrs, range=None, nbins=None, weights=None):
 	"""
 	arr -- tuple of N-arrays
 	range -- list of tuples of ranges
@@ -27,6 +27,13 @@ def quick_hist(arrs, range=None, nbins=None):
 	from __builtin__ import range as xrange
 	nd = len(arrs)
 	nx = len(arrs[0])
+	for curarr in arrs:
+		if len(curarr)!=nx:
+			raise ValueError('All the input arrays MUST have the same length!')
+	if weights is not None:
+		if len(weights)!=nx:
+			raise ValueError('The weights array MUST have the same length as the input arrays')
+	
 	poss = numpy.zeros((nx,), dtype=numpy.int64)
 	ind = numpy.ones_like(arrs[0]).astype(bool)
 	nbins_rev = nbins + []
@@ -45,19 +52,32 @@ def quick_hist(arrs, range=None, nbins=None):
 	poss = poss[ind]
 	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
 	newlen = len(poss)
+	if weights is None:
+		weights_str='1'
+	else:
+		weights_str='weights(i)'
+
 	code = """
 	int i;
 	for (i=0; i<newlen; i++)
 	{
-		res(poss(i)) = res(poss(i)) + 1;
-	}"""
+		res(poss(i)) = res(poss(i)) + %s;
+	}"""%weights_str
 	try:
-		scipy.weave.inline(code, ['res', 'poss', 'newlen'],
-			type_converters=scipy.weave.converters.blitz)
+		if weights is None:
+			scipy.weave.inline(code, ['res', 'poss', 'newlen'],
+				type_converters=scipy.weave.converters.blitz)
+		else:
+			scipy.weave.inline(code, ['res', 'poss', 'newlen','weights'],
+				type_converters=scipy.weave.converters.blitz)			
 	except Exception:
 		print "Sorry the compiled version didn't work :("
-		for i in xrange(len(poss)):
-			res[poss[i]]+=1
+		if weights is None:
+			for i in xrange(len(poss)):
+				res[poss[i]]+=1
+		else:
+			for i in xrange(len(poss)):
+				res[poss[i]]+=weights[i]
 	
 	return res.reshape(nbins)
 		
