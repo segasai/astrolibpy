@@ -596,7 +596,8 @@ import scipy.lib.blas
 
 class mpfit:
 
-	blas_enorm, = scipy.lib.blas.get_blas_funcs(['nrm2'])
+	blas_enorm32, = scipy.lib.blas.get_blas_funcs(['nrm2'],numpy.array([0],dtype=numpy.float32))
+	blas_enorm64, = scipy.lib.blas.get_blas_funcs(['nrm2'],numpy.array([0],dtype=numpy.float64))
 
 
 	def __init__(self, fcn, xall=None, functkw={}, parinfo=None,
@@ -849,8 +850,6 @@ class mpfit:
 		self.errmsg = ''
 		self.nfev = 0
 		self.damp = damp
-		self.machar = machar(double=1)
-		machep = self.machar.machep
 		self.dof=0
 
 		if fcn==None:
@@ -892,8 +891,12 @@ class mpfit:
 				self.errmsg = 'ERROR: either P or PARINFO(*)["value"] must be supplied.'
 				return
 
-		# Make sure parameters are Numeric arrays of type Float
-		xall = numpy.asarray(xall, float)
+		# Make sure parameters are numpy arrays
+		xall = numpy.asarray(xall)
+		# In the case if the xall is not float or if is float but has less 
+		# than 64 bits we do convert it into double
+		if xall.dtype.kind != 'f' or xall.dtype.itemsize<=4:
+			xall = xall.astype(numpy.float)
 
 		npar = len(xall)
 		self.fnorm  = -1.
@@ -990,14 +993,23 @@ class mpfit:
 				return
 			self.errmsg = ''
 
-		# Make sure x is a Numeric array of type Float
-		x = numpy.asarray(x, float)
-
 		[self.status, fvec] = self.call(fcn, self.params, functkw)
+		
 		if self.status < 0:
 			self.errmsg = 'ERROR: first call to "'+str(fcn)+'" failed'
 			return
-
+		# If the returned fvec has more than four bits I assume that we have 
+		# double precision 
+		# It is important that the machar is determined by the precision of 
+		# the returned value, not by the precision of the input array
+		if numpy.array([fvec]).dtype.itemsize>4:
+			self.machar = machar(double=1)
+			self.blas_enorm = mpfit.blas_enorm64
+		else:
+			self.machar = machar(double=0)
+			self.blas_enorm = mpfit.blas_enorm32
+		machep = self.machar.machep
+		
 		m = len(fvec)
 		if m < n:
 			self.errmsg = 'ERROR: number of parameters must not exceed data'
@@ -1484,7 +1496,7 @@ class mpfit:
 	
 	
 	def enorm(self, vec):
-		ans = mpfit.blas_enorm(vec)
+		ans = self.blas_enorm(vec)
 		return ans
 	
 	
