@@ -4,8 +4,18 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 	""" 
 	Writes the list of numpy.arrays arraylist as a FITS table filename
 	using namelist as list of names. 
-	Arraylist can be dictionary with arrays as values and names as keys.
-	Also Arraylist can be numpy-record-array
+	Arraylist can be dictionary with arrays as values and names as keys. 
+	Also Arraylist can be numpy-record-array.
+	Example:
+	mwrfits('/tmp/xx.fits',[arr,arr1],['X','Y'])
+	Or :
+	mwrfits('test.fits',{'X':arr,'Y':arr1})
+	Or:
+	data = numpy.zeros((4,),dtype=[('run','i4'),('rerun','f8'),('zz','b')])
+	mwfits('test1.fits',data)
+	
+	Keep in mind that when you used a dictionary, the order of columns in the
+	fits file is not guaranteed
 	"""
 	tmplist=[]
 	if isinstance(arraylist,numpy.ndarray):
