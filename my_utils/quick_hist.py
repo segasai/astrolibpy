@@ -51,7 +51,6 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 		poss = poss + cur_pos * mults[i]
 	del cur_pos
 	poss = poss[ind]
-	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
 	newlen = len(poss)
 	if weights is None:
 		weights_str = '1'
@@ -59,6 +58,8 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 		weightsind = weights[ind]
 		weights_str = 'weightsind(i)'
 	del ind
+	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
+
 	code = """
 	int i;
 	for (i=0; i<newlen; i++)
