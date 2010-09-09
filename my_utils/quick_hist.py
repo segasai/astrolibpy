@@ -47,9 +47,9 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 		cur_pos = (cur_arr - cur_range[0]) * (cur_nbins * 
 								1. / (cur_range[1] - cur_range[0]))
 		cur_pos = cur_pos.astype(numpy.int64)
-		ind = (ind) & (cur_pos >= 0) & ( cur_pos < cur_nbins)
-		poss = poss + cur_pos * mults[i]
-	del cur_pos
+		ind &= (cur_pos >= 0) & ( cur_pos < cur_nbins)
+		poss += cur_pos * mults[i]
+    	del cur_pos
 	poss = poss[ind]
 	newlen = len(poss)
 	if weights is None:
