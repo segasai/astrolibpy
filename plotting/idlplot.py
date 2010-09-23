@@ -51,7 +51,7 @@ def get_marker(ps, linestyle):
 
 def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
-			nan=False, weights=None, norm=False, **kw):
+			nan=False, weights=None, norm=False, kernel=None, **kw):
 	if nan:
 		ind = numpy.isfinite(x)
 		dat = x[ind]
@@ -62,19 +62,24 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 	if max is None:
 		max=numpy.max(dat)
 	if bin is None:
-		bin=100
+		nbin=100
+		bin = (max-min)*1./nbin
 	else:
-		bin=(max-min)/bin
-
-	hh, loc = numpy.histogram(dat, range=(min, max), bins=bin, weights=weights)
-	hh1 = numpy.zeros(2*len(hh)+2)
-	loc1 = numpy.zeros_like(hh1)
-	hh1[1:-1:2]=hh
-	hh1[2::2]=hh
-	loc1[1:-1:2]=loc[:-1]
-	loc1[2::2]=loc[1:]
-	loc1[-1]=loc1[-2]
-	loc1[0]=loc[0]
+		nbin=(max-min)/bin
+	if kernel is None:
+		hh, loc = numpy.histogram(dat, range=(min, max), bins=nbin, weights=weights)
+		hh1 = numpy.zeros(2*len(hh)+2)
+		loc1 = numpy.zeros_like(hh1)
+		hh1[1:-1:2]=hh
+		hh1[2::2]=hh
+		loc1[1:-1:2]=loc[:-1]
+		loc1[2::2]=loc[1:]
+		loc1[-1]=loc1[-2]
+		loc1[0]=loc[0]
+	else:
+		loc1=numpy.linspace(min,max,nbin*5)
+		import statistics
+		hh1=statistics.pdf( dat,loc1,h=bin/2.,kernel=kernel)*bin*len(dat)
 	if overplot:
 		func = oplot 
 	else:
