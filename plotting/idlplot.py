@@ -93,7 +93,8 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
-		yaxis_formatter=None, autoscalex=False, autoscaley=False):
+		yaxis_formatter=None, autoscalex=False, autoscaley=False,
+		markerfacecolor=None):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -179,11 +180,13 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if not nodata:
 		if markersize is None:
 			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
-							linewidth=thick, color=color, label=label)
+							linewidth=thick, color=color, label=label,
+							markerfacecolor=markerfacecolor)
 		else:
 			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
-							markersize=markersize)	
+							markersize=markersize,
+							markerfacecolor=markerfacecolor)	
 	if plt.isinteractive():
 		plt.draw()
 	
