@@ -9,6 +9,7 @@ def Flin(x,p):
     y =  p[0] -p[1]*x 
     return y
 
+
 def myfunctlin(p, fjac=None, x=None, y=None, err=None):
     # Parameter values are passed in "p"
     # If fjac==None then partial derivatives should not be
@@ -51,10 +52,25 @@ def test_linfit():
     assert N.allclose(N.array([chisq],dtype='float64'),N.array([2.756284983],dtype='float64'))
     assert m.dof==8
     return
-#    assert zzz()=='Hello from zzz'
+
+def myfunctrosenbrock(p, fjac=None):
+    # rosenbrock function 
+    res = N.array([1-p[0],-(1-p[0]),10*(p[1]-p[0]**2),-10*(p[1]-p[0]**2)])
+    status = 0
+    return [status, res]
 
 
 
+def test_rosenbrock():
+    p0=N.array([-1,1.],dtype='float64')  #initial conditions
+    pactual=N.array([1.,1.]) #actual minimum of the rosenbrock function
+    m = mpfit(myfunctrosenbrock, p0)
+    if (m.status <= 0): 
+        print 'error message = ', m.errmsg
+    assert m.status > 0
+    assert N.allclose(m.params,pactual)
+    assert N.allclose(m.fnorm,0)
+    return
 
 if __name__ == "__main__":
     run_module_suite()
