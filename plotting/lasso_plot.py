@@ -37,16 +37,23 @@ class lasso_plot:
         fig = self.axes.figure
         self.cid = self.canvas.mpl_connect('button_press_event', self.onpress)
         self.ind = None
+        self.mask = None
         self.verts = None
 
     def callback(self, verts):
-        ind = nonzero(points_inside_poly(self.xys, verts))[0]
+        mask = points_inside_poly(self.xys, verts)
+        ind = nonzero(mask)[0]
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)
         del self.lasso
         del self.xys
         self.verts = verts
         self.ind = ind
+        self.mask = mask
+
+    def inside(self, xs,ys):
+        tmpxys = zip(xs,ys)
+        return points_inside_poly(tmpxys, self.verts)
 
     def onpress(self, event):
         if self.canvas.widgetlock.locked(): return
