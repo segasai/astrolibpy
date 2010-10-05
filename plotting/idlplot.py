@@ -27,18 +27,15 @@ import types
 plt.ion()
 
 def get_marker(ps, linestyle):
+	"""
+	Wrapper for point markers which understand idl-like ps options
+	(e.g. ps=3 for the point, ps=4 for the diamond)
+	"""
 	outlinestyle=' '
-	if ps==3:
-		marker='.'
-	elif ps==4: 
-		marker='D'
-	elif ps==7: 
-		marker='+'
-	elif ps==2: 
-		marker='*'
-	elif ps==6: 
-		marker='s'
-	else:
+	markerHash={3: '.', 4:'D', 7:'+',2:'*',6:'s'}
+	try:
+		marker = markerHash[ps]
+	except KeyError:
 		if isinstance(ps,types.StringType):
 			marker=ps
 		else:
@@ -57,10 +54,9 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		dat = x[ind]
 	else:
 		dat = x
-	if min is None:
-		min=numpy.min(dat)
-	if max is None:
-		max=numpy.max(dat)
+	min = min or numpy.min(dat)
+	max = max or numpy.max(dat)
+
 	if bin is None:
 		nbin=100
 		bin = (max-min)*1./nbin
@@ -190,10 +186,10 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if plt.isinteractive():
 		plt.draw()
 	
-def oplot (x,y=None, **kw):
+def oplot (x, y=None, **kw):
 	""" Overplot your data in an IDL-way
 		Example:
-		idlplot.oplot(x,2+y/10.,ps=3,color='blue')
+		oplot(x,2+y/10.,ps=3,color='blue')
 	"""
 
 	plot (x,y, noerase=True, overplot=True, **kw)
@@ -240,14 +236,11 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
-	if xmin is None:
-		xmin=0
-	if ymin is None:
-		ymin=0
-	if xmax is None:
-		xmax=image.shape[0]
-	if ymax is None:
-		ymax=image.shape[1]
+	xmin= xmin or 0
+	ymin= xmin or 0
+	xmax= xmax or image.shape[0]
+	ymax = ymax or image.shape[1]
+
 	im = image.T
 	if smooth is not None:
 		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
@@ -263,8 +256,6 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	plt.gca().set_ylabel(ytitle)
 	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-#	seg=  mlines.Line2D(x, y, color=_color, linestyle=linestyle, 
-#							marker=marker, axes=plt.gca() )
 
 	plt.gca().xaxis.set_minor_locator(xminorLocator)
 	plt.gca().yaxis.set_minor_locator(yminorLocator)		
@@ -290,14 +281,12 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	x1 = x.flat
 	y1 = y.flat
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
-	if xmin is None:
-		xmin = x1[ind].min()
-	if ymin is None:
-		ymin = y1[ind].min()
-	if xmax is None:
-		xmax = x1[ind].max()
-	if ymax is None:
-		ymax = y1[ind].max()
+
+	xmin = xmin or x1[ind].min()
+	ymin = ymin or y1[ind].min()
+	xmax = xmax or x1[ind].max()
+	ymax = ymax or y1[ind].max()
+
 	range = [[ymin, ymax],[xmin, xmax]]
 	range1 = (xmin, xmax, ymin, ymax)
 	if not quick:
@@ -384,12 +373,9 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 	if zr is not None:
 		zrange=zr
 
-	if xrange is None:
-		xrange=[x.min(),x.max()]
-	if yrange is None:
-		yrange=[y.min(),y.max()]
-	if zrange is None:
-		zrange=[z.min(),z.max()]		
+	xrange = xrange or [x.min(),x.max()]
+	yrange = yrange or [y.min(),y.max()]
+	zrange = zrange or [z.min(),z.max()]		
 		
 # Setup levels for contour plot:		
 	if levels is None:
