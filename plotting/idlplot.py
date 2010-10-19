@@ -52,7 +52,11 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			**kw):
 	if nan:
 		ind = numpy.isfinite(x)
+		if weights is not None:
+		    ind = numpy.isfinite(weights)&ind
 		dat = x[ind]
+		if weights is not None:
+		    weights =weights[ind]
 	else:
 		dat = x
 	min = min or numpy.min(dat)
