@@ -59,9 +59,11 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		    weights =weights[ind]
 	else:
 		dat = x
-	min = min or numpy.min(dat)
-	max = max or numpy.max(dat)
-
+	if min is None:
+		min = numpy.min(dat)
+	if max is None:
+		max = numpy.max(dat)
+	
 	if bin is None:
 		nbin=100
 		bin = (max-min)*1./nbin
@@ -245,11 +247,15 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
-	xmin= xmin or 0
-	ymin= xmin or 0
-	xmax= xmax or image.shape[0]
-	ymax = ymax or image.shape[1]
-
+	if xmin is None:
+		xmin = 0
+	if ymin is None:
+		ymin = 0
+	if xmax is None:
+		xmax = image.shape[0]
+	if ymax is None:
+		ymax = image.shape[1]
+	
 	im = image.T
 	if smooth is not None:
 		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
@@ -291,10 +297,14 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	y1 = y.flat
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 
-	xmin = xmin or x1[ind].min()
-	ymin = ymin or y1[ind].min()
-	xmax = xmax or x1[ind].max()
-	ymax = ymax or y1[ind].max()
+	if xmin is None:
+		xmin = x1[ind].min()
+	if ymin is None:
+		ymin = y1[ind].min()
+	if xmax is None:
+	    xmax = x1[ind].max()
+	if ymax is None:
+		ymax = y1[ind].max()
 
 	range = [[ymin, ymax],[xmin, xmax]]
 	range1 = (xmin, xmax, ymin, ymax)
