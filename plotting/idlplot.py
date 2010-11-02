@@ -1,18 +1,18 @@
 # Copyright (C) 2009-2010 Sergey Koposov
 # This file is part of astrolibpy
 #
-#    astrolibpy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+#	astrolibpy is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
 #
-#   astrolibpy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#	astrolibpy is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
+#	You should have received a copy of the GNU General Public License
+#	along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import matplotlib.pyplot as plt
@@ -53,10 +53,10 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 	if nan:
 		ind = numpy.isfinite(x)
 		if weights is not None:
-		    ind = numpy.isfinite(weights)&ind
+			ind = numpy.isfinite(weights)&ind
 		dat = x[ind]
 		if weights is not None:
-		    weights =weights[ind]
+			weights =weights[ind]
 	else:
 		dat = x
 	if min is None:
@@ -175,7 +175,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.gca().set_xlabel(xtitle)
 	if ytitle is not None:
 		plt.gca().set_ylabel(ytitle)
-        
+		
 	plt.gca().set_autoscalex_on(autoscalex)
 	plt.gca().set_autoscaley_on(autoscaley)
 	if not overplot:
@@ -290,7 +290,6 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				xflip=False, yflip=False, bar=False, bar_label='',
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False,normy=False, **kw):
-				cmap='gray_r', **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -303,7 +302,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if ymin is None:
 		ymin = y1[ind].min()
 	if xmax is None:
-	    xmax = x1[ind].max()
+		xmax = x1[ind].max()
 	if ymax is None:
 		ymax = y1[ind].max()
 
@@ -311,15 +310,16 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	range1 = (xmin, xmax, ymin, ymax)
 	if not quick:
 		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
-		                                        bins=bins, weights=weights)
+												bins=bins, weights=weights)
 	else:
 		import quick_hist
 		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
+								weights=weights)
 	if normx:
 		hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
 	if normy:
 		hh = hh*1./numpu.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
-                                weights=weights)
+
 	if xflip:
 		range1 = (range1[1], range1[0], range1[2], range1[3])
 		hh = numpy.fliplr(hh)
@@ -330,7 +330,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 	if smooth is not None:
-	    hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
+		hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
 	else:
@@ -453,7 +453,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 
 # Do not display dashed contours for negative values:
 	for c in cset2.collections:
-   		c.set_linestyle(c_line)
+		c.set_linestyle(c_line)
 
 # Add value labels on contour lines:
 	if zticklabel is not None:
