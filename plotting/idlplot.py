@@ -289,6 +289,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
 				bar_fraction=0.05, smooth=None, quick=False,
+				cmap='gray_r', normx=False,normy=False, **kw):
 				cmap='gray_r', **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
@@ -314,6 +315,10 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	else:
 		import quick_hist
 		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
+	if normx:
+		hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
+	if normy:
+		hh = hh*1./numpu.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
                                 weights=weights)
 	if xflip:
 		range1 = (range1[1], range1[0], range1[2], range1[3])
