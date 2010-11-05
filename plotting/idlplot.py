@@ -205,8 +205,9 @@ def oplot (x, y=None, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
-def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overplot=False, 
-				noerase=False, elinewidth=None, **kw):
+def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
+				overplot=False, noerase=False, elinewidth=None, capsize=None,
+				**kw):
 	if overplot:
 		noerase=True
 	if err1 is None:
@@ -217,14 +218,15 @@ def ploterror (x,y, err0, err1=None, color='black', ps=0, ecolor='black', overpl
 		kw['yr'] = [(y-erry).min(),(y+erry).max()]
 	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker,outlinestyle)=get_marker(ps, None)
+	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
+			'elinewidth':elinewidth} 
+	if capsize is not None:
+		kw1['capsize']=capsize
 	if err1 is None:
-		plt.gca().errorbar(x,y,err0,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle,elinewidth=elinewidth)
+		plt.gca().errorbar(x, y, err0, **kw1)
 	else:
-		plt.gca().errorbar(x,y,xerr=err0,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle,elinewidth=elinewidth)
-		plt.gca().errorbar(x,y,yerr=err1,color=color,ecolor=ecolor,marker=marker,
-						linestyle=outlinestyle,elinewidth=elinewidth)
+		plt.gca().errorbar(x, y, xerr=err0, **kw1)
+		plt.gca().errorbar(x, y, yerr=err1, **kw1)
 	
 	if plt.isinteractive():
 		plt.draw()
