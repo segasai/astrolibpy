@@ -86,21 +86,20 @@ def ldist(z, q0=None, lambda0=None):
 
 
 def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None):
+   '''Syntax: result = lumdist(z, H0 = ,k=, Lambda0 = ])
+   Returns luminosity distance in Mpc'''
 
-   n_params = 1
-   
-   # COMPILE_OPT IDL2
-   if n_params == 0:   
-      print 'Syntax: result = lumdist(z, H0 = ,k=, Lambda0 = ])'
-      print 'Returns luminosity distance in Mpc'
-      return 0.
-   if isinstance(z,ndarray) or isinstance(z,list):
-      n = len(array(z))
+   scal=False
+   scalret = lambda x : x[0] if scal else x
+
+   if isinstance(z,list):
       z=numpy.array(z)
+   elif isinstance(z,ndarray):
+      pass
    else:
+      scal=True
       z=array([z])
-      n=len(z)
-      print z
+   n=len(z)
 
    omega_m,lambda0,k,q0=cosmo_param(omega_m, lambda0, k, q0)
    
@@ -118,7 +117,7 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
    if lambda0 == 0:   
       denom = sqrt(1 + 2 * q0 * z) + 1 + q0 * z
       dlum = (c * z / h0) * (1 + z * (1 - q0) / denom)
-      return dlum
+      return scalret(dlum)
       
       # For non-zero lambda
    else:   
@@ -127,7 +126,6 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
          if z[i] <= 0.0:   
             dlum[i] = 0.0
          else:   
-            #qsimp('LDIST', 0, z[i], lz, q0=q0, lambda0=lambda0)
             lz=scipy.integrate.quad(ldist,0,z[i],args=(q0,lambda0))
             dlum[i] = lz[0]
       
@@ -136,6 +134,6 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
       else:   
          if k < 0:   
             dlum = maximum(sin(sqrt(-k) * dlum) / sqrt(-k), 0)
-      return c * (1 + z) * dlum / h0
+      return scalret(c * (1 + z) * dlum / h0)
    
 
