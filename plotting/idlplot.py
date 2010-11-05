@@ -289,7 +289,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
 				bar_fraction=0.05, smooth=None, quick=False,
-				cmap='gray_r', normx=False,normy=False, **kw):
+				cmap='gray_r', normx=False, normy=False,
+				xlog=False, ylog=False, **kw):
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
@@ -306,8 +307,15 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if ymax is None:
 		ymax = y1[ind].max()
 
-	range = [[ymin, ymax],[xmin, xmax]]
 	range1 = (xmin, xmax, ymin, ymax)
+	if xlog is True:
+		x1=numpy.log10(x1)
+		xmin,xmax=numpy.log10(xmin),numpy.log10(xmax)
+	if ylog is True:
+		y1=numpy.log10(y1)
+		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
+	range = [[ymin, ymax],[xmin, xmax]]
+
 	if not quick:
 		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
 												bins=bins, weights=weights)
@@ -340,6 +348,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
 		cb.set_label(bar_label)
+	if xlog:
+		plt.gca().set_xscale('log')
+	if ylog:
+		plt.gca().set_yscale('log')
+
 	if plt.isinteractive():
 		plt.draw()
 	return axim
