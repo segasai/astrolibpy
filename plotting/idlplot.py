@@ -26,6 +26,9 @@ import types
 
 plt.ion()
 
+listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
+
+
 def get_marker(ps, linestyle):
 	"""
 	Wrapper for point markers which understand idl-like ps options
@@ -50,6 +53,9 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
 			**kw):
+"""
+Plot the 1D histogram
+"""
 	if nan:
 		ind = numpy.isfinite(x)
 		if weights is not None:
@@ -105,7 +111,6 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
 			color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
 	"""
-	listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
 
 	if arg2 is None:
 		y=listtoarr(arg1)
@@ -125,15 +130,15 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
-	
+	axis = plt.gca()
 	if xlog:
-		plt.gca().set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
-		plt.gca().set_yscale('log',suby=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_yscale('log',suby=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if xaxis_formatter is not None:
-		plt.gca().xaxis.set_major_formatter(xaxis_formatter)
+		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
-		plt.gca().yaxis.set_major_formatter(yaxis_formatter)
+		axis.yaxis.set_major_formatter(yaxis_formatter)
 	
 	marker, linestyle = get_marker(ps, linestyle)
 	if xr is not None:
@@ -166,30 +171,30 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if not overplot:
 		if not xlog:
 			xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-			plt.gca().xaxis.set_minor_locator(xminorLocator)
+			axis.xaxis.set_minor_locator(xminorLocator)
 		if not ylog:
 			yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-			plt.gca().yaxis.set_minor_locator(yminorLocator)		
+			axis.yaxis.set_minor_locator(yminorLocator)		
 
 	if xtitle is not None:
-		plt.gca().set_xlabel(xtitle)
+		axis.set_xlabel(xtitle)
 	if ytitle is not None:
-		plt.gca().set_ylabel(ytitle)
+		axis.set_ylabel(ytitle)
 		
-	plt.gca().set_autoscalex_on(autoscalex)
-	plt.gca().set_autoscaley_on(autoscaley)
+	axis.set_autoscalex_on(autoscalex)
+	axis.set_autoscaley_on(autoscaley)
 	if not overplot:
-		plt.gca().axis(numpy.concatenate((xrange,yrange)))
+		axis.axis(numpy.concatenate((xrange,yrange)))
 	if title is not None:
 		plt.title(title)
 	if not nodata:
 		if markersize is None:
-			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
+			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markerfacecolor=markerfacecolor,
 							markeredgecolor=markeredgecolor)
 		else:
-			plt.gca().plot(x, y, marker=marker, linestyle=linestyle,
+			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markersize=markersize,
 							markerfacecolor=markerfacecolor,
@@ -208,25 +213,30 @@ def oplot (x, y=None, **kw):
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
 				**kw):
+"""
+Plot the data with error-bars
+"""
 	if overplot:
 		noerase=True
 	if err1 is None:
-		erry = err0
+		erry = listtoarr(err0)
 	else:
-		erry = err1
+		erry = listtoarr(err1)
+		errx = listtoarr(err0)
+	
 	if kw.get('yr') is None:
 		kw['yr'] = [(y-erry).min(),(y+erry).max()]
-	plot (x,y,color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
-	(marker,outlinestyle)=get_marker(ps, None)
+	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
+	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
 			'elinewidth':elinewidth} 
 	if capsize is not None:
 		kw1['capsize']=capsize
 	if err1 is None:
-		plt.gca().errorbar(x, y, err0, **kw1)
+		plt.gca().errorbar(x, y, erry, **kw1)
 	else:
-		plt.gca().errorbar(x, y, xerr=err0, **kw1)
-		plt.gca().errorbar(x, y, yerr=err1, **kw1)
+		plt.gca().errorbar(x, y, xerr=errx, **kw1)
+		plt.gca().errorbar(x, y, yerr=erry, **kw1)
 	
 	if plt.isinteractive():
 		plt.draw()
@@ -236,7 +246,9 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
 			bar_fraction=0.05, zlog=False, smooth=None, **kw):
-
+"""
+Display the 2D image with proper axes (similar to plt.imshow)
+"""
 	if xlog:
 		plt.gca().set_xscale('log')
 	if ylog:
@@ -296,8 +308,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	""" Plots the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
-	x1 = x.flat
-	y1 = y.flat
+	x1 = listtoarr(x).flat
+	y1 = listtoarr(y).flat
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 
 	if xmin is None:
@@ -369,7 +381,9 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		weight="normal", charsize=14.0, bar=True, fill=True, overplot=False,
 		noerase=False, c_label=True, bar_fraction=0.05, xaxis_formatter=None,
 		yaxis_formatter=None):
-
+"""
+Plots the contours of the 2d array
+"""
 # Initialize x and y if these are not provided:
 	if x is None or y is None:
 		if z.ndim!=2:
