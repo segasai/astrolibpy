@@ -53,9 +53,9 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 			overplot=False,color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
 			**kw):
-"""
-Plot the 1D histogram
-"""
+	"""
+	Plot the 1D histogram
+	"""
 	if nan:
 		ind = numpy.isfinite(x)
 		if weights is not None:
@@ -213,9 +213,9 @@ def oplot (x, y=None, **kw):
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
 				**kw):
-"""
-Plot the data with error-bars
-"""
+	"""
+	Plot the data with error-bars
+	"""
 	if overplot:
 		noerase=True
 	if err1 is None:
@@ -246,9 +246,9 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
 			bar_fraction=0.05, zlog=False, smooth=None, **kw):
-"""
-Display the 2D image with proper axes (similar to plt.imshow)
-"""
+	"""
+	Display the 2D image with proper axes (similar to plt.imshow)
+	"""
 	if xlog:
 		plt.gca().set_xscale('log')
 	if ylog:
@@ -305,7 +305,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, **kw):
-	""" Plots the 2D histogram of the data"""
+	""" Plot the 2D histogram of the data"""
 	if not noerase:
 		plt.gcf().clf()
 	x1 = listtoarr(x).flat
@@ -381,10 +381,10 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		weight="normal", charsize=14.0, bar=True, fill=True, overplot=False,
 		noerase=False, c_label=True, bar_fraction=0.05, xaxis_formatter=None,
 		yaxis_formatter=None):
-"""
-Plots the contours of the 2d array
-"""
-# Initialize x and y if these are not provided:
+	"""
+	Plot the contours of the 2d array
+	"""
+	# Initialize x and y if these are not provided:
 	if x is None or y is None:
 		if z.ndim!=2:
 			raise Exception("The 2D array is required")
