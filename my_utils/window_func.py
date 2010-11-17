@@ -1,6 +1,7 @@
 import scipy,numpy
 
-def window_func(x,y,func,xmin=None,xmax=None,nbin=100, empty=False ):
+def window_func(x, y, func, xmin=None, xmax=None, nbin=100, empty=False,
+			xlog=False):
 	"""This function does compute a user-supplied function 
 	on the subsets of y grouped by values of x
 	E.g. imagine that you have x from 0 to 100 and you want
@@ -18,6 +19,8 @@ def window_func(x,y,func,xmin=None,xmax=None,nbin=100, empty=False ):
 		xmin = x.min()
 	if xmax is None:
 		xmax = x.max()
+	if xlog:
+		xmin,xmax,x=[numpy.log10(tmp) for tmp in [xmin,xmax,x]]
 	hh,loc=scipy.histogram(x,range=(xmin,xmax),bins=nbin)
 	inds= numpy.digitize(x,loc)
 	mask=numpy.zeros(len(hh),bool)
@@ -28,6 +31,8 @@ def window_func(x,y,func,xmin=None,xmax=None,nbin=100, empty=False ):
 			retv[i]=func(cury)
 		mask[i]=len(cury)>0
 	retx = (loc[1:]+loc[:-1])*0.5 # middle of the bin
+	if xlog:
+		retx = 10**retx
 	if empty:
 		mask |= True
 	return retx[mask], retv[mask],hh[mask]
