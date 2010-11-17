@@ -329,6 +329,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		y1=numpy.log10(y1)
 		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
 	range = [[ymin, ymax],[xmin, xmax]]
+	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 
 	if not quick:
 		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
