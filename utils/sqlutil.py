@@ -119,7 +119,7 @@ def execute(query, db="wsdb", driver="pgdb", user=None,
 										password=None, host=None):
 	if driver=='pgdb':
 		import pgdb
-		con = pgdb.connect(database='wsdb', user='koposov', password='sdss_2mass', host='cappc118')
+		con = pgdb.connect(database=db, user=user, password=password, host=host)
 	elif driver=='sqlite3':
 		import sqlite3
 		con = sqlite3.connect(db)
