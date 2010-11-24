@@ -17,7 +17,7 @@
 
 import types
 import numpy
-import time
+import time,pgdb
 
 
 def fetchmany(curs, size=None, keep=False):
@@ -40,10 +40,7 @@ def fetchmany(curs, size=None, keep=False):
 		size = curs.arraysize
 	if keep:
 		curs.arraysize = size
-	try:
-		result = curs._src.fetch(size)
-	except Error, err:
-		raise pgdb.DatabaseError(str(err))
+	result = curs._src.fetch(size)
 	coltypes = [desc[1] for desc in curs.description]
 	types=[_cast.get(a) for a in coltypes]
 	return result,types #[list(row) for row in result]
@@ -88,6 +85,8 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 				typelist=[_cast[type(tmp)] for tmp in tups[0]]
 			except KeyError:
 				raise Exception("Unknown datatype")
+	else:
+		raise Exception('Unrecognized driver')
 		
 
 	cur.close()
@@ -115,3 +114,18 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 	
 	return result		
 	#return [res[:,a].astype(b) for a,b in zip(range(ncols),types)]
+
+def execute(query, db="wsdb", driver="pgdb", user=None,
+										password=None, host=None):
+	if driver=='pgdb':
+		import pgdb
+		con = pgdb.connect(database='wsdb', user='koposov', password='sdss_2mass', host='cappc118')
+	elif driver=='sqlite3':
+		import sqlite3
+		con = sqlite3.connect(db)
+	else:
+		raise Exception('Unrecognized driver')
+	cur=con.cursor()
+	cur.execute(query)
+	con.commit()
+	con.close()
