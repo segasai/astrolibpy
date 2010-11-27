@@ -1,7 +1,8 @@
 from numpy import pi
 from lumdist import lumdist
 
-def zang(dl, z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None):
+def zang(dl, z, h0=None, k=None, lambda0=None, omega_m=None, q0=None,
+				silent=None):
    """
     NAME:
           ZANG
@@ -64,9 +65,11 @@ def zang(dl, z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=Non
          Written    J. Hill   STX           July, 1988
          Converted to IDL V5.0   W. Landsman   September 1997
          Major rewrite to call LUMDIST function  W. Landsman   April 2000
+         Convert to python                       S. Koposov          2010
    """
    _radeg = 180.0 / pi
-   d = lumdist(z, h0=h0, k=k, lambda0=lambda0, omega_m=omega_m, q0=q0, silent=silent)
+   d = lumdist(z, h0=h0, k=k, lambda0=lambda0, omega_m=omega_m, q0=q0,
+   					silent=silent)
    
    # Angular distance is equal to the luminosity distance times (1+z)^2
    return _radeg * 3600. * dl * (1. + z) ** 2 / (1000. * d)

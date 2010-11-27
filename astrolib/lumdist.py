@@ -62,11 +62,12 @@
     Written   W. Landsman        Raytheon ITSS       April 2000
     Avoid integer overflow for more than 32767 redshifts  July 2001
     Use double precision J. Moustakas/W. Landsman April 2008
+    Convert to python S. Koposov                        2010
 """
 
-from numpy import *
+from numpy import array, ndarray, sqrt, sin, sinh, maximum
 from cosmo_param import cosmo_param
-import scipy.integrate
+from scipy.integrate import quad
 
 def ldist(z, q0=None, lambda0=None):
    
@@ -92,16 +93,16 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
    scal=False
    scalret = lambda x : x[0] if scal else x
 
-   if isinstance(z,list):
-      z=numpy.array(z)
-   elif isinstance(z,ndarray):
+   if isinstance(z, list):
+      z = numpy.array(z)
+   elif isinstance(z, ndarray):
       pass
    else:
-      scal=True
-      z=array([z])
-   n=len(z)
+      scal = True
+      z = array([z])
+   n = len(z)
 
-   omega_m,lambda0,k,q0=cosmo_param(omega_m, lambda0, k, q0)
+   omega_m, lambda0, k, q0 = cosmo_param(omega_m, lambda0, k, q0)
    
    # Check keywords
    c = 2.99792458e5                  #  speed of light in km/s
@@ -122,11 +123,11 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
       # For non-zero lambda
    else:   
       dlum = z * 0.0
-      for i in arange(0, (n - 1)+(1)):
+      for i in range(n):
          if z[i] <= 0.0:   
             dlum[i] = 0.0
          else:   
-            lz=scipy.integrate.quad(ldist,0,z[i],args=(q0,lambda0))
+            lz = quad(ldist, 0, z[i], args=(q0, lambda0))
             dlum[i] = lz[0]
       
       if k > 0:   
