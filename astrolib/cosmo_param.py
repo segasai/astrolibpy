@@ -1,5 +1,3 @@
-from numpy import *
-
 def cosmo_param(omega_m=None, omega_lambda=None, omega_k=None, q0=None):
    """
     NAME:
@@ -46,21 +44,10 @@ def cosmo_param(omega_m=None, omega_lambda=None, omega_k=None, q0=None):
           W. Landsman         Raytheon ITSS         April 2000
    """
 
-   n_params = 4
-   def _ret():  return (omega_m, omega_lambda, omega_k, q0)
-   
-   if n_params < 3:   
-      print 'Syntax - COSMO_PARAM, Omega_m, Omega_lambda, Omega_k, q0'
-      return _ret()
-   
-   #nk = minimum(len(array(omega_k, copy=0)), 1)
    nk = omega_k is not None
-   #nlambda = minimum(array(omega_lambda, copy=0).nelements(), 1)
    nlambda = omega_lambda is not None 
-   #nomega = minimum(array(omega_m, copy=0).nelements(), 1)
    nomega = omega_m is not None
-   #nq0 = minimum(array(q0, copy=0).nelements(), 1)
-   nq0= q0 is not None
+   nq0 = q0 is not None
    # Check which two parameters are defined, and then determine the other two
    
    if nomega and nlambda:
@@ -74,16 +61,19 @@ def cosmo_param(omega_m=None, omega_lambda=None, omega_k=None, q0=None):
          omega_lambda = 1. - omega_m - omega_k
       if not nq0:   
          q0 = -1 + omega_k + 3 * omega_m / 2
+
    if nlambda and nk:   
       if not nomega:   
          omega_m = 1. - omega_lambda - omega_k
       if not nq0:   
          q0 = (1 - omega_k - 3. * omega_lambda) / 2.
+
    if nomega and nq0:   
       if not nk:   
          omega_k = 1 + q0 - 3 * omega_m / 2.
       if not nlambda:   
          omega_lambda = 1. - omega_m - omega_k
+
    if nlambda and nq0:   
       if not nk:   
          omega_k = 1 - 2 * q0 - 3 * omega_lambda
@@ -97,19 +87,14 @@ def cosmo_param(omega_m=None, omega_lambda=None, omega_k=None, q0=None):
          omega_lambda = 1. - omega_m - omega_k
    
    #Set default values
-   
-#   if array(omega_k, copy=0).nelements() == 0:   
    if omega_k is None:
       omega_k = 0       #Default is flat space
-#   if array(omega_lambda, copy=0).nelements() == 0:   
    if omega_lambda is None:
       omega_lambda = 0.7
-#   if array(omega_m, copy=0).nelements() == 0:   
    if omega_m is None:
       omega_m = 1 - omega_lambda
-#   if array(q0, copy=0).nelements() == 0:   
    if q0 is None:
       q0 = (1 - omega_k - 3 * omega_lambda) / 2.
    
-   return _ret()
+   return omega_m, omega_lambda, omega_k, q0
 
