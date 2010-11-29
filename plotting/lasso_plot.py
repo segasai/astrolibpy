@@ -61,4 +61,8 @@ class lasso_plot:
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
+    
+    def __del__(self):
+        self.cid = self.canvas.mpl_disconnect(self.onpress)
+        
 
