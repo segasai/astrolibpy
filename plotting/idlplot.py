@@ -403,7 +403,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		y=y_new
 				
 # Define position of this plot:
-	if not noerase:
+	if not noerase and not overplot:
 		plt.gcf().clf()	
 		if position is not None:
 			mypos=position[:]
