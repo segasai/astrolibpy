@@ -416,6 +416,9 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 			y_new=y
 		x=x_new
 		y=y_new
+
+	isInteractive = plt.isinteractive()
+	plt.ioff()
 				
 # Define position of this plot:
 	if not noerase and not overplot:
@@ -425,12 +428,13 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 			mypos[2]=position[2]-position[0]
 			mypos[3]=position[3]-position[1]
 			plt.axes(mypos)
+	axis = plt.gca()
 
 # Rescaling of the axes:		
 	if xlog:
-	 	plt.gca().set_xscale('log')
+	 	axis.set_xscale('log')
 	if ylog:
-		plt.gca().set_yscale('log')
+		axis.set_yscale('log')
 	if zlog:
 		z = numpy.log10(z)
 
@@ -454,47 +458,47 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		levels = zmin + dz/nlevels*numpy.arange(nlevels+1)	
 
 # Setup frame thickness:
-#	plt.gca().frame.set_linewidth(thick) 
+#	axis.frame.set_linewidth(thick) 
 
 # Setup x-, y-titles and the main title:
-	plt.gca().set_xlabel(xtitle)
-	plt.gca().set_ylabel(ytitle)
+	axis.set_xlabel(xtitle)
+	axis.set_ylabel(ytitle)
 	plt.title(title)
 
 # Assume autoscale is off:	
-	plt.gca().set_autoscale_on(False)
+	axis.set_autoscale_on(False)
 	
 # For a new plot, we have to initialize axes:	
 	if not overplot:
-		plt.gca().axis(xrange+yrange) 
+		axis.axis(xrange+yrange) 
 
 # Setup format of the major ticks:
 	if xticklabel is not None:
 		xFormatter = matplotlib.ticker.FormatStrFormatter(xticklabel)
-		plt.gca().xaxis.set_major_formatter(xFormatter)
+		axis.xaxis.set_major_formatter(xFormatter)
 	if yticklabel is not None:
 		yFormatter = matplotlib.ticker.FormatStrFormatter(yticklabel)
-		plt.gca().yaxis.set_major_formatter(yFormatter)
+		axis.yaxis.set_major_formatter(yFormatter)
 	if xaxis_formatter is not None:
-		plt.gca().xaxis.set_major_formatter(xaxis_formatter)
+		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
-		plt.gca().yaxis.set_major_formatter(yaxis_formatter)
+		axis.yaxis.set_major_formatter(yaxis_formatter)
 
 # Setup minor tickmarks:		
 	xminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
 	yminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])	
 
-	plt.gca().xaxis.set_minor_locator(xminorLocator)
-	plt.gca().yaxis.set_minor_locator(yminorLocator)		
+	axis.xaxis.set_minor_locator(xminorLocator)
+	axis.yaxis.set_minor_locator(yminorLocator)		
 		
 # Make a filled contour plot:		
 	if fill:
-		cset1=plt.gca().contourf(x, y, z, levels, cmap=plt.cm.get_cmap(cm, nlevels))
+		cset1=axis.contourf(x, y, z, levels, cmap=plt.cm.get_cmap(cm, nlevels))
 
 # Add contour lines:
 	if c_levels is None:
 		c_levels = levels[0:len(levels):int(nlevels/12)]
-	cset2 = plt.gca().contour(x, y, z, c_levels, colors = c_color,linewidths=c_thick,hold='on')
+	cset2 = axis.contour(x, y, z, c_levels, colors = c_color,linewidths=c_thick,hold='on')
 
 # Do not display dashed contours for negative values:
 	for c in cset2.collections:
@@ -511,15 +515,13 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 			args = {'fmt':zticklabel}
 		else:
 			args = {}
-		cset3 = plt.gca().clabel(cset2, c_levels, inline=1, fontsize=c_charsize, **args)
+		cset3 = axis.clabel(cset2, c_levels, inline=1, fontsize=c_charsize, **args)
 				
 # Do we need a color bar?:
 	if fill & bar:
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
 			fraction=bar_fraction, format=zFormatter)
-		
-	if plt.isinteractive():
-		plt.draw()
-		
-
+	if isInteractive:
+		plt.ion()
+	draw_if_interactive()
