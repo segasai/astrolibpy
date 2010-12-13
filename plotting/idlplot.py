@@ -20,12 +20,13 @@ import numpy
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
 import scipy.ndimage.filters
+from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
 import types
 
+# this module is by default in interactive regime 
 plt.ion()
-
 listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
 
 
@@ -122,6 +123,8 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		x=x.flatten()
 	if y.ndim !=1:
 		y=y.flatten()
+	isInteractive = plt.isinteractive()
+	plt.ioff()
 		
 	if not noerase:
 		plt.gcf().clf()	
@@ -199,8 +202,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 							markersize=markersize,
 							markerfacecolor=markerfacecolor,
 							markeredgecolor=markeredgecolor)	
-	if plt.isinteractive():
-		plt.draw()
+	if isInteractive:
+		plt.ion()
+	draw_if_interactive()
 	
 def oplot (x, y=None, **kw):
 	""" Overplot your data in an IDL-way
@@ -226,6 +230,8 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	
 	if kw.get('yr') is None:
 		kw['yr'] = [(y-erry).min(),(y+erry).max()]
+	isInteractive = plt.isinteractive()
+	plt.ioff()
 	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
@@ -237,9 +243,9 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	else:
 		plt.gca().errorbar(x, y, xerr=errx, **kw1)
 		plt.gca().errorbar(x, y, yerr=erry, **kw1)
-	
-	if plt.isinteractive():
-		plt.draw()
+	if isInteractive:
+		plt.ion()
+	draw_if_interactive()
 
 
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
@@ -249,6 +255,9 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	"""
 	Display the 2D image with proper axes (similar to plt.imshow)
 	"""
+	isInteractive = plt.isinteractive()
+	plt.ioff()
+
 	if xlog:
 		plt.gca().set_xscale('log')
 	if ylog:
@@ -294,8 +303,9 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
 		cb.set_label(bar_label)
-	if plt.isinteractive():
-		plt.draw()
+	if isInteractive:
+		plt.ion()
+	draw_if_interactive()
 	return axim
 
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
@@ -306,8 +316,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, **kw):
 	""" Plot the 2D histogram of the data"""
-	if not noerase:
-		plt.gcf().clf()
+
 	x1 = listtoarr(x).flat
 	y1 = listtoarr(y).flat
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
@@ -350,6 +359,12 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		range1 = (range1[0], range1[1], range1[3], range1[2])
 		hh = numpy.flipud(hh)
 
+	isInteractive = plt.isinteractive()
+	plt.ioff()
+
+	if not noerase:
+		plt.gcf().clf()
+
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
 	if smooth is not None:
@@ -367,9 +382,9 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		plt.gca().set_xscale('log')
 	if ylog:
 		plt.gca().set_yscale('log')
-
-	if plt.isinteractive():
-		plt.draw()
+	if isInteractive:
+		plt.ion()
+	draw_if_interactive()
 	return axim
 
 
