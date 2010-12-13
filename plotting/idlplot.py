@@ -172,13 +172,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if len(yrange)!=2 or len(xrange)!=2:
 		raise ValueError("Wrong xrange or yrange")
 	if not overplot:
-		if not xlog:
-			xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-			axis.xaxis.set_minor_locator(xminorLocator)
-		if not ylog:
-			yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-			axis.yaxis.set_minor_locator(yminorLocator)		
-
+		axis.minorticks_on()
 	if xtitle is not None:
 		axis.set_xlabel(xtitle)
 	if ytitle is not None:
@@ -292,11 +286,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
-	xminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-	yminorLocator = MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-
-	plt.gca().xaxis.set_minor_locator(xminorLocator)
-	plt.gca().yaxis.set_minor_locator(yminorLocator)		
+	plt.gca().minorticks_on()
 
 	if title is not None:
 		plt.title(title)
@@ -484,12 +474,8 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 	if yaxis_formatter is not None:
 		axis.yaxis.set_major_formatter(yaxis_formatter)
 
-# Setup minor tickmarks:		
-	xminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])
-	yminorLocator = matplotlib.ticker.MaxNLocator(nbins=90, steps=[1, 2, 5, 10])	
-
-	axis.xaxis.set_minor_locator(xminorLocator)
-	axis.yaxis.set_minor_locator(yminorLocator)		
+	if not overplot:
+		plt.gca().minorticks_on()
 		
 # Make a filled contour plot:		
 	if fill:
