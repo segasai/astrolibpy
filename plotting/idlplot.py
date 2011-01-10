@@ -444,8 +444,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 	if levels is None:
 		zmin = zrange[0]
 		zmax = zrange[1]
-		dz = zmax-zmin
-		levels = zmin + dz*1./nlevels*numpy.arange(nlevels+1)	
+		levels = numpy.linspace(zmin,zmax,nlevels)
 
 # Setup frame thickness:
 #	axis.frame.set_linewidth(thick) 
