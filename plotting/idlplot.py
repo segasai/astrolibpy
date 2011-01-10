@@ -201,9 +201,11 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	draw_if_interactive()
 	
 def oplot (x, y=None, **kw):
-	""" Overplot your data in an IDL-way
-		Example:
-		oplot(x,2+y/10.,ps=3,color='blue')
+	"""
+	Overplot your data
+	
+	Example:
+	>> oplot(x,2+y/10.,ps=3,color='blue')
 	"""
 
 	plot (x,y, noerase=True, overplot=True, **kw)
@@ -213,6 +215,17 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				**kw):
 	"""
 	Plot the data with error-bars
+	
+	Example:
+	>> ploterror(x,y,erry) # plot only Y error-bars
+	>> ploterror(x,y,errx,erry) # plot data with X and Y error-bars	
+	
+	Keyword parameters:
+	------------------
+	capsize
+		integer param controlling the size of hats/caps of the error-bars
+	ecolor
+		color of the error-bars (different from the main color)	
 	"""
 	if overplot:
 		noerase=True
@@ -248,6 +261,21 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 			bar_fraction=0.05, zlog=False, smooth=None, **kw):
 	"""
 	Display the 2D image with proper axes (similar to plt.imshow)
+	Example:
+	>> tvaxis(im,-20,10,-40,50)
+	
+	Keyword parameters:
+	------------------
+	xmin,xmax,ymin,ymax
+		the ranges for x,y where the histogram is constructed.
+		These params can be specified not only as keywords but also as normal arguments
+	vmin,vmax
+		the ranges of intensities shown on the plot
+	smooth
+		if not None this parameter controls additional smoothing of the 2D histogram
+	bar
+		boolean parameter for switching on/off the plotting of the color-bar
+	
 	"""
 	isInteractive = plt.isinteractive()
 	plt.ioff()
@@ -305,7 +333,33 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, **kw):
-	""" Plot the 2D histogram of the data"""
+	""" Plot the 2D histogram of the data
+	Example:
+	>> tvhist2d(xs,ys,bins=[30,30])
+	
+	>> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
+	
+	Keyword arguments:
+	-----------------
+	xmin,xmax,ymin,ymax
+		the ranges for x,y where the histogram is constructed.
+		These params can be specified not only as keywords but also as normal arguments
+		>> tvhist2d(xs,ys,xmin=0,ymin=10,ymin=-1,ymax=2,bins=[30,30])
+		>> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
+	vmin,vmax
+		the ranges of intensities shown on the plot
+	bins
+		the list of two integers specifying how many bins in x,y you want
+	smooth
+		if not None this parameter controls additional smoothing of the 2D histogram
+	bar
+		boolean parameter for switching on/off the plotting of the color-bar
+	xflip, yflip
+		boolean parameters allowing to flip x,y axes
+	normx, normy
+		boolean params controlling the normalization of the histogram along X or Y axes
+		in such way that the brightest pixel value will be the same for each row/column
+	"""
 
 	x1 = listtoarr(x).flat
 	y1 = listtoarr(y).flat
@@ -340,7 +394,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if normx:
 		hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
 	if normy:
-		hh = hh*1./numpu.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
+		hh = hh*1./numpy.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
 
 	if xflip:
 		range1 = (range1[1], range1[0], range1[2], range1[3])
@@ -388,7 +442,29 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		noerase=False, c_label=True, bar_fraction=0.05, xaxis_formatter=None,
 		yaxis_formatter=None):
 	"""
-	Plot the contours of the 2d array
+	Plot the contours of the 2d array. 
+	Example:
+	>> contour(z)
+	if you have the x and y coordinates of your array then you can use them
+	>> contour(z, x, y)
+	In that case  x,y can be either 2D arrays with the same shape as z, or 1D arrays with the
+	appropriate dimensions.
+	
+	Keyword arguments:
+	-----------------
+	
+	xr, xrange, yr, yrange
+		plot ranges for x and y
+	fill
+		boolean parameter controlling whether to fill area between contours or not
+	bar
+		boolean parameter for plotting of the color-bar
+	overplot
+		boolean parameter for overplotting
+	nlevels
+		integer number of number of contours
+	c_label
+		boolean parameter for labeling or not-labeling each contour with its value
 	"""
 	# Initialize x and y if these are not provided:
 	if x is None or y is None:
