@@ -17,7 +17,7 @@
 
 import numpy, re
 def from_hex(arr):
-	r=re.compile('(\-?)(.+):(.+):(.+)')
+	r=re.compile('\s*(\-?)(.+):(.+):(.+)')
 	ret=[]
 	for a in arr:
 		m = r.search(a)
