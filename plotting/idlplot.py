@@ -24,6 +24,7 @@ from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
 import types
+import warnings
 
 # this module is by default in interactive regime 
 plt.ion()
@@ -50,8 +51,8 @@ def get_marker(ps, linestyle):
 				outlinestyle='-'
 	return (marker, outlinestyle)
 
-def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
-			overplot=False,color='black', xlog=False, ylog=False,
+def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
+			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
 			**kw):
 	"""
@@ -71,13 +72,21 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 	if max is None:
 		max = numpy.max(dat)
 	
-	if bin is None:
-		nbin=100
-		bin = (max-min)*1./nbin
+	if bin is None and nbins is None:
+		nbins = 100
+		bin = (max - min) * 1. / nbins
+	elif nbins is None:
+		nbins = int((max - min) * 1. / bin)
+	elif bin is None:
+		bin = (max - min) * 1. / nbins
 	else:
-		nbin=(max-min)/bin
+		warnings.warn("both bin= and nbins= keywords were specified in the plothist call",RuntimeWarning)
+		pass
+		# if both nbins and bin are defined I don't do anything 
+		# it may be non-intuitive if kernel option is used, because
+		# it uses both nbins and bin options
 	if kernel is None:
-		hh, loc = numpy.histogram(dat, range=(min, max), bins=nbin, weights=weights)
+		hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
 		hh1 = numpy.zeros(2*len(hh)+2)
 		loc1 = numpy.zeros_like(hh1)
 		hh1[1:-1:2]=hh
@@ -87,7 +96,7 @@ def plothist(x,bin=None, xrange=None, yrange=None, min=None, max=None,
 		loc1[-1]=loc1[-2]
 		loc1[0]=loc[0]
 	else:
-		loc1=numpy.linspace(min,max,nbin*5)
+		loc1=numpy.linspace(min,max,nbins*5)
 		import statistics
 		hh1=statistics.pdf( dat,loc1,h=bin/2.,kernel=kernel)*bin*len(dat)
 	if overplot:
