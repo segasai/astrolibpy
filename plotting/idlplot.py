@@ -57,6 +57,33 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			**kw):
 	"""
 	Plot the 1D histogram
+	Example:
+	>> plothist(dat, bin=0.1, min=0, max=3)
+
+	Keyword parameters:
+	------------------
+	bin
+		the binsize(float)
+	nbins
+		number of bins(integer)
+		It cannot be specified together with the bin= parameter
+	xlog, ylog
+		log the appropriate axis
+	weights
+		the 1-D array of weights used in the histogram creation
+	nan
+		boolean flag to ignore nan's
+	norm
+		boolean flag to normalize the histogram by the peak value
+	min,max
+		range of data for which the histogram is constructed
+	retpoints
+		boolean parameter controlling whether to return or not the
+		computed histogram.
+		If yes the tuple with two arrays (bin centers, Number of points in bins) 
+		is returned
+	overplot
+		boolean parameter for overplotting 
 	"""
 	if nan:
 		ind = numpy.isfinite(x)
@@ -108,7 +135,7 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	func(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
-		return loc1,hh1
+		return 0.5*(loc[1:]+loc[:-1]),hh
 	 
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
