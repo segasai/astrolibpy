@@ -475,7 +475,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		c_color="black", cm ="jet", c_line="solid", c_levels=None,
 		c_charsize=12.0, c_thick=1, thick=1, font="monospace",
 		weight="normal", charsize=14.0, bar=True, fill=True, overplot=False,
-		noerase=False, c_label=True, bar_fraction=0.05, xaxis_formatter=None,
+		noerase=False, c_label=False, bar_fraction=0.05, xaxis_formatter=None,
 		yaxis_formatter=None):
 	"""
 	Plot the contours of the 2d array. 
