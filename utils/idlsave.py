@@ -70,7 +70,7 @@ class idlsave:
 		return None
 
 	@staticmethod
-	def restore(filename=None, names=None):
+	def restore(filename=None, names=None, asdict=False):
 		"""Restores the variables stored in a file by idlsave.save routine
 		Example: 
 		> exec(idlsave.restore("mydat.psav"))
@@ -82,6 +82,10 @@ class idlsave:
 		idlsave.dhash=xx
 		f.close()
 		if names is None:
+			if asdict:
+				ret=idlsave.dhash.copy()
+				del idlsave.dhash
+				return ret
 			buf=",".join(idlsave.dhash.iterkeys())
 			if len(idlsave.dhash)==1:
 				buf=buf+','
