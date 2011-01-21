@@ -18,6 +18,10 @@ class cacheFunc:
 	7
 	>> print funcC(2,b=3)
 	5
+	It also can be used as decorator:
+	@cacheFunc
+	def myfunc(a,b,c,d=3,e=4):
+	....
 	"""
 	def __init__(self, func,maxn=10):
 		self.hash={}
