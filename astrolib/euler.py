@@ -1,4 +1,4 @@
-import numpy
+from numpy import array, sin, cos, pi, deg2rad, rad2deg, arctan2, arcsin, minimum
 
 def euler(ai, bi, select=1, fk4=False):
    """
@@ -51,9 +51,6 @@ def euler(ai, bi, select=1, fk4=False):
           Add option to specify SELECT as a keyword W. Landsman March 2003
    """
 
-   twopi = 2.0e0 * numpy.pi
-   fourpi = 4.0e0 * numpy.pi
-   
    #   J2000 coordinate conversions are based on the following constants
    #   (see the Hipparcos explanatory supplement).
    #  eps = 23.4392911111d              Obliquity of the ecliptic
@@ -66,28 +63,29 @@ def euler(ai, bi, select=1, fk4=False):
    
    if fk4:   
       equinox = '(B1950)'
-      psi = numpy.array ([0.57595865315e0, 4.9261918136e0, 0.00000000000e0, 0.0000000000e0, 0.11129056012e0, 4.7005372834e0])
-      stheta = numpy.array ([0.88781538514e0, -0.88781538514e0, 0.39788119938e0, -0.39788119938e0, 0.86766174755e0, -0.86766174755e0])
-      ctheta = numpy.array([0.46019978478e0, 0.46019978478e0, 0.91743694670e0, 0.91743694670e0, 0.49715499774e0, 0.49715499774e0])
-      phi = numpy.array([4.9261918136e0, 0.57595865315e0, 0.0000000000e0, 0.00000000000e0, 4.7005372834e0, 0.11129056012e0])
+      psi = array ([0.57595865315e0, 4.9261918136e0, 0.00000000000e0, 0.0000000000e0, 0.11129056012e0, 4.7005372834e0])
+      stheta = array ([0.88781538514e0, -0.88781538514e0, 0.39788119938e0, -0.39788119938e0, 0.86766174755e0, -0.86766174755e0])
+      ctheta = array([0.46019978478e0, 0.46019978478e0, 0.91743694670e0, 0.91743694670e0, 0.49715499774e0, 0.49715499774e0])
+      phi = array([4.9261918136e0, 0.57595865315e0, 0.0000000000e0, 0.00000000000e0, 4.7005372834e0, 0.11129056012e0])
    else:   
       equinox = '(J2000)'
-      psi = numpy.array([0.57477043300e0, 4.9368292465e0, 0.00000000000e0, 0.0000000000e0, 0.11142137093e0, 4.71279419371e0])
-      stheta = numpy.array([0.88998808748e0, -0.88998808748e0, 0.39777715593e0, -0.39777715593e0, 0.86766622025e0, -0.86766622025e0])
-      ctheta = numpy.array([0.45598377618e0, 0.45598377618e0, 0.91748206207e0, 0.91748206207e0, 0.49714719172e0, 0.49714719172e0])
-      phi = numpy.array([4.9368292465e0, 0.57477043300e0, 0.0000000000e0, 0.00000000000e0, 4.71279419371e0, 0.11142137093e0])
-      
+      psi = array([0.57477043300e0, 4.9368292465e0, 0.00000000000e0, 0.0000000000e0, 0.11142137093e0, 4.71279419371e0])
+      stheta = array([0.88998808748e0, -0.88998808748e0, 0.39777715593e0, -0.39777715593e0, 0.86766622025e0, -0.86766622025e0])
+      ctheta = array([0.45598377618e0, 0.45598377618e0, 0.91748206207e0, 0.91748206207e0, 0.49714719172e0, 0.49714719172e0])
+      phi = array([4.9368292465e0, 0.57477043300e0, 0.0000000000e0, 0.00000000000e0, 4.71279419371e0, 0.11142137093e0])
+   if select not in [1,2,3,4,5,6]:
+      raise ValueError('Select parameter should be an integer between 1 and 6')
    i = select - 1
-   a = numpy.deg2rad(ai) - phi[i]
-   b = numpy.deg2rad(bi)
-   sb = numpy.sin(b)
-   cb = numpy.cos(b)
-   cbsa = cb * numpy.sin(a)
+   a = deg2rad(ai) - phi[i]
+   b = deg2rad(bi)
+   sb = sin(b)
+   cb = cos(b)
+   cbsa = cb * sin(a)
    b = -stheta[i] * cbsa + ctheta[i] * sb
-   bo = numpy.rad2deg(numpy.arcsin(numpy.minimum(b, 1.0)))
+   bo = rad2deg(arcsin(minimum(b, 1.0)))
    del b
-   a = numpy.arctan2(ctheta[i] * cbsa + stheta[i] * sb, cb * numpy.cos(a))
+   a = arctan2(ctheta[i] * cbsa + stheta[i] * sb, cb * cos(a))
    del cb, cbsa, sb
-   ao = numpy.rad2deg(((a + psi[i] + fourpi) % twopi) )
+   ao = rad2deg(((a + psi[i] + 4 * pi ) % (2 * pi) ) )
 
    return (ao, bo)
