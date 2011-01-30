@@ -16,9 +16,18 @@
 
 
 import numpy.random, numpy,quick_hist, scipy.stats, random
-from idlsave import idlsave
 
-def __doit(x, y, hi1=None, hi2=None, thresh=None):
+
+__doc__="""
+Adaptive binner module
+Functions:
+hist:
+	1D adaptive histogram
+hist2d:
+	2D adaptive histogram
+
+"""
+def __doit2d(x, y, hi1=None, hi2=None, thresh=None):
 	hhs ={}
 	for curhi in range(hi1,hi2+1):
 		hh = quick_hist.quick_hist((x, y), range=((0, 1), (0, 1)),
@@ -61,6 +70,49 @@ def __doit(x, y, hi1=None, hi2=None, thresh=None):
 					area[i*dn:(i+1)*dn, j*dn:(j+1)*dn] = 2**(-hi1)					
 	return hh0*1./(2**hi1*area)**2							
 
+
+def __doit1d(x, hi1=None, hi2=None, thresh=None):
+	hhs ={}
+	for curhi in range(hi1,hi2+1):
+		hh = quick_hist.quick_hist((x,), range=((0, 1),),
+								nbins=[2**curhi])
+		hhs[curhi]=hh
+
+	hh0 = hhs[hi2] * 1 # accumulator of the result
+	area = hh0 * 0
+
+	two = 2
+	poiss = scipy.stats.poisson(thresh)
+
+	DeepenOrNot = lambda x: random.random() < poiss.cdf(x)
+	#DeepenOrNot = lambda x: x>thresh
+
+	def doitit(it, i):
+		curhhs = hhs[it]
+		if it==hi2:
+			hh[i:i+2] = curhhs[i:i+2]
+			area[i:i+2] = 2**(-it)
+		else:
+			for ii in range(i, i+2):
+				curval = curhhs[ii]
+				if DeepenOrNot(curval):
+					doitit(it+1, ii*two)
+				else:
+					dx=2**(hi2-it)
+					hh0[ii*dx:(ii+1)*dx]=curval
+					area[ii*dx:(ii+1)*dx] = 2**(-it)
+	n1 = 2**hi1
+	dn = 2**(hi2-hi1)
+
+	for i in range(n1):
+			if DeepenOrNot(hhs[hi1][i]):
+				doitit(hi1+1,i*two)
+			else:
+				hh0[i*dn:(i+1)*dn] = hhs[hi1][i]
+				area[i*dn:(i+1)*dn] = 2**(-hi1)
+	return hh0*1./(2**hi1*area)							
+
+
 def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 			thresh=30):
 	"""
@@ -93,6 +145,41 @@ def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 	ymod = (y-ymin)/(ymax-ymin)
 
 	ind = (xmod>=0)&(xmod<=1)&(ymod>=0)&(ymod<=1)
-	res = __doit(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
+	res = __doit2d(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
 	return res
+
+def hist(x, xmin=None, xmax=None, hi=[2,10], thresh=30):
+	"""
+	This function does the 1D histogram with adaptive binning 
+	Example:
+	>> loc, hh = hist(xs, hi=[3,6], thresh=30)
+	
+	Keyword parameters:
+	------------------
+	hi
+		the list of two integer values: they describe how coarse the
+		largest bin and how fine is the smallest bin, e.g. 
+		[2,5] means the largest possible bin has a size 
+		of 1/2**2 of the your dataset and the smallest bin has a
+		size of 1/2**5
+	thresh
+		the minimum number of points within a bin allowed (
+		if the number is smaller than the threshold then further
+		decreasing of the bin size is not allowed by the algorithm)
+	xmin,xmax
+		x-range. If not specified, they are determined
+		from the x.min(),x.max()
+	--------------------------------------------	
+	Returns:
+		bin edges vector and the histogram 
+	"""
+	xmin = x.min() if xmin is None else xmin
+	xmax = x.max() if xmax is None else xmax
+
+	xmod = (x-xmin)/(xmax-xmin)
+
+	ind = (xmod>=0)&(xmod<=1)
+	res = __doit1d(xmod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
+	loc = numpy.linspace(xmin,xmax,len(res)+1,True)
+	return loc,res
 
