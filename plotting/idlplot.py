@@ -23,13 +23,23 @@ import scipy.ndimage.filters
 from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
-import types
+import types, sys
 import warnings
 
 # this module is by default in interactive regime 
 plt.ion()
-listtoarr = lambda x: numpy.array(x) if isinstance(x, types.ListType) else x
 
+def listToArr(x):
+	if isinstance(x, types.ListType):
+		return numpy.array(x)
+	else:
+		return x
+
+def listToArrFlat(x):
+	if isinstance(x, types.ListType):
+		return numpy.array(x).flatten()
+	else:
+		return x.flatten()
 
 def get_marker(ps, linestyle):
 	"""
@@ -50,6 +60,29 @@ def get_marker(ps, linestyle):
 			else:
 				outlinestyle='-'
 	return (marker, outlinestyle)
+
+def exceptionDecorator(func):
+	def wrapper(*args, **kwargs):
+		try:
+			isInteractive = plt.isinteractive()
+
+			# switch to non-interactive mode
+			matplotlib.interactive(False)
+
+			ret = func(*args, **kwargs)
+
+			matplotlib.interactive(isInteractive)
+
+			draw_if_interactive()
+			return ret
+		except Exception, exc:
+			# switch back
+			matplotlib.interactive(isInteractive)
+
+			einfo = sys.exc_info()
+			raise einfo[0], einfo[1], einfo[2]
+
+	return wrapper
 
 def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
@@ -151,7 +184,8 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
 		return 0.5*(loc[1:]+loc[:-1]),hh
-	 
+
+@exceptionDecorator	 
 def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
@@ -165,17 +199,11 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	"""
 
 	if arg2 is None:
-		y=listtoarr(arg1)
+		y=listToArrFlat(arg1)
 		x=numpy.arange(len(y))
 	else:
-		x=listtoarr(arg1)
-		y=listtoarr(arg2)
-	if x.ndim !=1:
-		x=x.flatten()
-	if y.ndim !=1:
-		y=y.flatten()
-	isInteractive = plt.isinteractive()
-	plt.ioff()
+		x=listToArrFlat(arg1)
+		y=listToArrFlat(arg2)
 		
 	if not noerase:
 		plt.gcf().clf()	
@@ -253,9 +281,6 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 							markersize=markersize,
 							markerfacecolor=markerfacecolor,
 							markeredgecolor=markeredgecolor)	
-	if isInteractive:
-		plt.ion()
-	draw_if_interactive()
 	
 def oplot (x, y=None, **kw):
 	"""
@@ -267,6 +292,7 @@ def oplot (x, y=None, **kw):
 
 	plot (x,y, noerase=True, overplot=True, **kw)
 
+@exceptionDecorator
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
 				**kw):
@@ -287,15 +313,13 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	if overplot:
 		noerase=True
 	if err1 is None:
-		erry = listtoarr(err0)
+		erry = listToArr(err0)
 	else:
-		erry = listtoarr(err1)
-		errx = listtoarr(err0)
+		erry = listToArr(err1)
+		errx = listToArr(err0)
 	
 	if kw.get('yr') is None:
 		kw['yr'] = [(y-erry).min(),(y+erry).max()]
-	isInteractive = plt.isinteractive()
-	plt.ioff()
 	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
@@ -307,11 +331,8 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	else:
 		plt.gca().errorbar(x, y, xerr=errx, **kw1)
 		plt.gca().errorbar(x, y, yerr=erry, **kw1)
-	if isInteractive:
-		plt.ion()
-	draw_if_interactive()
 
-
+@exceptionDecorator
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
@@ -334,8 +355,6 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		boolean parameter for switching on/off the plotting of the color-bar
 	
 	"""
-	isInteractive = plt.isinteractive()
-	plt.ioff()
 
 	if xlog:
 		plt.gca().set_xscale('log')
@@ -378,11 +397,10 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	if bar:
 		cb=plt.colorbar(fraction=bar_fraction)
 		cb.set_label(bar_label)
-	if isInteractive:
-		plt.ion()
-	draw_if_interactive()
+
 	return axim
 
+@exceptionDecorator
 def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				vmin=None, vmax=None, bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
@@ -418,8 +436,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		in such way that the brightest pixel value will be the same for each row/column
 	"""
 
-	x1 = listtoarr(x).flat
-	y1 = listtoarr(y).flat
+	x1 = listToArrFlat(x)
+	y1 = listToArrFlat(y)
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 
 	if xmin is None:
@@ -460,9 +478,6 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		range1 = (range1[0], range1[1], range1[3], range1[2])
 		hh = numpy.flipud(hh)
 
-	isInteractive = plt.isinteractive()
-	plt.ioff()
-
 	if not noerase:
 		plt.gcf().clf()
 
@@ -483,12 +498,10 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		plt.gca().set_xscale('log')
 	if ylog:
 		plt.gca().set_yscale('log')
-	if isInteractive:
-		plt.ion()
-	draw_if_interactive()
+
 	return axim
 
-
+@exceptionDecorator
 def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		xr=None, yr=None, zr=None, title="", xtitle="", ytitle="",
 		position=None, xlog=False, ylog=False, zlog=False, xticklabel = None,
@@ -540,9 +553,6 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		x=x_new
 		y=y_new
 
-	isInteractive = plt.isinteractive()
-	plt.ioff()
-				
 # Define position of this plot:
 	if not noerase and not overplot:
 		plt.gcf().clf()	
@@ -640,6 +650,3 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
 			fraction=bar_fraction, format=zFormatter)
-	if isInteractive:
-		plt.ion()
-	draw_if_interactive()
