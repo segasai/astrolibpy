@@ -191,7 +191,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
 		yaxis_formatter=None, autoscalex=False, autoscaley=False,
-		markerfacecolor=None,markeredgecolor=None):
+		markerfacecolor=None, markeredgecolor=None, axis=None):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -207,12 +207,13 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		
 	if not noerase:
 		plt.gcf().clf()	
-	if position is not None:
+	if position is not None and axis is None:
 		mypos=position[:]
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
-	axis = plt.gca()
+	if axis is None:
+		axis = plt.gca()
 	if xlog:
 		axis.set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
