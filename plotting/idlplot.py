@@ -54,7 +54,7 @@ def get_marker(ps, linestyle):
 def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
-			**kw):
+			adaptive=False, adaptive_thresh=30, adaptive_depth=[2,10], **kw):
 	"""
 	Plot the 1D histogram
 	Example:
@@ -84,6 +84,16 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		is returned
 	overplot
 		boolean parameter for overplotting 
+	adaptive
+		boolean for turning on/off the adaptive regime of
+		histogramming (adaptive bin size). 
+		If True weights, nbins, bin,kernel parameters are ignored
+	adaptive_thresh
+		the limiting number of points in the bin for the adaptive 
+		histogramming (default 30)
+	adaptive_depth
+		the list of two integers for the detalisation levels of 
+		adaptive histogramming (default [2,10]) 
 	"""
 	if nan:
 		ind = numpy.isfinite(x)
@@ -113,7 +123,12 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		# it may be non-intuitive if kernel option is used, because
 		# it uses both nbins and bin options
 	if kernel is None:
-		hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
+		if adaptive is None:
+			hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
+		else:
+			import adabinner
+			hh, loc = adabinner.hist(dat, xmin=min, xmax=max, hi=adaptive_depth,
+						thresh=adaptive_thresh)
 		hh1 = numpy.zeros(2*len(hh)+2)
 		loc1 = numpy.zeros_like(hh1)
 		hh1[1:-1:2]=hh
