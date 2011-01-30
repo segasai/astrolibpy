@@ -1,7 +1,24 @@
+# Copyright (C) 2009-2010 Sergey Koposov
+# This file is part of astrolibpy
+#
+#	astrolibpy is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	astrolibpy is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
+
+
 import numpy.random, numpy,quick_hist, scipy.stats, random
 from idlsave import idlsave
 
-def doit(x, y, hi1=None, hi2=None, thresh=None):
+def __doit(x, y, hi1=None, hi2=None, thresh=None):
 	hhs ={}
 	for curhi in range(hi1,hi2+1):
 		hh = quick_hist.quick_hist((x, y), range=((0, 1), (0, 1)),
@@ -46,7 +63,27 @@ def doit(x, y, hi1=None, hi2=None, thresh=None):
 
 def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 			thresh=30):
+	"""
+	This function does the 2D histogram with adaptive binning 
+	Example:
+	>> hist2d(xs,ys, hi=[3,6], thresh=30)
 
+	Keyword parameters:
+	------------------
+	hi
+		the list of two integer values: they describe how coarse the
+		largest bin and how fine is the smallest bin, e.g. 
+		[2,5] means the largest possible bin has a size 
+		of 1/2**2 of the your dataset and the smallest bin has a
+		size of 1/2**5
+	thresh
+		the minimum number of points within a bin allowed (
+		if the number is smaller than the threshold then further
+		decreasing of the bin size is not allowed by the algorithm)
+	xmin,xmax,ymin,ymax
+		x-ranges and y-ranges. If not specified, they are determined
+		from the x.min(),x.max(),y.min(),y.max()
+	"""
 	xmin = x.min() if xmin is None else xmin
 	ymin = y.min() if ymin is None else ymin
 	xmax = x.max() if xmax is None else xmax
@@ -56,6 +93,6 @@ def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 	ymod = (y-ymin)/(ymax-ymin)
 
 	ind = (xmod>=0)&(xmod<=1)&(ymod>=0)&(ymod<=1)
-	res = doit(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
+	res = __doit(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
 	return res
 
