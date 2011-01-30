@@ -171,7 +171,7 @@ def hist(x, xmin=None, xmax=None, hi=[2,10], thresh=30):
 		from the x.min(),x.max()
 	--------------------------------------------	
 	Returns:
-		bin edges vector and the histogram 
+		the histogram and the bin edges vector
 	"""
 	xmin = x.min() if xmin is None else xmin
 	xmax = x.max() if xmax is None else xmax
@@ -179,7 +179,7 @@ def hist(x, xmin=None, xmax=None, hi=[2,10], thresh=30):
 	xmod = (x-xmin)/(xmax-xmin)
 
 	ind = (xmod>=0)&(xmod<=1)
-	res = __doit1d(xmod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
-	loc = numpy.linspace(xmin,xmax,len(res)+1,True)
-	return loc,res
+	hh = __doit1d(xmod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
+	loc = numpy.linspace(xmin,xmax,len(hh)+1,True)
+	return hh, loc
 
