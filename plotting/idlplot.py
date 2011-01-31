@@ -156,7 +156,7 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		# it may be non-intuitive if kernel option is used, because
 		# it uses both nbins and bin options
 	if kernel is None:
-		if adaptive is None:
+		if not adaptive:
 			hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
 		else:
 			import adabinner
