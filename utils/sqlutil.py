@@ -18,7 +18,7 @@
 import types
 import numpy
 import time,psycopg2
-
+import multiprocessing, Queue
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host=None):
@@ -39,20 +39,44 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	else: 
 		pass
 #		raise Exception("Unknown driver")
-	cur = con.cursor(name='mycursor')
-	cur.arraysize=1000000
+	cur = con.cursor(name='sqlutilcursor')
+	cur.arraysize=100000
 	if params==None:
 		res = cur.execute(query)
 	else:
 		res = cur.execute(query, params)
+	qIn = multiprocessing.Queue(1)
+	qOut = multiprocessing.Queue()
+	endEvent = multiprocessing.Event()
+	endEvent1 = multiprocessing.Event()
+	
+	def converter():
+		while(not endEvent.is_set()):
+			tups = qIn.get(1)
+			qOut.put(numpy.core.records.array(tups))
+		endEvent1.set()
 
 	reslist=[]
+	proc = multiprocessing.Process(target=converter)
 	if driver=='psycopg2':
+		proc.start()
 		while(True):
 			tups = cur.fetchmany()
 			if tups == []:
+				endEvent.set()
 				break
-			reslist.append(numpy.core.records.array(tups))
+			qIn.put(tups)
+			try:
+				reslist.append(qOut.get(False))
+			except Queue.Empty:
+				pass
+		try:
+			endEvent1.wait()
+			while(True):
+				reslist.append(qOut.get(False))
+		except Queue.Empty:
+			pass
+		proc.join()
 		res=numpy.concatenate(reslist)
 		res=[res[tmp] for tmp in res.dtype.names]
 
