@@ -54,6 +54,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				break
 			reslist.append(numpy.core.records.array(tups))
 		res=numpy.concatenate(reslist)
+		res=[res[tmp] for tmp in res.dtype.names]
+
 	elif driver=='sqlite3':
 		tups=cur.fetchall()
 		if len(tups)>0:
