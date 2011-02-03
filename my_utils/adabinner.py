@@ -33,7 +33,7 @@ def __doit2d(x, y, hi1=None, hi2=None, thresh=None):
 		hh = quick_hist.quick_hist((x, y), range=((0, 1), (0, 1)),
 								nbins=[2**curhi,2**curhi])
 		hhs[curhi]=hh
-
+	pixcen = []
 	hh0 = hhs[hi2] * 1 # accumulator of the result
 	area = hh0 * 0
 
@@ -48,6 +48,7 @@ def __doit2d(x, y, hi1=None, hi2=None, thresh=None):
 		if it==hi2:
 			hh[i:i+2, j:j+2] = curhhs[i:i+2, j:j+2]
 			area[i:i+2, j:j+2] = 2**(-it)
+			pixcen.append((i+.5,j+.5))
 		else:
 			for ii in range(i, i+2):
 				for jj in range(j, j+2):
@@ -58,6 +59,7 @@ def __doit2d(x, y, hi1=None, hi2=None, thresh=None):
 						dx=2**(hi2-it)
 						hh0[ii*dx:(ii+1)*dx, jj*dx:(jj+1)*dx]=curval
 						area[ii*dx:(ii+1)*dx, jj*dx:(jj+1)*dx] = 2**(-it)
+						pixcen.append((ii*dx+dx/2.+0.5,jj*dx+dx/2.+0.5))
 	n1 = 2**hi1
 	dn = 2**(hi2-hi1)
 
@@ -68,7 +70,9 @@ def __doit2d(x, y, hi1=None, hi2=None, thresh=None):
 				else:
 					hh0[i*dn:(i+1)*dn, j*dn:(j+1)*dn] = hhs[hi1][i,j]
 					area[i*dn:(i+1)*dn, j*dn:(j+1)*dn] = 2**(-hi1)					
-	return hh0*1./(2**hi1*area)**2							
+					pixcen.append((i*dn+dn/2.+0.5,j*dn+dn/2.+0.5))
+	area = (2**hi1*area)**2 # in smallest pixels squared
+	return hh0*1./area,pixcen,area
 
 
 def __doit1d(x, hi1=None, hi2=None, thresh=None):
@@ -114,12 +118,12 @@ def __doit1d(x, hi1=None, hi2=None, thresh=None):
 
 
 def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
-			thresh=30):
+			thresh=30, full_output=False):
 	"""
 	This function does the 2D histogram with adaptive binning 
 	Example:
 	>> hist2d(xs,ys, hi=[3,6], thresh=30)
-
+	>> hh,xloc,yloc,pixcen,area = hist2d(xra,dec,full_output=True,thresh=100)                
 	Keyword parameters:
 	------------------
 	hi
@@ -135,6 +139,10 @@ def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 	xmin,xmax,ymin,ymax
 		x-ranges and y-ranges. If not specified, they are determined
 		from the x.min(),x.max(),y.min(),y.max()
+	full_output
+		Boolean controlling whether to output just just the histogram(full_output=False)
+		or output the tuple with the histogram, grid-centers in x, grid-centers in y,
+		pixel-centers, and area
 	"""
 	xmin = x.min() if xmin is None else xmin
 	ymin = y.min() if ymin is None else ymin
@@ -145,8 +153,17 @@ def hist2d(x, y, xmin=None, xmax=None, ymin=None, ymax=None, hi=[2,10],
 	ymod = (y-ymin)/(ymax-ymin)
 
 	ind = (xmod>=0)&(xmod<=1)&(ymod>=0)&(ymod<=1)
-	res = __doit2d(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
-	return res
+	hh,pixcen,area = __doit2d(xmod[ind], ymod[ind], hi1=hi[0], hi2=hi[1], thresh=thresh)	
+	xloc = numpy.linspace(xmin,xmax,hh.shape[0],False)
+	yloc = numpy.linspace(ymin,ymax,hh.shape[0],False)
+	xloc += 0.5*(xloc[1]-xloc[0])
+	yloc += 0.5*(yloc[1]-yloc[0])
+	
+	if full_output:
+		out = hh,xloc,yloc,pixcen,area
+	else:
+		out = hh
+	return out
 
 def hist(x, xmin=None, xmax=None, hi=[2,10], thresh=30):
 	"""
