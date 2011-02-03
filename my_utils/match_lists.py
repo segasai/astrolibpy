@@ -28,9 +28,9 @@ def match_lists(ra1, dec1, ra2, dec2, dist):
 	of indices of the neighbor. Everything is in degrees.
 	if no match is found the distance is NaN.
 	Example: 
-	dist,ind=match(ra1,dec1,ra2,dec2)
+	dist,ind=match_lists(ra1,dec1,ra2,dec2)
 	goodmatch_ind = numpy.isfinite(dist)
-	plot(ra1[goodmatch_ind],ra2[ind][goodmatch_ind])
+	plot(ra1[goodmatch_ind],ra2[ind[goodmatch_ind]])
 	"""
 	cosd = lambda x : cos(deg2rad(x))
 	sind = lambda x : sin(deg2rad(x))
