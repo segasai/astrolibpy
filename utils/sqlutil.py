@@ -80,8 +80,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 def execute(query, db="wsdb", driver="psycopg2", user=None,
 										password=None, host=None):
 	if driver=='psycopg2':
-		import pgdb
-		con = pgdb.connect(database=db, user=user, password=password, host=host)
+		import psycopg2
+		con = psycopg2.connect("dbname=%s user=%s password=%s host=%s"%(db,user,password,host))
 	elif driver=='sqlite3':
 		import sqlite3
 		con = sqlite3.connect(db)
