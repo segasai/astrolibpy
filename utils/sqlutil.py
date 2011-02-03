@@ -17,36 +17,10 @@
 
 import types
 import numpy
-import time,pgdb
+import time,psycopg2
 
 
-def fetchmany(curs, size=None, keep=False):
-	"""Fetch the next set of rows of a query result.
-
-	The number of rows to fetch per call is specified by the
-	size parameter. If it is not given, the cursor's arraysize
-	determines the number of rows to be fetched. If you set
-	the keep parameter to true, this is kept as new arraysize.
-
-	"""
-	_cast = {'bool': numpy.bool,
-		'int2': numpy.int16, 'int4': numpy.int32, 'serial': numpy.int32,
-		'int8': numpy.int64, 'oid': numpy.int64, 'oid8': numpy.int64,
-		'float4': numpy.float32, 'float8': numpy.float64,
-		'numeric': numpy.float128, 'varchar': numpy.str}
-
-
-	if size is None:
-		size = curs.arraysize
-	if keep:
-		curs.arraysize = size
-	result = curs._src.fetch(size)
-	coltypes = [desc[1] for desc in curs.description]
-	types=[_cast.get(a) for a in coltypes]
-	return result,types #[list(row) for row in result]
-
-
-def get(query, params=None, db="wsdb", driver="pgdb", user=None,
+def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host=None):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
@@ -56,22 +30,30 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 	Example:
 	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
-	if driver=='pgdb':
-		import pgdb
-		con = pgdb.connect(database=db, user=user, password=password, host=host)
+	if driver=='psycopg2':
+		import psycopg2
+		con = psycopg2.connect("dbname=%s user=%s password=%s host=%s"%(db,user,password,host))
 	elif driver=='sqlite3':
 		import sqlite3
 		con = sqlite3.connect(db)
 	else: 
-		raise Exception("Unknown driver")
-	cur = con.cursor()
+		pass
+#		raise Exception("Unknown driver")
+	cur = con.cursor(name='mycursor')
+	cur.arraysize=1000000
 	if params==None:
 		res = cur.execute(query)
 	else:
 		res = cur.execute(query, params)
 
-	if driver=='pgdb':
-		tups,typelist = fetchmany(cur,-1, False)
+	reslist=[]
+	if driver=='psycopg2':
+		while(True):
+			tups = cur.fetchmany()
+			if tups == []:
+				break
+			reslist.append(numpy.core.records.array(tups))
+		res=numpy.concatenate(reslist)
 	elif driver=='sqlite3':
 		tups=cur.fetchall()
 		if len(tups)>0:
@@ -85,39 +67,17 @@ def get(query, params=None, db="wsdb", driver="pgdb", user=None,
 				typelist=[_cast[type(tmp)] for tmp in tups[0]]
 			except KeyError:
 				raise Exception("Unknown datatype")
+			res = numpy.core.records.array(tups)
 	else:
 		raise Exception('Unrecognized driver')
-		
-
 	cur.close()
 	con.commit()
 	con.close()
-	nrows = len(tups)
-#	print nrows
-	if nrows == 0:
-		return None
-	for curtype in [numpy.float64,numpy.float32,numpy.int16,numpy.int32,numpy.int64]:
-		if numpy.array([a ==curtype  for a in typelist]).all():
-			res= numpy.asfarray(tups,typelist[0])
-			return res.transpose()
+	return res
 
-	res = numpy.array(tups)
-	nrows,ncols=res.shape
-	result = []
-	for  i, cur_type in zip(range(ncols),typelist):
-		if cur_type == numpy.str:
-			result.append(numpy.fromiter(res[:,i],dtype='|S100'))
-			(result[-1])[result[-1]=='None']=''
-
-		else:
-			result.append(res[:,i].astype(cur_type))
-	
-	return result		
-	#return [res[:,a].astype(b) for a,b in zip(range(ncols),types)]
-
-def execute(query, db="wsdb", driver="pgdb", user=None,
+def execute(query, db="wsdb", driver="psycopg2", user=None,
 										password=None, host=None):
-	if driver=='pgdb':
+	if driver=='psycopg2':
 		import pgdb
 		con = pgdb.connect(database=db, user=user, password=password, host=host)
 	elif driver=='sqlite3':
