@@ -377,8 +377,12 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		xmax = image.shape[0]
 	if ymax is None:
 		ymax = image.shape[1]
-	
-	im = image.T
+	if image.ndim==3:
+		im = numpy.transpose(image,axes=(1,0,2))
+	elif image.ndim==2:
+		im = image.T
+	else:
+		raise ValueError('Wrong dimensions of the input array')
 	if smooth is not None:
 		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
 	if zlog:
