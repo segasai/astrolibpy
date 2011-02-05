@@ -81,6 +81,7 @@ def exceptionDecorator(func):
 
 			einfo = sys.exc_info()
 			raise einfo[0], einfo[1], einfo[2]
+	wrapper.__doc__ = func.__doc__
 
 	return wrapper
 
