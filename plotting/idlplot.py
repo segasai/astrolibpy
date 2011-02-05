@@ -188,7 +188,8 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		func = plot
 	if norm:
 		hh1=hh1*1./hh1.max()
-	func(loc1, hh1, ps=0, color=color, xrange=xrange, yrange=yrange,
+	kw['ps'] = kw.get('ps') or 0
+	func(loc1, hh1, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
 		return 0.5*(loc[1:]+loc[:-1]),hh
