@@ -88,7 +88,8 @@ def exceptionDecorator(func):
 def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
-			adaptive=False, adaptive_thresh=30, adaptive_depth=[2,10], **kw):
+			adaptive=False, adaptive_thresh=30, adaptive_depth=[2,10],
+			weight_norm=False, **kw):
 	"""
 	Plot the 1D histogram
 	Example:
@@ -128,6 +129,9 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	adaptive_depth
 		the list of two integers for the detalisation levels of 
 		adaptive histogramming (default [2,10]) 
+	weight_norm
+		if True the value in each bin is mean weight of points within
+		the bin
 	"""
 	if nan:
 		ind = numpy.isfinite(x)
@@ -159,6 +163,9 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	if kernel is None:
 		if not adaptive:
 			hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
+			if weight_norm:
+				hh1, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=None)	
+				hh = hh*1./hh1
 		else:
 			import adabinner
 			hh, loc = adabinner.hist(dat, xmin=min, xmax=max, hi=adaptive_depth,
@@ -413,7 +420,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				xflip=False, yflip=False, bar=False, bar_label='',
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False, normy=False,
-				xlog=False, ylog=False, **kw):
+				xlog=False, ylog=False, weight_norm=False, **kw):
 	""" Plot the 2D histogram of the data
 	Example:
 	>> tvhist2d(xs,ys,bins=[30,30])
@@ -440,6 +447,10 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	normx, normy
 		boolean params controlling the normalization of the histogram along X or Y axes
 		in such way that the brightest pixel value will be the same for each row/column
+	weight_norm
+		if True the value in each bin is mean weight of points within
+		the bin
+
 	"""
 
 	x1 = listToArrFlat(x)
@@ -468,10 +479,20 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if not quick:
 		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
 												bins=bins, weights=weights)
+		if weight_norm:
+			hh1, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
+												bins=bins, weights=None)
+			hh = hh*1./hh1
+			
 	else:
 		import quick_hist
 		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
 								weights=weights)
+		if weight_norm:
+			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
+								weights=weights)
+			hh = hh*1./hh1
+
 	if normx:
 		hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
 	if normy:
