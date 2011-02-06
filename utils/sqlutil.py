@@ -33,14 +33,15 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	if driver=='psycopg2':
 		import psycopg2
 		con = psycopg2.connect("dbname=%s user=%s password=%s host=%s"%(db,user,password,host))
+		cur = con.cursor(name='sqlutilcursor')
+		cur.arraysize=100000
+
 	elif driver=='sqlite3':
 		import sqlite3
 		con = sqlite3.connect(db)
+		cur = con.cursor()
 	else: 
-		pass
-#		raise Exception("Unknown driver")
-	cur = con.cursor(name='sqlutilcursor')
-	cur.arraysize=100000
+		raise Exception("Unknown driver")
 	if params==None:
 		res = cur.execute(query)
 	else:
@@ -78,7 +79,6 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			pass
 		proc.join()
 		res=numpy.concatenate(reslist)
-		res=[res[tmp] for tmp in res.dtype.names]
 
 	elif driver=='sqlite3':
 		tups=cur.fetchall()
@@ -94,8 +94,10 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			except KeyError:
 				raise Exception("Unknown datatype")
 			res = numpy.core.records.array(tups)
-	else:
-		raise Exception('Unrecognized driver')
+		else:
+			return None
+	res=[res[tmp] for tmp in res.dtype.names]
+
 	cur.close()
 	con.commit()
 	con.close()
