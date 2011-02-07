@@ -54,7 +54,10 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	def converter():
 		try:
 			while(not endEvent.is_set()):
-				tups = qIn.get(0.1)
+				try:
+					tups = qIn.get(True,0.1)
+				except Queue.Empty:
+					continue
 				qOut.put(numpy.core.records.array(tups))
 		finally:
 			endEvent1.set()
@@ -89,6 +92,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				proc.terminate()
 			raise ei[0], None, ei[2]
 		proc.join()
+		if reslist == []:
+			return None
 		res=numpy.concatenate(reslist)
 
 	elif driver=='sqlite3':
