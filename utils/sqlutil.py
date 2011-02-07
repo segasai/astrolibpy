@@ -52,10 +52,12 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	endEvent1 = multiprocessing.Event()
 	
 	def converter():
-		while(not endEvent.is_set()):
-			tups = qIn.get(0.1)
-			qOut.put(numpy.core.records.array(tups))
-		endEvent1.set()
+		try:
+			while(not endEvent.is_set()):
+				tups = qIn.get(0.1)
+				qOut.put(numpy.core.records.array(tups))
+		finally:
+			endEvent1.set()
 
 	reslist=[]
 	proc = multiprocessing.Process(target=converter)
