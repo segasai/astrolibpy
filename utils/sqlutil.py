@@ -16,7 +16,7 @@
 
 
 import types
-import numpy
+import numpy, sys
 import time,psycopg2
 import multiprocessing, Queue
 
@@ -53,7 +53,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	
 	def converter():
 		while(not endEvent.is_set()):
-			tups = qIn.get(1)
+			tups = qIn.get(0.1)
 			qOut.put(numpy.core.records.array(tups))
 		endEvent1.set()
 
@@ -61,22 +61,31 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	proc = multiprocessing.Process(target=converter)
 	if driver=='psycopg2':
 		proc.start()
-		while(True):
-			tups = cur.fetchmany()
-			if tups == []:
-				endEvent.set()
-				break
-			qIn.put(tups)
+		try:
+			while(True):
+				tups = cur.fetchmany()
+				if tups == []:
+					endEvent.set()
+					break
+				qIn.put(tups)
+				try:
+					reslist.append(qOut.get(False))
+				except Queue.Empty:
+					pass
 			try:
-				reslist.append(qOut.get(False))
+				endEvent1.wait()
+				while(True):
+					reslist.append(qOut.get(False))
 			except Queue.Empty:
 				pass
-		try:
-			endEvent1.wait()
-			while(True):
-				reslist.append(qOut.get(False))
-		except Queue.Empty:
-			pass
+		except BaseException:
+			ei = sys.exc_info()
+			endEvent.set()
+			proc.join(0.2) # notice that here the timeout is larger than the timeout
+							# in the converter process
+			if proc.is_alive():
+				proc.terminate()
+			raise ei[0], None, ei[2]
 		proc.join()
 		res=numpy.concatenate(reslist)
 
