@@ -18,7 +18,7 @@
 import types
 import numpy, sys
 import time,psycopg2
-import multiprocessing, Queue
+import threading, Queue
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host=None):
@@ -46,43 +46,40 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		res = cur.execute(query)
 	else:
 		res = cur.execute(query, params)
-	qIn = multiprocessing.Queue(1)
-	qOut = multiprocessing.Queue()
-	endEvent = multiprocessing.Event()
-	endEvent1 = multiprocessing.Event()
-	
+	qIn = Queue.Queue(1)
+	qOut = Queue.Queue()
+	endEvent = threading.Event()
+	nrec = 0
 	def converter():
-		try:
-			while(not endEvent.is_set()):
-				try:
-					tups = qIn.get(True,0.1)
-				except Queue.Empty:
-					continue
-				qOut.put(numpy.core.records.array(tups))
-		finally:
-			endEvent1.set()
-
+		while(not endEvent.is_set()):
+			try:
+				tups = qIn.get(True,0.1)
+			except Queue.Empty:
+				continue
+			qOut.put(numpy.core.records.array(tups))
 	reslist=[]
-	proc = multiprocessing.Process(target=converter)
+	proc = threading.Thread(target=converter)
 	if driver=='psycopg2':
 		proc.start()
 		try:
 			while(True):
 				tups = cur.fetchmany()
 				if tups == []:
-					endEvent.set()
 					break
 				qIn.put(tups)
+				nrec+=1
 				try:
 					reslist.append(qOut.get(False))
+					nrec-=1
 				except Queue.Empty:
 					pass
 			try:
-				endEvent1.wait()
-				while(True):
-					reslist.append(qOut.get(False))
+				while(nrec!=0):
+					reslist.append(qOut.get(True))
+					nrec-=1
 			except Queue.Empty:
 				pass
+			endEvent.set()
 		except BaseException:
 			ei = sys.exc_info()
 			endEvent.set()
