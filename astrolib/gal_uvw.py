@@ -36,8 +36,10 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
    
     OPTIONAL INPUT KEYWORD:
          /LSR - If this keyword is set, then the output velocities will be
-                corrected for the solar motion (U,V,W)_Sun = (-10.00,+5.25,+7.17)
-                (Dehnen & Binney, 1998) to the local standard of rest
+                corrected for the solar motion (U,V,W)_Sun = (-8.5, 13.38, 6.49)
+                (Coskunoglu et al. 2011 MNRAS) to the local standard of rest.
+                Note that the value of the solar motion through the LSR remains
+                poorly determined.
      EXAMPLE:
          (1) Compute the U,V,W coordinates for the halo star HD 6755.
              Use values from Hipparcos catalog, and correct to the LSR
@@ -106,8 +108,8 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
    u = (a_g[0,0] * cosa * cosd + a_g[1,0] * sina * cosd + a_g[2,0] * sind) * vec1 + (-a_g[0,0] * sina + a_g[1,0] * cosa) * vec2 + (-a_g[0,0] * cosa * sind - a_g[1,0] * sina * sind + a_g[2,0] * cosd) * vec3
    v = (a_g[0,1] * cosa * cosd + a_g[1,1] * sina * cosd + a_g[2,1] * sind) * vec1 + (-a_g[0,1] * sina + a_g[1,1] * cosa) * vec2 + (-a_g[0,1] * cosa * sind - a_g[1,1] * sina * sind + a_g[2,1] * cosd) * vec3
    w = (a_g[0,2] * cosa * cosd + a_g[1,2] * sina * cosd + a_g[2,2] * sind) * vec1 + (-a_g[0,2] * sina + a_g[1,2] * cosa) * vec2 + (-a_g[0,2] * cosa * sind - a_g[1,2] * sina * sind + a_g[2,2] * cosd) * vec3
-   
-   lsr_vel = numpy.array([-10.00, 5.25, 7.17])
+
+   lsr_vel = numpy.array([8.5, 13.38, 6.49])
    if (lsr is not None):   
       u = u + lsr_vel[0]
       v = v + lsr_vel[1]
