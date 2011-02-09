@@ -78,9 +78,7 @@ def exceptionDecorator(func):
 		except Exception, exc:
 			# switch back
 			matplotlib.interactive(isInteractive)
-
-			einfo = sys.exc_info()
-			raise einfo[0], einfo[1], einfo[2]
+			raise
 	wrapper.__doc__ = func.__doc__
 
 	return wrapper
