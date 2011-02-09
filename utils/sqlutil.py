@@ -87,7 +87,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 							# in the converter process
 			if proc.is_alive():
 				proc.terminate()
-			raise ei[0], None, ei[2]
+			raise ei[0], ei[1], ei[2]
 		proc.join()
 		if reslist == []:
 			return None
