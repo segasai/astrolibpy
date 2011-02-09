@@ -81,13 +81,12 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				pass
 			endEvent.set()
 		except BaseException:
-			ei = sys.exc_info()
 			endEvent.set()
 			proc.join(0.2) # notice that here the timeout is larger than the timeout
 							# in the converter process
 			if proc.is_alive():
 				proc.terminate()
-			raise ei[0], ei[1], ei[2]
+			raise
 		proc.join()
 		if reslist == []:
 			return None
