@@ -327,7 +327,7 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 		errx = listToArr(err0)
 	
 	if kw.get('yr') is None:
-		kw['yr'] = [(y-erry).min(),(y+erry).max()]
+		kw['yr'] = [numpy.nanmin(y-erry),numpy.nanmax(y+erry)]
 	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
