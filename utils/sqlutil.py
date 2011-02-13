@@ -21,7 +21,7 @@ import time,psycopg2
 import threading, Queue
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
-										password=None, host=None):
+						password=None, host='localhost', preamb=None):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -32,7 +32,18 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	'''
 	if driver=='psycopg2':
 		import psycopg2
-		con = psycopg2.connect("dbname=%s user=%s password=%s host=%s"%(db,user,password,host))
+		conn_str = "dbname=%s host=%s"%(db,host)
+		if user is not None:
+			conn_str = conn_str+ ' user=%s'%user
+		if password is not None:
+			conn_str = conn_str+ ' password=%s'%password
+		
+		con = psycopg2.connect(conn_str)
+
+		cur = con.cursor()
+		if preamb is not None:
+			cur.execute(preamb)
+
 		cur = con.cursor(name='sqlutilcursor')
 		cur.arraysize=100000
 
