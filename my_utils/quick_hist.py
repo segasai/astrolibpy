@@ -26,6 +26,11 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 	"""
 	from __builtin__ import range as xrange
 	nd = len(arrs)
+    if len(nbins)!=nd:
+        raise ValueError('The array of nbins MUST have the same length as the number of input data vectors')
+    if len(range)!=nd:
+        raise ValueError('The array of ranges MUST have the same length as the number of input data vectors')
+
 	nx = len(arrs[0])
 	for curarr in arrs:
 		if len(curarr)!=nx:
