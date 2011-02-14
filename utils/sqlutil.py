@@ -20,8 +20,39 @@ import numpy, sys
 import time,psycopg2
 import threading, Queue
 
+
+def getConnection( db=None, driver=None, user=None,
+						password=None, host=None):
+	if driver=='psycopg2':
+		import psycopg2
+		conn_str = "dbname=%s host=%s"%(db,host)
+		if user is not None:
+			conn_str = conn_str+ ' user=%s'%user
+		if password is not None:
+			conn_str = conn_str+ ' password=%s'%password
+		conn = psycopg2.connect(conn_str)
+	elif driver=='sqlite3':
+		import sqlite3
+		conn = sqlite3.connect(db)
+		cur = conn.cursor()
+	else: 
+		raise Exception("Unknown driver")
+	return conn					
+
+def getCursor(conn, driver=None, preamb=None):
+	if driver=='psycopg2':
+		cur = conn.cursor()
+		if preamb is not None:
+			cur.execute(preamb)
+		cur = conn.cursor(name='sqlutilcursor')
+		cur.arraysize=100000
+	elif driver=='sqlite3':
+		cur = conn.cursor()
+	return cur
+
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
-						password=None, host='localhost', preamb=None):
+						password=None, host='localhost', preamb=None,
+						getConn=False, conn=None):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -30,33 +61,17 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	Example:
 	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
-	if driver=='psycopg2':
-		import psycopg2
-		conn_str = "dbname=%s host=%s"%(db,host)
-		if user is not None:
-			conn_str = conn_str+ ' user=%s'%user
-		if password is not None:
-			conn_str = conn_str+ ' password=%s'%password
-		
-		con = psycopg2.connect(conn_str)
+	connSupplied = (conn is not None)
+	if not connSupplied:
+		conn = getConnection(db=db,driver=driver,user=user,password=password,
+				host=host)
+	cur = getCursor(conn, driver=driver, preamb=preamb)
 
-		cur = con.cursor()
-		if preamb is not None:
-			cur.execute(preamb)
-
-		cur = con.cursor(name='sqlutilcursor')
-		cur.arraysize=100000
-
-	elif driver=='sqlite3':
-		import sqlite3
-		con = sqlite3.connect(db)
-		cur = con.cursor()
-	else: 
-		raise Exception("Unknown driver")
-	if params==None:
+	if params is None:
 		res = cur.execute(query)
 	else:
 		res = cur.execute(query, params)
+
 	qIn = Queue.Queue(1)
 	qOut = Queue.Queue()
 	endEvent = threading.Event()
@@ -69,8 +84,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				continue
 			qOut.put(numpy.core.records.array(tups))
 	reslist=[]
-	proc = threading.Thread(target=converter)
 	if driver=='psycopg2':
+		proc = threading.Thread(target=converter)
 		proc.start()
 		try:
 			while(True):
@@ -122,21 +137,24 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	res=[res[tmp] for tmp in res.dtype.names]
 
 	cur.close()
-	con.commit()
-	con.close()
-	return res
+	conn.commit()
+	if not getConn:
+		if not connSupplied:
+			conn.close() # do not close if we were given the connection
+		return res
+	else:
+		return conn,res
 
 def execute(query, db="wsdb", driver="psycopg2", user=None,
-										password=None, host=None):
-	if driver=='psycopg2':
-		import psycopg2
-		con = psycopg2.connect("dbname=%s user=%s password=%s host=%s"%(db,user,password,host))
-	elif driver=='sqlite3':
-		import sqlite3
-		con = sqlite3.connect(db)
-	else:
-		raise Exception('Unrecognized driver')
-	cur=con.cursor()
+										password=None, host='locahost',
+										conn=None):
+	connSupplied = (conn is not None)
+	if not connSupplied:
+		conn = getConnection(db=db,driver=driver,user=user,password=password,
+				host=host)
+	cur = getCursor(conn, driver=driver, preamb=preamb)
+
 	cur.execute(query)
-	con.commit()
-	con.close()
+	conn.commit()
+	if not connSupplied:
+		conn.close() # do not close if we were given the connection
