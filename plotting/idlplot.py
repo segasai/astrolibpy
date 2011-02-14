@@ -198,7 +198,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
 		yaxis_formatter=None, autoscalex=False, autoscaley=False,
-		markerfacecolor=None, markeredgecolor=None, axis=None):
+		markerfacecolor=None, markeredgecolor=None, axis=None, **kw):
 	""" Plot your data in an IDL-way
 		Example:
 		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
@@ -282,13 +282,13 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markerfacecolor=markerfacecolor,
-							markeredgecolor=markeredgecolor)
+							markeredgecolor=markeredgecolor,**kw)
 		else:
 			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markersize=markersize,
 							markerfacecolor=markerfacecolor,
-							markeredgecolor=markeredgecolor)	
+							markeredgecolor=markeredgecolor,**kw)	
 	
 def oplot (x, y=None, **kw):
 	"""
