@@ -147,7 +147,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 def execute(query, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
-										conn=None):
+										conn=None, preamb=None):
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
