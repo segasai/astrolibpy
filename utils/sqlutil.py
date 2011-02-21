@@ -39,11 +39,13 @@ def getConnection( db=None, driver=None, user=None,
 		raise Exception("Unknown driver")
 	return conn					
 
-def getCursor(conn, driver=None, preamb=None):
+def getCursor(conn, driver=None, preamb=None, notNamed=False):
 	if driver=='psycopg2':
 		cur = conn.cursor()
 		if preamb is not None:
 			cur.execute(preamb)
+		if notNamed:
+			return cur
 		cur = conn.cursor(name='sqlutilcursor')
 		cur.arraysize=100000
 	elif driver=='sqlite3':
@@ -152,7 +154,7 @@ def execute(query, db="wsdb", driver="psycopg2", user=None,
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
 				host=host)
-	cur = getCursor(conn, driver=driver, preamb=preamb)
+	cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
 
 	cur.execute(query)
 	conn.commit()
