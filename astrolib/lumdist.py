@@ -68,6 +68,7 @@
 from numpy import array, ndarray, sqrt, sin, sinh, maximum
 from cosmo_param import cosmo_param
 from scipy.integrate import quad
+from math import sqrt as msqrt
 
 def ldist(z, q0=None, lambda0=None):
    
@@ -76,7 +77,9 @@ def ldist(z, q0=None, lambda0=None):
    term3 = z * (2. + z) * lambda0
    denom = (term1 * term2 - term3)
    if denom>0:
-      out = 1. / sqrt(denom)
+      out = 1. / msqrt(denom) # since the function is used with scalar arguments
+								  # I use math.sqrt instead of numpy.sqrt for
+                                  # performance reasons
    else:
       out = 0.
    return out
