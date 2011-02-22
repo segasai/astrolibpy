@@ -75,14 +75,10 @@ def ldist(z, q0=None, lambda0=None):
    term2 = 1. + 2. * (q0 + lambda0) * z
    term3 = z * (2. + z) * lambda0
    denom = (term1 * term2 - term3)
-   out = z * 0.
-   good = denom > 0.0
-   if isinstance(z,ndarray):
-      out[good] = 1. / sqrt(denom[good])
+   if denom>0:
+      out = 1. / sqrt(denom)
    else:
-      if good:
-         out = 1. / sqrt(denom)
-      
+      out = 0.
    return out
 
 
@@ -136,5 +132,4 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
          if k < 0:   
             dlum = maximum(sin(sqrt(-k) * dlum) / sqrt(-k), 0)
       return scalret(c * (1 + z) * dlum / h0)
-   
 
