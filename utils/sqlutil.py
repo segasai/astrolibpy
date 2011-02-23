@@ -114,6 +114,16 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 							# in the converter process
 			if proc.is_alive():
 				proc.terminate()
+
+			try:
+				cur.close()
+			except:
+				pass
+			try:
+				conn.rollback()
+			except:
+				pass
+
 			raise
 		proc.join()
 		if reslist == []:
