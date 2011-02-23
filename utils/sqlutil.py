@@ -52,6 +52,15 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 		cur = conn.cursor()
 	return cur
 
+def __converter(qIn, qOut, endEvent):
+	while(not endEvent.is_set()):
+		try:
+			tups = qIn.get(True,0.1)
+		except Queue.Empty:
+			continue
+		qOut.put(numpy.core.records.array(tups))
+
+
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None):
@@ -67,89 +76,86 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
 				host=host)
-	cur = getCursor(conn, driver=driver, preamb=preamb)
+	try:
+		cur = getCursor(conn, driver=driver, preamb=preamb)
 
-	if params is None:
-		res = cur.execute(query)
-	else:
-		res = cur.execute(query, params)
+		if params is None:
+			res = cur.execute(query)
+		else:
+			res = cur.execute(query, params)
 
-	qIn = Queue.Queue(1)
-	qOut = Queue.Queue()
-	endEvent = threading.Event()
-	nrec = 0
-	def converter():
-		while(not endEvent.is_set()):
+		qIn = Queue.Queue(1)
+		qOut = Queue.Queue()
+		endEvent = threading.Event()
+		nrec = 0
+		reslist=[]
+		if driver=='psycopg2':
+			proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent))
+			proc.start()
 			try:
-				tups = qIn.get(True,0.1)
-			except Queue.Empty:
-				continue
-			qOut.put(numpy.core.records.array(tups))
-	reslist=[]
-	if driver=='psycopg2':
-		proc = threading.Thread(target=converter)
-		proc.start()
-		try:
-			while(True):
-				tups = cur.fetchmany()
-				if tups == []:
-					break
-				qIn.put(tups)
-				nrec+=1
+				while(True):
+					tups = cur.fetchmany()
+					if tups == []:
+						break
+					qIn.put(tups)
+					nrec+=1
+					try:
+						reslist.append(qOut.get(False))
+						nrec-=1
+					except Queue.Empty:
+						pass
 				try:
-					reslist.append(qOut.get(False))
-					nrec-=1
+					while(nrec!=0):
+						reslist.append(qOut.get(True))
+						nrec-=1
 				except Queue.Empty:
 					pass
-			try:
-				while(nrec!=0):
-					reslist.append(qOut.get(True))
-					nrec-=1
-			except Queue.Empty:
-				pass
-			endEvent.set()
-		except BaseException:
-			endEvent.set()
-			proc.join(0.2) # notice that here the timeout is larger than the timeout
-							# in the converter process
-			if proc.is_alive():
-				proc.terminate()
+				endEvent.set()
+			except BaseException:
+				endEvent.set()
+				proc.join(0.2) # notice that here the timeout is larger than the timeout
+								# in the converter process
+				if proc.is_alive():
+					proc.terminate()
+				raise
+			proc.join()
+			if reslist == []:
+				return None
+			res=numpy.concatenate(reslist)
 
-			try:
-				cur.close()
-			except:
-				pass
-			try:
-				conn.rollback()
-			except:
-				pass
-
-			raise
-		proc.join()
-		if reslist == []:
-			return None
-		res=numpy.concatenate(reslist)
-
-	elif driver=='sqlite3':
-		tups=cur.fetchall()
-		if len(tups)>0:
-			_cast = {types.BooleanType: numpy.bool,
-				types.IntType: numpy.int32,
-				types.LongType: numpy.int64,
-				types.FloatType: numpy.float64,
-				types.StringType: numpy.str,
-				types.UnicodeType: numpy.str}
-			try:
-				typelist=[_cast[type(tmp)] for tmp in tups[0]]
-			except KeyError:
-				raise Exception("Unknown datatype")
-			res = numpy.core.records.array(tups)
-		else:
-			return None
-	res=[res[tmp] for tmp in res.dtype.names]
+		elif driver=='sqlite3':
+			tups=cur.fetchall()
+			if len(tups)>0:
+				_cast = {types.BooleanType: numpy.bool,
+					types.IntType: numpy.int32,
+					types.LongType: numpy.int64,
+					types.FloatType: numpy.float64,
+					types.StringType: numpy.str,
+					types.UnicodeType: numpy.str}
+				try:
+					typelist=[_cast[type(tmp)] for tmp in tups[0]]
+				except KeyError:
+					raise Exception("Unknown datatype")
+				res = numpy.core.records.array(tups)
+			else:
+				return None
+		res=[res[tmp] for tmp in res.dtype.names]
+	except BaseException:
+		try:
+			cur.close()
+		except:
+			pass
+		try:
+			conn.rollback()
+		except:
+			pass
+		if not connSupplied:
+			conn.close() # do not close if we were given the connection
+		raise
 
 	cur.close()
-	conn.commit()
+	conn.rollback()
+	
 	if not getConn:
 		if not connSupplied:
 			conn.close() # do not close if we were given the connection
@@ -164,9 +170,26 @@ def execute(query, db="wsdb", driver="psycopg2", user=None,
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
 				host=host)
-	cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
-
-	cur.execute(query)
+	try:
+		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
+		
+		cur.execute(query)
+	except BaseException:
+		try:
+			cur.close()
+		except:
+			pass
+		try:
+			conn.rollback()
+		except:
+			pass
+		if not connSupplied:
+			try:
+				conn.close() # do not close if we were given the connection
+			except:
+				pass
+		raise
+	cur.close()
 	conn.commit()
 	if not connSupplied:
 		conn.close() # do not close if we were given the connection
