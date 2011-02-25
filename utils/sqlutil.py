@@ -142,12 +142,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		res=[res[tmp] for tmp in res.dtype.names]
 	except BaseException:
 		try:
-			cur.close()
-		except:
-			pass
-		try:
 			conn.rollback()
-		except:
+		except Exception:
 			pass
 		if not connSupplied:
 			conn.close() # do not close if we were given the connection
@@ -176,12 +172,8 @@ def execute(query, db="wsdb", driver="psycopg2", user=None,
 		cur.execute(query)
 	except BaseException:
 		try:
-			cur.close()
-		except:
-			pass
-		try:
 			conn.rollback()
-		except:
+		except Exception:
 			pass
 		if not connSupplied:
 			try:
