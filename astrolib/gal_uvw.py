@@ -109,7 +109,9 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
    v = (a_g[0,1] * cosa * cosd + a_g[1,1] * sina * cosd + a_g[2,1] * sind) * vec1 + (-a_g[0,1] * sina + a_g[1,1] * cosa) * vec2 + (-a_g[0,1] * cosa * sind - a_g[1,1] * sina * sind + a_g[2,1] * cosd) * vec3
    w = (a_g[0,2] * cosa * cosd + a_g[1,2] * sina * cosd + a_g[2,2] * sind) * vec1 + (-a_g[0,2] * sina + a_g[1,2] * cosa) * vec2 + (-a_g[0,2] * cosa * sind - a_g[1,2] * sina * sind + a_g[2,2] * cosd) * vec3
 
-   lsr_vel = numpy.array([8.5, 13.38, 6.49])
+   lsr_vel = numpy.array([-8.5, 13.38, 6.49]) # notice the sign of the first velocity 
+   											#component, it is negative because 
+									# in this program U points toward anticenter
    if (lsr is not None):   
       u = u + lsr_vel[0]
       v = v + lsr_vel[1]
