@@ -23,7 +23,7 @@ import scipy.ndimage.filters
 from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
-import types, sys
+import types, sys, math
 import warnings
 
 # this module is by default in interactive regime 
@@ -140,16 +140,20 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			weights =weights[ind]
 	else:
 		dat = x
+	maxNone = False
 	if min is None:
 		min = numpy.min(dat)
 	if max is None:
+		maxNone = True
 		max = numpy.max(dat)
 	
 	if bin is None and nbins is None:
 		nbins = 100
 		bin = (max - min) * 1. / nbins
 	elif nbins is None:
-		nbins = int((max - min) * 1. / bin)
+		nbins = int(math.ceil((max - min) * 1. / bin))
+		if maxNone:
+			max = min + nbins * bin
 	elif bin is None:
 		bin = (max - min) * 1. / nbins
 	else:
