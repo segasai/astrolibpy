@@ -61,12 +61,13 @@ class idlsave:
 		if len(names)!=len(args):
 			raise Exception("The number of variable names should \
 					be equal to the number of variables)")
-		dhash={}
+		curhash={}
 		for a in range(len(names)):
-			dhash[names[a]]=args[a]
+			curhash[names[a]]=args[a]
 		f=open(filename,"w")
-		cPickle.dump(dhash, f, 2)
+		cPickle.dump(curhash, f, 2)
 		f.close()
+		del curhash
 		return None
 
 	@staticmethod
