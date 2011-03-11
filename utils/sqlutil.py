@@ -120,7 +120,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				raise
 			proc.join()
 			if reslist == []:
-				return None
+				nCols = len(cur.description)
+				return tuple([None]*nCols)
 			res=numpy.concatenate(reslist)
 
 		elif driver=='sqlite3':
