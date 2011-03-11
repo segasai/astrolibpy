@@ -121,8 +121,9 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			proc.join()
 			if reslist == []:
 				nCols = len(cur.description)
-				return tuple([None]*nCols)
-			res=numpy.concatenate(reslist)
+				res = tuple([None]*nCols)
+			else:
+				res = numpy.concatenate(reslist)
 
 		elif driver=='sqlite3':
 			tups=cur.fetchall()
