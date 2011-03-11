@@ -121,7 +121,9 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			proc.join()
 			if reslist == []:
 				nCols = len(cur.description)
-				res = tuple([None]*nCols)
+				res = numpy.array([],
+					dtype=numpy.dtype([('a%d'%i,'f') for i in range(nCols)])
+									)				
 			else:
 				res = numpy.concatenate(reslist)
 
@@ -141,7 +143,9 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				res = numpy.core.records.array(tups)
 			else:
 				return None
+
 		res=[res[tmp] for tmp in res.dtype.names]
+
 	except BaseException:
 		try:
 			conn.rollback()
