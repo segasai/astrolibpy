@@ -253,14 +253,14 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
 		del ind
 	elif xrange is None and yrange is not None:
-		ind=(y<numpy.maximum(yr[1],yr[0])) & (y>numpy.minimum(yr[0],yr[1])) & numpy.isfinite(x)
+		ind=(y<numpy.maximum(yrange[1],yrange[0])) & (y>numpy.minimum(yrange[0],yrange[1])) & numpy.isfinite(x)
 		if ind.any():
 			xrange=[numpy.min(x[ind]),numpy.max(x[ind])]
 		else:
 			xrange=[numpy.min(x),numpy.max(x)]
 		del ind
 	elif xrange is not None and yrange is None:
-		ind=(x<numpy.maximum(xr[1],xr[0])) & (x>numpy.minimum(xr[0],xr[1])) & numpy.isfinite(y)
+		ind=(x<numpy.maximum(xrange[1],xrange[0])) & (x>numpy.minimum(xrange[0],xrange[1])) & numpy.isfinite(y)
 		if ind.any():
 			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
 		else:
