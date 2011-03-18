@@ -492,8 +492,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
 								weights=weights)
 		if weight_norm:
-			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
-								weights=weights)
+			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins)
 			hh = hh*1./hh1
 
 	if normx:
