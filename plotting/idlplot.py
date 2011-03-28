@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
-import scipy.ndimage.filters
+import scipy.ndimage.filters, scipy.stats
 from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
@@ -348,7 +348,8 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
-			bar_fraction=0.05, zlog=False, smooth=None, **kw):
+			bar_fraction=0.05, zlog=False, smooth=None, vmaxfrac=None,
+			vminfrac=None, **kw):
 	"""
 	Display the 2D image with proper axes (similar to plt.imshow)
 	Example:
@@ -396,6 +397,11 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		raise ValueError('Wrong dimensions of the input array')
 	if smooth is not None:
 		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
+	if vminfrac is not None and vmin is None:
+		vmin = scipy.stats.scoreatpercentile(im.flat, 100 * vminfrac)
+	if vmaxfrac is not None and vmax is None:
+		vmax = scipy.stats.scoreatpercentile(im.flat, 100 * vmaxfrac)
+
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
 	else:
@@ -423,7 +429,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				xflip=False, yflip=False, bar=False, bar_label='',
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False, normy=False,
-				xlog=False, ylog=False, weight_norm=False, **kw):
+				xlog=False, ylog=False, weight_norm=False,
+				vminfrac=None, vmaxfrac=None, **kw):
 	""" Plot the 2D histogram of the data
 	Example:
 	>> tvhist2d(xs,ys,bins=[30,30])
@@ -514,6 +521,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	plt.gca().set_ylabel(ytitle)
 	if smooth is not None:
 		hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
+	if vminfrac is not None and vmin is None:
+		vmin = scipy.stats.scoreatpercentile(hh.flat, 100 * vminfrac)
+	if vmaxfrac is not None and vmax is None:
+		vmax = scipy.stats.scoreatpercentile(hh.flat, 100 * vmaxfrac)
+			
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
 	else:
