@@ -401,6 +401,10 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		vmin = scipy.stats.scoreatpercentile(im.flat, 100 * vminfrac)
 	if vmaxfrac is not None and vmax is None:
 		vmax = scipy.stats.scoreatpercentile(im.flat, 100 * vmaxfrac)
+	if vmin>=vmax:
+		warnings.warn("vmin is >= vmax... Resetting their values",RuntimeWarning)
+		vmin=None
+		vmax=None
 
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
@@ -525,6 +529,10 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		vmin = scipy.stats.scoreatpercentile(hh.flat, 100 * vminfrac)
 	if vmaxfrac is not None and vmax is None:
 		vmax = scipy.stats.scoreatpercentile(hh.flat, 100 * vmaxfrac)
+	if vmin>=vmax:
+		warnings.warn("vmin is >= vmax... Resetting their values",RuntimeWarning)
+		vmin=None
+		vmax=None
 			
 	if zlog:
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
