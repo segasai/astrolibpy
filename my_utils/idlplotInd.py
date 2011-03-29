@@ -51,6 +51,7 @@ def ploterror(a,b,c,*args,**kw):
 	else:
 		del kw['ind']
 		l = len(args)
+		args1=[None]*l
 		for i in range(l):
-			args[i]=args[i][ind]
-		idlplot.ploterror(a[ind],b[ind],c[ind],*args,**kw)
+			args1[i]=args[i][ind]
+		idlplot.ploterror(a[ind],b[ind],c[ind],*args1,**kw)
