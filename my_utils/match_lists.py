@@ -21,9 +21,10 @@ from numpy import sin,cos,deg2rad,rad2deg,arcsin
 
 scipy_version  = float('.'.join(version.version.split('.')[0:2]))
 
-def match_lists(ra1, dec1, ra2, dec2, dist):
+def match_lists(ra1, dec1, ra2, dec2, dist, numNei=1):
 	"""crossmatches the list of objects (ra1,dec1) with
-	another list of objects (ra2,dec2) with the dist matching radius
+	another list of objects (ra2,dec2) with the matching radius "dist"
+	The routines searche for up to numNei closest neighbors
 	the routine returns the distance to the neighbor and the list 
 	of indices of the neighbor. Everything is in degrees.
 	if no match is found the distance is NaN.
@@ -46,7 +47,7 @@ def match_lists(ra1, dec1, ra2, dec2, dist):
 		tree2 = scipy.spatial.KDTree(xyz2.T)
 	else:
 		tree2 = scipy.spatial.cKDTree(xyz2.T)
-	ret = tree2.query(xyz1.T, 1, 0, 2, mindist)
+	ret = tree2.query(xyz1.T, numNei, 0, 2, mindist)
 	dist, ind = ret
 	dist = rad2deg(2*arcsin(dist/2))
 	return dist, ind
