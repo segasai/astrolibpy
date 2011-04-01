@@ -37,6 +37,9 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 			if a=='I':
 				curtype=numpy.int32
 				convs[i]=retnull
+			if a=='L':
+				curtype=numpy.int64
+				convs[i]=retnull
 			elif a=='F':
 				curtype=numpy.float32
 				convs[i]=retnull
@@ -59,6 +62,8 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 		for a in formats:
 			if a=='I':
 				tmp=numpy.zeros(nrows,dtype=numpy.int32)
+			if a=='L':
+				tmp=numpy.zeros(nrows,dtype=numpy.int64)
 			elif a=='F':
 				tmp=numpy.zeros(nrows,dtype=numpy.float32)
 			elif a=='D':
