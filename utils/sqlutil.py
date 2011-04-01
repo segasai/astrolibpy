@@ -152,7 +152,10 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		except Exception:
 			pass
 		if not connSupplied:
-			conn.close() # do not close if we were given the connection
+			try:
+				conn.close() # do not close if we were given the connection
+			except:
+				pass
 		raise
 
 	cur.close()
