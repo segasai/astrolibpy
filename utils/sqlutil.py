@@ -63,7 +63,7 @@ def __converter(qIn, qOut, endEvent):
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
-						getConn=False, conn=None):
+						getConn=False, conn=None, maskNull=False):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -145,6 +145,10 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				return None
 
 		res=[res[tmp] for tmp in res.dtype.names]
+		if maskNull:
+			for i in range(len(res)):
+				if res[i].dtype==numpy.object:
+					res[i]=res[i].astype(numpy.float)
 
 	except BaseException:
 		try:
