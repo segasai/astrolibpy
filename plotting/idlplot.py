@@ -349,6 +349,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
 			bar_fraction=0.05, zlog=False, smooth=None, vmaxfrac=None,
+			xflip=False, yflip=False,
 			vminfrac=None, **kw):
 	"""
 	Display the 2D image with proper axes (similar to plt.imshow)
@@ -410,6 +411,10 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
 	else:
 		norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)		
+	if xflip:
+		im = numpy.fliplr(im)
+	if yflip:
+		im = numpy.flipud(im)
 	
 	axim = plt.imshow(im, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, norm=norm, **kw)
