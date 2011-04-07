@@ -48,8 +48,8 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
  	mults.reverse()	
 	for i in xrange(nd):
 		cur_arr = arrs[i]
-		cur_range0 = range[i][0]
-		cur_range1 = range[i][1]
+		cur_range0 = float(range[i][0])
+		cur_range1 = float(range[i][1])
 		cur_nbins = nbins[i]
 		cur_mult = mults[i]
 		code1 = """
@@ -72,6 +72,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 			scipy.weave.inline(code1, ['cur_range0', 'cur_range1', 'cur_nbins','poss','ind','nx','cur_arr','cur_mult'],
 				type_converters=scipy.weave.converters.blitz)
 		except:
+			print "Sorry the compiled version didn't work :("
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins * 
 									1. / (cur_range1 - cur_range0))
 			cur_pos = numpy.floor(cur_pos).astype(numpy.int64)
