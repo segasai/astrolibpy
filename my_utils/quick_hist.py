@@ -57,7 +57,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 		double curfac = cur_nbins * 1./ (cur_range1-cur_range0);
 		for (i=0; i<nx; i++)
 		{
-			cur_pos = floor( ( cur_arr(i)-cur_range0) * curfac);
+			cur_pos = (int)floor( ( cur_arr(i)-cur_range0) * curfac);
 
 			if ((cur_pos>=0 ) && (cur_pos<cur_nbins))
 			{
@@ -69,9 +69,8 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 			}
 		}"""
 		try:
-			if weights is None:
-				scipy.weave.inline(code1, ['cur_range0', 'cur_range1', 'cur_nbins','poss','ind','nx','cur_arr','cur_mult'],
-					type_converters=scipy.weave.converters.blitz)
+			scipy.weave.inline(code1, ['cur_range0', 'cur_range1', 'cur_nbins','poss','ind','nx','cur_arr','cur_mult'],
+				type_converters=scipy.weave.converters.blitz)
 		except:
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins * 
 									1. / (cur_range1 - cur_range0))
