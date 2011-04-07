@@ -489,21 +489,21 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
 	range = [[ymin, ymax],[xmin, xmax]]
 	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
-
+	binsRev = bins[::-1]
 	if not quick:
 		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
-												bins=bins, weights=weights)
+												bins=binsRev, weights=weights)
 		if weight_norm:
 			hh1, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
-												bins=bins, weights=None)
+												bins=binsRev, weights=None)
 			hh = hh*1./hh1
 			
 	else:
 		import quick_hist
-		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins,
+		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=binsRev,
 								weights=weights)
 		if weight_norm:
-			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=bins)
+			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=binsRev)
 			hh = hh*1./hh1
 
 	if normx:
