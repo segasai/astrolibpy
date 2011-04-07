@@ -40,6 +40,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 			raise ValueError('The weights array MUST have the same length as the input arrays')
 	
 	poss = numpy.zeros((nx,), dtype=numpy.int64)
+
 	ind = numpy.ones_like(arrs[0]).astype(bool)
 	nbins_rev = nbins + []
 	nbins_rev.reverse()
@@ -47,14 +48,37 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
  	mults.reverse()	
 	for i in xrange(nd):
 		cur_arr = arrs[i]
-		cur_range = range[i]
+		cur_range0 = range[i][0]
+		cur_range1 = range[i][1]
 		cur_nbins = nbins[i]
-		cur_pos = (cur_arr - cur_range[0]) * (cur_nbins * 
-								1. / (cur_range[1] - cur_range[0]))
-		cur_pos = numpy.floor(cur_pos).astype(numpy.int64)
-		ind &= ((cur_pos >= 0) & ( cur_pos < cur_nbins))
-		poss += cur_pos * mults[i]
-		del cur_pos
+		cur_mult = mults[i]
+		code1 = """
+		int i, cur_pos;
+		double curfac = cur_nbins * 1./ (cur_range1-cur_range0);
+		for (i=0; i<nx; i++)
+		{
+			cur_pos = floor( ( cur_arr(i)-cur_range0) * curfac);
+
+			if ((cur_pos>=0 ) && (cur_pos<cur_nbins))
+			{
+				poss(i)=poss(i)+cur_pos*cur_mult;
+			}
+			else
+			{
+				ind(i)=false;
+			}
+		}"""
+		try:
+			if weights is None:
+				scipy.weave.inline(code1, ['cur_range0', 'cur_range1', 'cur_nbins','poss','ind','nx','cur_arr','cur_mult'],
+					type_converters=scipy.weave.converters.blitz)
+		except:
+			cur_pos = (cur_arr - cur_range0) * (cur_nbins * 
+									1. / (cur_range1 - cur_range0))
+			cur_pos = numpy.floor(cur_pos).astype(numpy.int64)
+			ind &= ((cur_pos >= 0) & ( cur_pos < cur_nbins))
+			poss += cur_pos * cur_mult
+
 	poss = poss[ind]
 	newlen = len(poss)
 	if weights is None:
