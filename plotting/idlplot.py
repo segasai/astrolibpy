@@ -39,7 +39,10 @@ def listToArrFlat(x):
 	if isinstance(x, types.ListType):
 		return numpy.array(x).flatten()
 	else:
-		return x.flatten()
+		if x.ndim!=1:
+			return x.flatten()
+		else:
+			return x
 
 def get_marker(ps, linestyle):
 	"""
@@ -474,16 +477,16 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 	x1 = listToArrFlat(x)
 	y1 = listToArrFlat(y)
-	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
+	#ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 
 	if xmin is None:
-		xmin = x1[ind].min()
+		xmin = numpy.nanmin(x1)
 	if ymin is None:
-		ymin = y1[ind].min()
+		ymin = numpy.nanmin(y1)
 	if xmax is None:
-		xmax = x1[ind].max()
+		xmax = numpy.nanmax(x1)
 	if ymax is None:
-		ymax = y1[ind].max()
+		ymax = numpy.nanmax(y1)
 
 	range1 = (xmin, xmax, ymin, ymax)
 	if xlog is True:
@@ -493,22 +496,21 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		y1=numpy.log10(y1)
 		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
 	range = [[ymin, ymax],[xmin, xmax]]
-	ind = numpy.isfinite(x1) & numpy.isfinite(y1)
 	binsRev = bins[::-1]
 	if not quick:
-		hh, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
+		hh, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
 												bins=binsRev, weights=weights)
 		if weight_norm:
-			hh1, yedges, xedges = scipy.histogram2d(y1[ind], x1[ind], range=range,
+			hh1, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
 												bins=binsRev, weights=None)
 			hh = hh*1./hh1
 			
 	else:
 		import quick_hist
-		hh = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=binsRev,
+		hh = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev,
 								weights=weights)
 		if weight_norm:
-			hh1 = quick_hist.quick_hist((y1[ind], x1[ind]), range=range, nbins=binsRev)
+			hh1 = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev)
 			hh = hh*1./hh1
 
 	if normx:
