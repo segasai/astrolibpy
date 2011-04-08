@@ -29,7 +29,7 @@ exec (idlsave.restore('xx.sav'))
 
 import cPickle
 import types
-
+import re,struct
 
 class idlsave:
 	""" The class devoted for saving and restoring the python variable in
@@ -38,9 +38,21 @@ class idlsave:
 	dhash={}
 	def __init(self):
 		pass
-	
+
 	@staticmethod
-	def save(filename=None, names=None, *args):
+	def versionId(version):
+		return 'IDLSAVE-v%04d'%version
+
+	@staticmethod
+	def parseVersion(s):
+		m=re.match('IDLSAVE-v(\d\d\d\d)',s)
+		if m is None:
+			return 1
+		else:
+			return int(m.group(1))
+		
+	@staticmethod
+	def save(filename=None, names=None, *args, **kw):
 		"""
 		Saves your variable in a file, in such a way that you can easily
 		retrieve them later. 
@@ -61,17 +73,32 @@ class idlsave:
 		if len(names)!=len(args):
 			raise Exception("The number of variable names should \
 					be equal to the number of variables)")
+		f=open(filename,"w")
+		version = kw.get('version',2)
 		curhash={}
 		for a in range(len(names)):
 			curhash[names[a]]=args[a]
-		f=open(filename,"w")
-		cPickle.dump(curhash, f, 2)
+
+		if version==1:
+			cPickle.dump(curhash, f, 2)
+		elif version==2:
+			f.write(idlsave.versionId(version))
+			headlen1 = f.tell()
+			f.write(struct.pack('!q',long(0)))			
+			offsets = dict([(name,long(0)) for name in names])
+			for name in names:
+				offsets[name] = long(f.tell())
+				cPickle.dump(curhash[name], f, 2)
+			offOffs = f.tell()
+			cPickle.dump(offsets, f, 2)
+			f.seek(headlen1)
+			f.write(struct.pack('!q',long(offOffs)))
 		f.close()
 		del curhash
 		return None
 
 	@staticmethod
-	def restore(filename=None, names=None, asdict=False):
+	def restore(filename=None, names=None, asdict=False, version=None):
 		"""Restores the variables stored in a file by idlsave.save routine
 		Example: 
 		> exec(idlsave.restore("mydat.psav"))
@@ -79,27 +106,62 @@ class idlsave:
 		Note that you MUST use this exact form exec(idlsave.restore(...))
 		"""
 		f=open(filename,"r")
-		xx=cPickle.load(f)
-		idlsave.dhash=xx
-		f.close()
-		if names is None:
-			if asdict:
-				ret=idlsave.dhash.copy()
+		vid = idlsave.versionId(1)
+		prefix=f.read(len(vid))
+		if version is None:
+			version=idlsave.parseVersion(prefix) 
+		if version==1:
+			f.seek(0) # there is no header in the version1 files
+		
+		if version==1:
+			xx=cPickle.load(f)
+			idlsave.dhash=xx
+			f.close()
+			if names is None:
+				if asdict:
+					ret=idlsave.dhash.copy()
+					del idlsave.dhash
+					return ret
+				buf=",".join(idlsave.dhash.iterkeys())
+				if len(idlsave.dhash)==1:
+					buf=buf+','
+				buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
+				return buf
+			else:
+				names=names.split(',')
+				res=[idlsave.dhash[a] for a in names]
 				del idlsave.dhash
-				return ret
-			buf=",".join(idlsave.dhash.iterkeys())
-			if len(idlsave.dhash)==1:
-				buf=buf+','
-			buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
-			return buf
-		else:
-			names=names.split(',')
-			res=[idlsave.dhash[a] for a in names]
-			del idlsave.dhash
-			return res
+				return res
+		elif version==2:
+			offOff = struct.unpack('!q',f.read(8))[0]
+			f.seek(offOff)
+			offsets=cPickle.load(f)
+			if names is None:
+				names1 = offsets.keys()
+			else:
+				names1 = names.split(',')
+			hash = {}
+			for name in names1:
+				off = offsets[name]
+				f.seek(off)
+				hash[name] = cPickle.load(f)
+			if asdict:
+				return hash
+			idlsave.dhash=hash
+			f.close()
+			if names is None:
+				buf=",".join(idlsave.dhash.iterkeys())
+				if len(idlsave.dhash)==1:
+					buf=buf+','
+				buf=buf+"=idlsave.getallvars()"
+				return buf # return the string for exec
+			else:
+				res=[idlsave.dhash[a] for a in names1]
+				del idlsave.dhash
+				return res
 
 	@staticmethod
-	def getallvars(filename=None):
+	def getallvars():
 		tup=tuple(a for a in idlsave.dhash.itervalues())
 		del idlsave.dhash
 		return tup
