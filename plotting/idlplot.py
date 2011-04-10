@@ -442,7 +442,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar_fraction=0.05, smooth=None, quick=False,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, weight_norm=False,
-				vminfrac=None, vmaxfrac=None, **kw):
+				vminfrac=None, vmaxfrac=None, position=None, **kw):
 	""" Plot the 2D histogram of the data
 	Example:
 	>> tvhist2d(xs,ys,bins=[30,30])
@@ -527,6 +527,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 	if not noerase:
 		plt.gcf().clf()
+	if position is not None:
+		mypos=position[:]
+		mypos[2]=position[2]-position[0]
+		mypos[3]=position[3]-position[1]
+		plt.axes(mypos)
 
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
