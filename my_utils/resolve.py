@@ -3,6 +3,15 @@ from suds.client import Client
 from lxml import etree
 
 def resolve(objectName):
+	"""
+	Resolve the object by name using CDS
+	Example:
+	>> resolve.resolve('M31')
+	(10.684708329999999, 41.268749999999997)
+
+	Requires the following modules:
+		suds, lxml
+	"""
 	url = 'http://cdsws.u-strasbg.fr/axis/services/Sesame?wsdl'
 	client = Client(url)    
 	xml=client.service.SesameXML(objectName)           
