@@ -125,7 +125,7 @@ class idlsave:
 				buf=",".join(idlsave.dhash.iterkeys())
 				if len(idlsave.dhash)==1:
 					buf=buf+','
-				buf=buf+"=idlsave.getallvars(filename=\"%s\")"%filename
+				buf=buf+"=idlsave.getallvars()"
 				return buf
 			else:
 				names=names.split(',')
