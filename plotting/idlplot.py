@@ -310,7 +310,7 @@ def oplot (x, y=None, **kw):
 @exceptionDecorator
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
-				**kw):
+				markersize=None,**kw):
 	"""
 	Plot the data with error-bars
 	
@@ -335,10 +335,11 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	
 	if kw.get('yr') is None:
 		kw['yr'] = [numpy.nanmin(y-erry),numpy.nanmax(y+erry)]
-	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw)
+	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, markersize=markersize,
+		 **kw)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
-			'elinewidth':elinewidth} 
+			'elinewidth':elinewidth,'markeredgewidth':elinewidth,'markersize':markersize} 
 	if capsize is not None:
 		kw1['capsize']=capsize
 	if err1 is None:
