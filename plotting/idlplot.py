@@ -332,14 +332,18 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	else:
 		erry = listToArr(err1)
 		errx = listToArr(err0)
-	
-	if kw.get('yr') is None:
-		kw['yr'] = [numpy.nanmin(y-erry),numpy.nanmax(y+erry)]
+	kw0 = kw.copy()
+	if kw0.get('yr') is None:
+		kw0['yr'] = [numpy.nanmin(y-erry),numpy.nanmax(y+erry)]
+	if markersize is not None:
+		kw0['markersize']=markersize
 	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, markersize=markersize,
-		 **kw)
+		 **kw0)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
-			'elinewidth':elinewidth,'markeredgewidth':elinewidth,'markersize':markersize} 
+			'elinewidth':elinewidth,'markeredgewidth':elinewidth} 
+	if markersize is not None:
+		kw1['markersize']=markersize
 	if capsize is not None:
 		kw1['capsize']=capsize
 	if err1 is None:
