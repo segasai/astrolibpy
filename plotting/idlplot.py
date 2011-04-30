@@ -194,6 +194,8 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	if norm:
 		hh1=hh1*1./hh1.max()
 	kw['ps'] = kw.get('ps') or 0
+	if 'yr' not in kw:
+		kw['yr']=[hh.min(),hh.max()]
 	func(loc1, hh1, color=color, xrange=xrange, yrange=yrange,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
