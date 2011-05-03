@@ -1,4 +1,3 @@
-
 """
 code taken from here:
  http://codingmess.blogspot.com/2009/05/conversion-of-wavelength-in-nanometers.html
@@ -8,7 +7,7 @@ def wav2RGB(wavelength):
 	"""
 	convert wavelength in angstrems to matplotlib color string
 	"""
-	w = int(wavelength)/10. # convert to nm
+	w = int(wavelength/10.) # convert to integer nanometers
 	
 	# colour
 	if w >= 380 and w < 440:
@@ -51,7 +50,7 @@ def wav2RGB(wavelength):
 		SSS = 0.0
 	SSS *= 255
 
-	val=(int(SSS*R), int(SSS*G), int(SSS*B))
-	strval="#%02x%02x%02x"%(val)
+	val = (int(SSS*R), int(SSS*G), int(SSS*B))
+	strval = "#%02x%02x%02x"%(val)
 	return strval
 
