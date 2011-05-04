@@ -44,6 +44,9 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 		cur = conn.cursor()
 		if preamb is not None:
 			cur.execute(preamb)
+		else:
+			cur.execute('set cursor_tuple_fraction TO 1') 
+			# this is required because otherwise PG may decide to execute a different plan
 		if notNamed:
 			return cur
 		cur = conn.cursor(name='sqlutilcursor')
