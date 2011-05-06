@@ -571,7 +571,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 
 @exceptionDecorator
 def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
-		xr=None, yr=None, zr=None, title="", xtitle="", ytitle="",
+		xr=None, yr=None, zr=None, title=None, xtitle=None, ytitle=None,
 		position=None, xlog=False, ylog=False, zlog=False, xticklabel = None,
 		yticklabel = None, zticklabel = None, levels=None, nlevels=256,
 		c_color="black", cm ="jet", c_line="solid", c_levels=None,
@@ -661,9 +661,13 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 #	axis.frame.set_linewidth(thick) 
 
 # Setup x-, y-titles and the main title:
-	axis.set_xlabel(xtitle)
-	axis.set_ylabel(ytitle)
-	plt.title(title)
+	
+	if xtitle is not None:
+		axis.set_xlabel(xtitle)
+	if ytitle is not None:
+		axis.set_ylabel(ytitle)
+	if title is not None:
+		plt.title(title)
 
 # Assume autoscale is off:	
 	axis.set_autoscale_on(False)
