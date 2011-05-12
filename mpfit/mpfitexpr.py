@@ -20,7 +20,8 @@ import re
 import numpy
 import scipy
 
-def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False, **kw):
+def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False,
+						imports=None, **kw):
 	"""Fit the used defined expression to the data
 	Input:
 	- func: string with the function definition 
@@ -33,6 +34,7 @@ def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False, **k
 	Keywords:
 	- check: boolean parameter. If true(default) the function will be checked for sanity
 	- full_output: boolean parameter. If True(default is False) then instead of best-fit parameters the mpfit object is returned
+	- imports: list of strings, of optional modules to be imported, required to evaluate the function
 	Example:
 	params,yfit=mpfitexpr('p[0]+p[2]*(x-p[1])',x,y,err,[0,10,1])
 	
@@ -45,8 +47,16 @@ def mpfitexpr(func, x, y, err , start_params, check=True, full_output=False, **k
 	
 	"""
 
+	hash={}
+	hash['numpy']=numpy
+	hash['scipy']=scipy
+	
+	if imports is not None:
+		for i in imports:
+			#exec '%s=__import__("%s")'%(a,b) in globals(),locals()
+			hash[i]= __import__(i)
 	def myfunc(p,fjac=None,x=None, y=None, err=None):
-		return [0, eval('(y-(%s))/err'%func)]
+		return [0, eval('(y-(%s))/err'%func,hash,locals())]
 
 	myre = "[^a-zA-Z]p\[(\d+)\]"
 	r = re.compile(myre)
