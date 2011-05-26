@@ -24,13 +24,13 @@ from matplotlib.pyplot import draw_if_interactive
 
 import matplotlib
 import types, sys, math
-import warnings
+import warnings,array
 
 # this module is by default in interactive regime 
 plt.ion()
 
 def listToArr(x):
-	if isinstance(x, types.ListType):
+	if isinstance(x, types.ListType) or isinstance(array.array):
 		return numpy.array(x)
 	else:
 		return x
