@@ -21,16 +21,19 @@ def window_func(x, y, func, xmin=None, xmax=None, nbin=100, empty=False,
 		xmax = x.max()
 	if xlog:
 		xmin,xmax,x=[numpy.log10(tmp) for tmp in [xmin,xmax,x]]
-	hh,loc=scipy.histogram(x,range=(xmin,xmax),bins=nbin)
-	inds= numpy.digitize(x,loc)
-	mask=numpy.zeros(len(hh),bool)
-	retv=hh*0.	
+	#hh,loc=scipy.histogram(x,range=(xmin,xmax),bins=nbin)
+	inds = ((x-xmin)/(xmax-xmin)*nbin).astype(int)
+	mask = numpy.zeros(nbin, bool)
+	retv = numpy.zeros(nbin)
+	hh = numpy.zeros(nbin,int)
+
 	for i in range(nbin):
-		cury=y[inds==(i+1)]
+		cury=y[inds==i]
+		hh[i]=len(cury)
+		mask[i]=len(cury)>0
 		if len(cury)>0 or empty:
 			retv[i]=func(cury)
-		mask[i]=len(cury)>0
-	retx = (loc[1:]+loc[:-1])*0.5 # middle of the bin
+	retx = xmin+(xmax-xmin)*1./nbin*(0.5+numpy.arange(nbin))
 	if xlog:
 		retx = 10**retx
 	if empty:
