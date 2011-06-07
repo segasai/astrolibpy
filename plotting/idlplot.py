@@ -30,7 +30,7 @@ import warnings,array
 plt.ion()
 
 def listToArr(x):
-	if isinstance(x, types.ListType) or isinstance(array.array):
+	if isinstance(x, types.ListType) or isinstance(x,array.array):
 		return numpy.array(x)
 	else:
 		return x
