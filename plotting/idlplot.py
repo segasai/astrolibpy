@@ -312,7 +312,7 @@ def oplot (x, y=None, **kw):
 @exceptionDecorator
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
-				markersize=None,**kw):
+				markersize=None, autoscalex=False, autoscaley=False, **kw):
 	"""
 	Plot the data with error-bars
 	
@@ -348,6 +348,10 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 		kw1['markersize']=markersize
 	if capsize is not None:
 		kw1['capsize']=capsize
+
+	plt.gca().set_autoscalex_on(autoscalex)
+	plt.gca().set_autoscaley_on(autoscaley)
+
 	if err1 is None:
 		plt.gca().errorbar(x, y, erry, **kw1)
 	else:
