@@ -18,14 +18,30 @@
 import numpy
 import scipy.weave, scipy.weave.converters
 
-def quick_hist(arrs, range=None, nbins=None, weights=None):
+def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	"""
-	arr -- tuple of N-arrays
-	range -- list of tuples of ranges
-	nbins -- list of lengths	
+	N-dimensional histogram routine.
+	Example:
+	> xs=numpy.random.uniform(size=100); ys= numpy.random.uniform(size=100)
+	> hh = quick_hist((xs,ys), range=[(0,1),(0,1)], nbins=[20,10])
+	Arguments:
+		arr -- tuple of N-arrays
+		range -- list of tuples of ranges
+		nbins -- list of numbers of bins 
+	Keywords:
+		weights -- weighting for the histogram
+		getPos -- return the 1D vector of the positions within the histogram
+					(-1 if the point is outside the range)
 	"""
 	from __builtin__ import range as xrange
 	nd = len(arrs)
+	if range is None:
+		range=[]
+		for i in xrange(nd):
+			range.append((arrs[0].min(),arrs[0].max()))
+	if nbins is None:
+		nbins = [10]*nd
+				
 	if len(nbins)!=nd:
 		raise ValueError('The array of nbins MUST have the same length as the number of input data vectors')
 	if len(range)!=nd:
@@ -86,7 +102,8 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 	else:
 		weightsind = weights[ind]
 		weights_str = 'weightsind(i)'
-	del ind
+	if not getPos:	
+		del ind
 	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
 
 	code = """
@@ -110,7 +127,10 @@ def quick_hist(arrs, range=None, nbins=None, weights=None):
 		else:
 			for i in xrange(len(poss)):
 				res[poss[i]]+=weights[i]
-	
-	return res.reshape(nbins)
-		
+	if not getPos:
+		return res.reshape(nbins)
+	else:
+		H = numpy.zeros(len(ind),dtype=numpy.int64)-1
+		H[ind] = poss
+		return res.reshape(nbins),H	
 		
