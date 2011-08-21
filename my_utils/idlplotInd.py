@@ -70,3 +70,9 @@ def ploterror(a,b,c,*args,**kw):
 		for i in range(l):
 			args1[i]=args[i][ind]
 		idlplot.ploterror(a[ind],b[ind],c[ind],*args1,**kw)
+
+tvhist2d.__doc__ = idlplot.tvhist2d.__doc__
+plot.__doc__ = idlplot.plot.__doc__
+oplot.__doc__ = idlplot.oplot.__doc__
+ploterror.__doc__ = idlplot.ploterror.__doc__
+plothist.__doc__ = idlplot.plothist.__doc__
