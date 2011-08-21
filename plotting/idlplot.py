@@ -450,7 +450,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				vmin=None, vmax=None, bins=[100,100], xtitle="",
 				ytitle="", noerase=False, weights=None, zlog=False,
 				xflip=False, yflip=False, bar=False, bar_label='',
-				bar_fraction=0.05, smooth=None, quick=False,
+				bar_fraction=0.05, bar_pad=None, smooth=None, 
+				quick=False,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, weight_norm=False,
 				vminfrac=None, vmaxfrac=None, position=None,
@@ -565,7 +566,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation='nearest',
 					cmap=cmap, norm=norm, **kw)
 	if bar:
-		cb=plt.colorbar(fraction=bar_fraction)
+		cb=plt.colorbar(fraction=bar_fraction, pad=(bar_pad or 0.05))
 		cb.set_label(bar_label)
 	if xlog:
 		plt.gca().set_xscale('log')
