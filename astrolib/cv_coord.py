@@ -1,20 +1,16 @@
-import numpy
+from numpy import sin,cos,deg2rad,rad2deg,arctan2,sqrt
 
 def cv_coord(a,b,c,fr=None,to=None,degr=False):
 	if degr:
-		degrad = numpy.deg2rad
-		raddeg = numpy.rad2deg
+		degrad = deg2rad
+		raddeg = rad2deg
 	else:
 		degrad = lambda x: x
 		raddeg = lambda x: x
 	if fr=='sph':
-		cosa = numpy.cos(degrad(a))
-		sina = numpy.sin(degrad(a))
-		cosb = numpy.cos(degrad(b))
-		sinb = numpy.sin(degrad(b))
-		x=c*cosa*cosb
-		y=c*sina*cosb
-		z=c*sinb
+		x=c*cos(degrad(a))*cos(degrad(b))
+		y=c*sin(degrad(a))*cos(degrad(b))
+		z=c*sin(degrad(b))
 	elif fr=='rect':
 		x=a
 		y=b
@@ -26,9 +22,9 @@ def cv_coord(a,b,c,fr=None,to=None,degr=False):
 	if to=='rect':
 		return (x,y,z)
 	elif to=='sph':
-		ra = raddeg(numpy.arctan2(y,x))
-		dec = raddeg(numpy.arctan2(z,numpy.sqrt(x**2+y**2)))
-		rad = numpy.sqrt(x**2+y**2+z**2)
+		ra = raddeg(arctan2(y,x))
+		dec = raddeg(arctan2(z,sqrt(x**2+y**2)))
+		rad = sqrt(x**2+y**2+z**2)
 		return (ra,dec,rad)
 	elif to is None:
 		raise Exception('You must specify the output coordinate system')
