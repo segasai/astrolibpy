@@ -23,13 +23,14 @@ def plothist(a,*args,**kw):
 	ind = kw.get('ind')
 	
 	if ind is None:
-		idlplot.plothist(a,*args,**kw)
+		ret=idlplot.plothist(a,*args,**kw)
 	else:
 		weights = kw.get('weights')
 		if weights is not None:
 			kw['weights']=kw['weights'][ind]
 		del kw['ind']
-		idlplot.plothist(a[ind],*args,**kw)
+		ret=idlplot.plothist(a[ind],*args,**kw)
+	return ret
 
 def plot(a, b=None, **kw):
 	ind = kw.get('ind')
