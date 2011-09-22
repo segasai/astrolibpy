@@ -17,7 +17,7 @@
 from matplotlib.widgets import Lasso
 from matplotlib.nxutils import points_inside_poly
 from matplotlib.pyplot import gca
-from numpy import nonzero
+from numpy import nonzero,array
 
 class lasso_plot:
     """ The class is designed to select the datapoints by drawing the region
@@ -33,7 +33,7 @@ class lasso_plot:
     def __init__(self, xs, ys):
         self.axes = gca()
         self.canvas = self.axes.figure.canvas
-        self.xys = [d for d in zip(xs,ys)]
+        self.xys = array([xs,ys]).T#[d for d in zip(xs,ys)]
         fig = self.axes.figure
         self.cid = self.canvas.mpl_connect('button_press_event', self.onpress)
         self.ind = None
