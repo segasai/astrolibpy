@@ -18,7 +18,7 @@
 import matplotlib.pyplot as plt
 import numpy
 import scipy
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator, LogLocator
 import scipy.ndimage.filters, scipy.stats
 from matplotlib.pyplot import draw_if_interactive
 
@@ -455,6 +455,7 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 				cmap='gray_r', normx=False, normy=False,
 				xlog=False, ylog=False, weight_norm=False,
 				vminfrac=None, vmaxfrac=None, position=None,
+				xaxis_formatter=None,yaxis_formatter=None,
 				title=None, **kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -545,9 +546,14 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		mypos[2]=position[2]-position[0]
 		mypos[3]=position[3]-position[1]
 		plt.axes(mypos)
+	axis = plt.gca()
+	axis.set_xlabel(xtitle)
+	axis.set_ylabel(ytitle)
+	if xaxis_formatter is not None:
+		axis.xaxis.set_major_formatter(xaxis_formatter)
+	if yaxis_formatter is not None:
+		axis.yaxis.set_major_formatter(yaxis_formatter)
 
-	plt.gca().set_xlabel(xtitle)
-	plt.gca().set_ylabel(ytitle)
 	if smooth is not None:
 		hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
 	if vminfrac is not None and vmin is None:
@@ -566,7 +572,9 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation='nearest',
 					cmap=cmap, norm=norm, **kw)
 	if bar:
-		cb=plt.colorbar(fraction=bar_fraction, pad=(bar_pad or 0.05))
+		format=matplotlib.ticker.ScalarFormatter()
+		cb=plt.colorbar(fraction=bar_fraction, pad=(bar_pad or 0.05),
+			norm=axim.norm, ax=axis,format=format)
 		cb.set_label(bar_label)
 	if xlog:
 		plt.gca().set_xscale('log')
