@@ -541,7 +541,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if normx is not None:
 		if normx == 'sum':
 			hh = hh*1./hh.sum(axis=0)[numpy.newaxis,:]#/numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
-		else normx == 'max':
+		elif normx == 'max':
 			hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
 		else:
 			raise Exception('unknown normx mode')
