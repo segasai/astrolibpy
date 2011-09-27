@@ -86,6 +86,7 @@ def exceptionDecorator(func):
 
 	return wrapper
 
+@exceptionDecorator
 def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
@@ -446,17 +447,20 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	return axim
 
 @exceptionDecorator
-def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
-				vmin=None, vmax=None, bins=[100,100], xtitle="",
-				ytitle="", noerase=False, weights=None, zlog=False,
-				xflip=False, yflip=False, bar=False, bar_label='',
-				bar_fraction=0.05, bar_pad=None, smooth=None, 
-				quick=False,
-				cmap='gray_r', normx=False, normy=False,
+def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
+				vmin=None, vmax=None, bins=[100,100],
+				xtitle="", ytitle="", title=None, 
+				noerase=False, weights=None, zlog=False,
+				xflip=False, yflip=False,
+				smooth=None, quick=False,
+				cmap='gray_r', normx=None, normy=None,
 				xlog=False, ylog=False, weight_norm=False,
 				vminfrac=None, vmaxfrac=None, position=None,
 				xaxis_formatter=None,yaxis_formatter=None,
-				title=None, **kw):
+				bar=False, bar_label='', bar_fraction=0.05, 
+				bar_pad=0.05, bar_ticks_locator=None,
+				bar_formatter=None,
+				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
 	>> tvhist2d(xs,ys,bins=[30,30])
@@ -476,16 +480,23 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 		the list of two integers specifying how many bins in x,y you want
 	smooth
 		if not None this parameter controls additional smoothing of the 2D histogram
-	bar
-		boolean parameter for switching on/off the plotting of the color-bar
 	xflip, yflip
 		boolean parameters allowing to flip x,y axes
 	normx, normy
-		boolean params controlling the normalization of the histogram along X or Y axes
-		in such way that the brightest pixel value will be the same for each row/column
+		params controlling the normalization of the histogram along X or Y axes
+		if normx=='sum' then the normalization is done in such way that the sum
+		is the same for each row/column
+		if normx=='max' then the normalization is don in such way that
+		the brightest pixel value will be the same for each row/column
 	weight_norm
 		if True the value in each bin is mean weight of points within
 		the bin
+	bar
+		boolean parameter for switching on/off the plotting of the color-bar
+	bar_pad, bar_fraction
+		padding and fraction for bar placement
+	bar_ticks_locator
+		locator for the tickmarks on the colorbar
 
 	"""
 
@@ -527,10 +538,20 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 			hh1 = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev)
 			hh = hh*1./hh1
 
-	if normx:
-		hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
-	if normy:
-		hh = hh*1./numpy.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
+	if normx is not None:
+		if normx == 'sum':
+			hh = hh*1./hh.sum(axis=0)[numpy.newaxis,:]#/numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
+		else normx == 'max':
+			hh = hh*1./numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
+		else:
+			raise Exception('unknown normx mode')
+	if normy is not None:
+		if normy == 'sum':
+			hh = hh*1./hh.sum(axis=1)[:,numpy.newaxis]#/numpy.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
+		elif normy == 'max':
+			hh = hh*1./numpy.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
+		else:
+			raise Exception('unknown normy mode')
 
 	if xflip:
 		range1 = (range1[1], range1[0], range1[2], range1[3])
@@ -549,6 +570,8 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	axis = plt.gca()
 	axis.set_xlabel(xtitle)
 	axis.set_ylabel(ytitle)
+	axis.minorticks_on()
+
 	if xaxis_formatter is not None:
 		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
@@ -572,9 +595,11 @@ def tvhist2d (x,y, xmin=None, xmax=None, ymin=None, ymax=None,
 	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation='nearest',
 					cmap=cmap, norm=norm, **kw)
 	if bar:
-		format=matplotlib.ticker.ScalarFormatter()
-		cb=plt.colorbar(fraction=bar_fraction, pad=(bar_pad or 0.05),
-			norm=axim.norm, ax=axis,format=format)
+		if bar_formatter is None:
+			bar_formatter = matplotlib.ticker.ScalarFormatter()
+		cb=plt.colorbar(fraction=bar_fraction, pad=bar_pad,
+			norm=axim.norm, ax=axis, format=bar_formatter, 
+			ticks=bar_ticks_locator)
 		cb.set_label(bar_label)
 	if xlog:
 		plt.gca().set_xscale('log')
