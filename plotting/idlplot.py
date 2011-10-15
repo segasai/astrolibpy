@@ -459,7 +459,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				xaxis_formatter=None,yaxis_formatter=None,
 				bar=False, bar_label='', bar_fraction=0.05, 
 				bar_pad=0.05, bar_ticks_locator=None,
-				bar_formatter=None,
+				bar_formatter=None, apply_func = None,
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -537,7 +537,8 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		if weight_norm:
 			hh1 = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev)
 			hh = hh*1./hh1
-
+	if apply_func is not None:
+		hh = apply_func (hh)
 	if normx is not None:
 		if normx == 'sum':
 			hh = hh*1./hh.sum(axis=0)[numpy.newaxis,:]#/numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
