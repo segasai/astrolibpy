@@ -1,4 +1,4 @@
-import glob, tables, numpy, Queue,psycopg2,threading
+import glob, tables, numpy, Queue,psycopg2,threading,sys
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None):
@@ -51,13 +51,9 @@ def __inserter(desc, filename, qIn, endEvent):
 def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None, maskNull=False):
-	'''This program executes the sql query and returns 
-	the tuple of the numpy arrays.
-	Example:
-	a,b, c = sqlutil.get('select ra,dec,d25 from rc3')
-	You can also use the parameters in your query:
-	Example:
-	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
+	'''This program executes the sql query and saves the results
+	in the HDF5 file (without storing all the results in memory)
+	pg2hdf5.get('select ra,dec,d25 from rc3','rc3.h5')
 	'''
 	connSupplied = (conn is not None)
 	if not connSupplied:
@@ -134,11 +130,4 @@ def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 
 
 if __name__=='__main__':
-	get('''
-	select ra,dec,psfmag_r,flags,psfwidth_r,nMgyPerCount_r,sky_r,p.camcol
-        from (select * from sdss3.phototag as p where  dec 
-        		between -4 and 10 and (ra>100 and ra<250) and 
-        		(type=3 or type=6 ) and mode=1 and 
-			psfmag_r>21 and psfmag_r<24 offset 0) as p join sdss3.field  as f using (fieldid);
-				''','sdss3.h5',host='cappc118',
-				preamb='set enable_mergejoin to off;set enable_hashjoin to off;')
+	get(sys.argv[1],sys.argv[2],host='cappc118')
