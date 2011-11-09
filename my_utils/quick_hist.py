@@ -54,7 +54,9 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	if weights is not None:
 		if len(weights)!=nx:
 			raise ValueError('The weights array MUST have the same length as the input arrays')
-	
+	# convert all the bins into integers 
+	nbins = [ int(_tmp) for _tmp in nbins]
+
 	poss = numpy.zeros((nx,), dtype=numpy.int64)
 
 	ind = numpy.ones_like(arrs[0]).astype(bool)
