@@ -197,7 +197,10 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	kw['ps'] = kw.get('ps') or 0
 	if 'yr' not in kw:
 		kw['yr']=[hh.min(),hh.max()]
-	func(loc1, hh1, color=color, xrange=xrange, yrange=yrange,
+	if 'xr' not in kw:
+		kw['xr']=[min,max]
+
+	func(loc1, hh1, color=color,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
 		return 0.5*(loc[1:]+loc[:-1]),hh
@@ -622,6 +625,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 		c_charsize=12.0, c_thick=1, thick=1, font="monospace",
 		weight="normal", charsize=14.0, bar=True, fill=True, overplot=False,
 		noerase=False, c_label=False, bar_fraction=0.05, xaxis_formatter=None,
+		label=None,
 		yaxis_formatter=None):
 	"""
 	Plot the contours of the 2d array. 
@@ -743,7 +747,8 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 	if c_levels is None:
 		c_levels = levels[0:len(levels):int(nlevels/12)]
 	cset2 = axis.contour(x, y, z, c_levels, colors = c_color,linewidths=c_thick,hold='on')
-
+	if label is not None:
+		cset2.collections[0].set_label(label)
 # Do not display dashed contours for negative values:
 	for c in cset2.collections:
 		c.set_linestyle(c_line)
