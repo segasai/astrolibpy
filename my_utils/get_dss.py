@@ -19,6 +19,6 @@ def get_dss(ra, dec, survey='all', radius = 15, debug=False):
 	gc=aplpy.FITSFigure(dat,figure=plt.gcf())
 	gc.set_tick_labels_format('ddd.dddd','ddd.dddd')
 	gc.show_grayscale()
-	
+	return gc
 
 	
