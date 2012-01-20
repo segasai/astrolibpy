@@ -91,7 +91,7 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
 			adaptive=False, adaptive_thresh=30, adaptive_depth=[2,10],
-			weight_norm=False, **kw):
+			weight_norm=False, apply_func=None, **kw):
 	"""
 	Plot the 1D histogram
 	Example:
@@ -199,7 +199,8 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		kw['yr']=[hh1.min(),hh1.max()]
 	if 'xr' not in kw:
 		kw['xr']=[min,max]
-
+	if apply_func is not None:
+		hh1 = apply_func (loc1,hh1)
 	func(loc1, hh1, color=color,
 		xlog=xlog, ylog=ylog, **kw)
 	if retpoints:
