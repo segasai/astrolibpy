@@ -11,13 +11,13 @@ def tvhist2d(a,b,*args,**kw):
 	ind = kw.get('ind')
 	
 	if ind is None:
-		idlplot.tvhist2d(a,b,*args,**kw)
+		return idlplot.tvhist2d(a,b,*args,**kw)
 	else:
 		weights = kw.get('weights')
 		if weights is not None:
 			kw['weights']=kw['weights'][ind]
 		del kw['ind']
-		idlplot.tvhist2d(a[ind],b[ind],*args,**kw)
+		return idlplot.tvhist2d(a[ind],b[ind],*args,**kw)
 
 def plothist(a,*args,**kw):
 	ind = kw.get('ind')

@@ -463,6 +463,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar=False, bar_label='', bar_fraction=0.05, 
 				bar_pad=0.05, bar_ticks_locator=None,
 				bar_formatter=None, apply_func = None, zsqrt=False,
+				ret_hist=False,
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -613,6 +614,8 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		plt.gca().set_yscale('log')
 	if title is not None:
 		plt.title(title)
+	if ret_hist:
+		return hh
 
 	return axim
 
