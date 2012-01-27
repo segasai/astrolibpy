@@ -389,10 +389,11 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	
 	"""
 
-	if xlog:
-		plt.gca().set_xscale('log')
-	if ylog:
-		plt.gca().set_yscale('log')
+#	if xlog is True:
+#		xmin,xmax=numpy.log10(xmin),numpy.log10(xmax)
+#	if ylog is True:
+#		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
+
 	if not noerase:
 		plt.clf()
 
@@ -437,6 +438,10 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	
 	axim = plt.imshow(im, extent=(xmin, xmax, ymin, ymax), vmin=vmin, vmax=vmax, 
 					aspect=aspect, norm=norm, **kw)
+	if xlog:
+		plt.gca().set_xscale('log')
+	if ylog:
+		plt.gca().set_yscale('log')
 
 	plt.gca().set_xlabel(xtitle)
 	plt.gca().set_ylabel(ytitle)
