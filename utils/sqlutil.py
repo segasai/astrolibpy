@@ -22,10 +22,10 @@ import threading, Queue
 
 
 def getConnection( db=None, driver=None, user=None,
-						password=None, host=None):
+						password=None, host=None,port=5432):
 	if driver=='psycopg2':
 		import psycopg2
-		conn_str = "dbname=%s host=%s"%(db,host)
+		conn_str = "dbname=%s host=%s port=%d"%(db,host,port)
 		if user is not None:
 			conn_str = conn_str+ ' user=%s'%user
 		if password is not None:
@@ -66,7 +66,7 @@ def __converter(qIn, qOut, endEvent):
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
-						getConn=False, conn=None, maskNull=False):
+						getConn=False, conn=None, maskNull=False, port=5432):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -78,7 +78,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
-				host=host)
+				host=host,port=port)
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb)
 
