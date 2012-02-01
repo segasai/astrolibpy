@@ -1,7 +1,7 @@
 import gal_uvw, cv_coord, euler
 
 
-def correct_pm(ra, dec, pmra, pmdec, dist):
+def correct_pm(ra, dec, pmra, pmdec, dist,vlsr=220):
 	"""Corrects the proper motion for the speed of the Sun
 	Arguments:
 		ra - RA in deg
@@ -21,8 +21,6 @@ def correct_pm(ra, dec, pmra, pmdec, dist):
 		pmra=one, pmdec=zero, vrad=zero)
 	ud, vd, wd = gal_uvw.gal_uvw(distance=dist_pc, ra=ra, dec=dec,
 		pmra=zero, pmdec=one, vrad=zero)
-
-	vlsr = 220
 
 
 	usun, vsun, wsun = -8.5, 13.38 + vlsr, 6.49 # the signs are in the coord system of gal_uvw
