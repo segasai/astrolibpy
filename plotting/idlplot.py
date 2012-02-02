@@ -450,7 +450,11 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 	if title is not None:
 		plt.title(title)
 	if bar:
-		cb=plt.colorbar(fraction=bar_fraction)
+		if int(''.join((matplotlib.__version__).split('.')[:2]))>=11:
+			kw={'use_gridspec':True}
+		else:
+			kw={}
+		cb=plt.colorbar(fraction=bar_fraction,**kw)
 		cb.set_label(bar_label)
 
 	return axim
@@ -610,9 +614,13 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if bar:
 		if bar_formatter is None:
 			bar_formatter = matplotlib.ticker.ScalarFormatter()
+		if int(''.join((matplotlib.__version__).split('.')[:2]))>=11:
+			kw={'use_gridspec':True}
+		else:
+			kw={}
 		cb=plt.colorbar(fraction=bar_fraction, pad=bar_pad,
 			norm=axim.norm, ax=axis, format=bar_formatter, 
-			ticks=bar_ticks_locator)
+			ticks=bar_ticks_locator,**kw)
 		cb.set_label(bar_label)
 	if xlog:
 		plt.gca().set_xscale('log')
@@ -778,5 +786,9 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 # Do we need a color bar?:
 	if fill & bar:
 #		matplotlib.rcParams['ytick.labelsize']=c_charsize				
+		if int(''.join((matplotlib.__version__).split('.')[:2]))>=11:
+			kw={'use_gridspec':True}
+		else:
+			kw={}
 		plt.colorbar(cset1, ticks=[numpy.min(levels), numpy.max(levels)],#, shrink = 0.87, aspect=15, 
-			fraction=bar_fraction, format=zFormatter)
+			fraction=bar_fraction, format=zFormatter, **kw)
