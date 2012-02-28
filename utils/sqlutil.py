@@ -20,6 +20,10 @@ import numpy, sys
 import time,psycopg2
 import threading, Queue
 
+__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',25:str,700:'f4',701:'f8',
+	1043:str,#varchar
+	1700:'f8' #numeric
+	} 
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None,port=5432):
@@ -55,13 +59,13 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 		cur = conn.cursor()
 	return cur
 
-def __converter(qIn, qOut, endEvent):
+def __converter(qIn, qOut, endEvent, dtype):
 	while(not endEvent.is_set()):
 		try:
 			tups = qIn.get(True,0.1)
 		except Queue.Empty:
 			continue
-		qOut.put(numpy.core.records.array(tups))
+		qOut.put(numpy.core.records.array(tups,dtype=dtype))
 
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
@@ -86,18 +90,24 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			res = cur.execute(query)
 		else:
 			res = cur.execute(query, params)
-
+		
 		qIn = Queue.Queue(1)
 		qOut = Queue.Queue()
 		endEvent = threading.Event()
 		nrec = 0
 		reslist=[]
+		proc = None
 		if driver=='psycopg2':
-			proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent))
-			proc.start()
 			try:
 				while(True):
 					tups = cur.fetchmany()
+					if nrec==0:
+						desc = cur.description
+						typeCodes = [_tmp.type_code for _tmp in desc]
+						dtype=numpy.dtype([('a%d'%_i,__pgTypeHash[_t]) for _i,_t in enumerate(typeCodes)])				
+						proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent,dtype))
+						proc.start()
+
 					if tups == []:
 						break
 					qIn.put(tups)
@@ -116,14 +126,15 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				endEvent.set()
 			except BaseException:
 				endEvent.set()
-				proc.join(0.2) # notice that here the timeout is larger than the timeout
-								# in the converter process
-				if proc.is_alive():
-					proc.terminate()
+				if proc is not None:
+					proc.join(0.2) # notice that here the timeout is larger than the timeout
+									# in the converter process
+					if proc.is_alive():
+						proc.terminate()
 				raise
 			proc.join()
 			if reslist == []:
-				nCols = len(cur.description)
+				nCols = len(desc)
 				res = numpy.array([],
 					dtype=numpy.dtype([('a%d'%i,'f') for i in range(nCols)])
 									)				
