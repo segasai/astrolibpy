@@ -473,7 +473,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar=False, bar_label='', bar_fraction=0.05, 
 				bar_pad=0.05, bar_ticks_locator=None,
 				bar_formatter=None, apply_func = None, zsqrt=False,
-				ret_hist=False,
+				ret_hist=False, interpolation='nearest',
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -609,7 +609,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		norm = matplotlib.colors.SqrtNorm(vmin=vmin, vmax=vmax)
 	else:
 		norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)		
-	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation='nearest',
+	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation=interpolation,
 					cmap=cmap, norm=norm, **kw)
 	if bar:
 		if bar_formatter is None:
