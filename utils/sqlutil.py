@@ -20,11 +20,6 @@ import numpy, sys
 import time,psycopg2
 import threading, Queue
 
-__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',25:str,700:'f4',701:'f8',
-	1043:str,#varchar
-	1700:'f8' #numeric
-	} 
-
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None,port=5432):
 	if driver=='psycopg2':
@@ -70,7 +65,8 @@ def __converter(qIn, qOut, endEvent, dtype):
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
-						getConn=False, conn=None, maskNull=False, port=5432):
+						getConn=False, conn=None, maskNull=False, port=5432,
+						strLength=10):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -79,6 +75,11 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	Example:
 	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
+	__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',25:'|S%d'%strLength,700:'f4',701:'f8',
+		1043:'|S%d'%strLength,#varchar
+		1700:'f8' #numeric
+		} 
+
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
