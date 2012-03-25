@@ -21,7 +21,7 @@ import time,psycopg2
 import threading, Queue
 
 def getConnection( db=None, driver=None, user=None,
-						password=None, host=None,port=5432):
+						password=None, host=None,port=5432, timeout=None):
 	if driver=='psycopg2':
 		import psycopg2
 		conn_str = "dbname=%s host=%s port=%d"%(db,host,port)
@@ -32,7 +32,7 @@ def getConnection( db=None, driver=None, user=None,
 		conn = psycopg2.connect(conn_str)
 	elif driver=='sqlite3':
 		import sqlite3
-		conn = sqlite3.connect(db)
+		conn = sqlite3.connect(db,timeout=timeout)
 		cur = conn.cursor()
 	else: 
 		raise Exception("Unknown driver")
@@ -189,11 +189,11 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 def execute(query, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
-										conn=None, preamb=None):
+										conn=None, preamb=None, timeout=5):
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
-				host=host)
+				host=host, timeout=timeout)
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
 		
