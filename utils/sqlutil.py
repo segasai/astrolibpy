@@ -32,7 +32,9 @@ def getConnection( db=None, driver=None, user=None,
 		conn = psycopg2.connect(conn_str)
 	elif driver=='sqlite3':
 		import sqlite3
-		conn = sqlite3.connect(db,timeout=timeout)
+		if timeout is None:
+			timeout = 5
+		conn = sqlite3.connect(db, timeout=timeout)
 		cur = conn.cursor()
 	else: 
 		raise Exception("Unknown driver")
@@ -66,7 +68,7 @@ def __converter(qIn, qOut, endEvent, dtype):
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None, maskNull=False, port=5432,
-						strLength=10):
+						strLength=10, timeout=None):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -82,8 +84,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 	connSupplied = (conn is not None)
 	if not connSupplied:
-		conn = getConnection(db=db,driver=driver,user=user,password=password,
-				host=host,port=port)
+		conn = getConnection(db=db, driver=driver, user=user, password=password,
+				host=host, port=port, timeout=timeout)
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb)
 
@@ -189,7 +191,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 def execute(query, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
-										conn=None, preamb=None, timeout=5):
+										conn=None, preamb=None, timeout=None):
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
