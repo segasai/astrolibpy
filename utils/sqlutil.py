@@ -61,7 +61,13 @@ def __converter(qIn, qOut, endEvent, dtype):
 			tups = qIn.get(True,0.1)
 		except Queue.Empty:
 			continue
-		qOut.put(numpy.core.records.array(tups,dtype=dtype))
+		try:
+			res=numpy.core.records.array(tups,dtype=dtype)
+		except:
+			print 'Failed to convert input data into array'
+			endEvent.set()
+			raise
+		qOut.put(res)
 
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
@@ -96,7 +102,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		qIn = Queue.Queue(1)
 		qOut = Queue.Queue()
 		endEvent = threading.Event()
-		nrec = 0
+		nrec = 0 ## keeps the number of arrays sent to the other thread
+				##  minus number received
 		reslist=[]
 		proc = None
 		if driver=='psycopg2':
@@ -113,16 +120,20 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 					if tups == []:
 						break
 					qIn.put(tups)
-					nrec+=1
+					nrec += 1
 					try:
 						reslist.append(qOut.get(False))
-						nrec-=1
+						nrec -= 1
 					except Queue.Empty:
 						pass
 				try:
 					while(nrec!=0):
-						reslist.append(qOut.get(True))
-						nrec-=1
+						try:
+							reslist.append(qOut.get(True, 0.1))
+							nrec-=1
+						except:
+							if endEvent.is_set():
+								raise Exception('Child thread failed')
 				except Queue.Empty:
 					pass
 				endEvent.set()
