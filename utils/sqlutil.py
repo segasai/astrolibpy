@@ -35,7 +35,6 @@ def getConnection( db=None, driver=None, user=None,
 		if timeout is None:
 			timeout = 5
 		conn = sqlite3.connect(db, timeout=timeout)
-		cur = conn.cursor()
 	else: 
 		raise Exception("Unknown driver")
 	return conn					
@@ -68,7 +67,7 @@ def __converter(qIn, qOut, endEvent, dtype):
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None, maskNull=False, port=5432,
-						strLength=10, timeout=None):
+						strLength=10, timeout=None,notNamed=False):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -87,7 +86,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		conn = getConnection(db=db, driver=driver, user=user, password=password,
 				host=host, port=port, timeout=timeout)
 	try:
-		cur = getCursor(conn, driver=driver, preamb=preamb)
+		cur = getCursor(conn, driver=driver, preamb=preamb,notNamed=notNamed)
 
 		if params is None:
 			res = cur.execute(query)
@@ -180,18 +179,20 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		raise
 
 	cur.close()
-	conn.rollback()
+	#conn.commit()
 	
 	if not getConn:
 		if not connSupplied:
+
 			conn.close() # do not close if we were given the connection
 		return res
 	else:
 		return conn,res
 
-def execute(query, db="wsdb", driver="psycopg2", user=None,
+def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
-										conn=None, preamb=None, timeout=None):
+										conn=None, preamb=None, timeout=None,
+										noCommit=False):
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
@@ -199,7 +200,7 @@ def execute(query, db="wsdb", driver="psycopg2", user=None,
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
 		
-		cur.execute(query)
+		cur.execute(query, params)
 	except BaseException:
 		try:
 			conn.rollback()
@@ -212,6 +213,7 @@ def execute(query, db="wsdb", driver="psycopg2", user=None,
 				pass
 		raise
 	cur.close()
-	conn.commit()
+	if not noCommit:
+		conn.commit()
 	if not connSupplied:
 		conn.close() # do not close if we were given the connection
