@@ -45,6 +45,7 @@ class lasso_plot:
         ind = nonzero(mask)[0]
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)
+        self.canvas.mpl_disconnect(self.cid)        
         del self.lasso
         del self.xys
         self.verts = verts
@@ -62,7 +63,3 @@ class lasso_plot:
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
     
-    def __del__(self):
-        self.cid = self.canvas.mpl_disconnect(self.onpress)
-        
-
