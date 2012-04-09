@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Sergey Koposov
+
 # This file is part of astrolibpy
 #
 #    astrolibpy is free software: you can redistribute it and/or modify
@@ -73,7 +73,7 @@ def __converter(qIn, qOut, endEvent, dtype):
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None, maskNull=False, port=5432,
-						strLength=10, timeout=None,notNamed=False):
+						strLength=10, timeout=None, notNamed=False, asDict=False):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -106,6 +106,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				##  minus number received
 		reslist=[]
 		proc = None
+		colNames = []
 		if driver=='psycopg2':
 			try:
 				while(True):
@@ -113,6 +114,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 					if nrec==0:
 						desc = cur.description
 						typeCodes = [_tmp.type_code for _tmp in desc]
+						colNames = [_tmp.name for _tmp in cur.description]
 						dtype=numpy.dtype([('a%d'%_i,__pgTypeHash[_t]) for _i,_t in enumerate(typeCodes)])				
 						proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent,dtype))
 						proc.start()
@@ -191,7 +193,11 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 	cur.close()
 	#conn.commit()
-	
+	if asDict:
+		resDict = {}
+		for _n, _v in zip(colNames,res):
+			resDict[_n]=_v
+		res=resDict	
 	if not getConn:
 		if not connSupplied:
 
