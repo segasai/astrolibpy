@@ -16,7 +16,7 @@
 
 
 import types
-import numpy, sys
+import numpy, sys, numpy as np
 import time,psycopg2
 import threading, Queue
 
@@ -234,3 +234,87 @@ def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		conn.commit()
 	if not connSupplied:
 		conn.close() # do not close if we were given the connection
+
+
+def create_schema(tableName, arrays, names, temp=False):
+	hash = dict([
+		(np.int32,'integer'),
+		(np.int64,'bigint'),
+		(np.float32,'real'),
+		(np.float64,'double precision'),
+		(np.string_,'varchar'),		
+			])
+	if temp:
+		temp='temporary'
+	else:
+		temp=''
+	outp = 'create %s table %s '%(temp,tableName)
+	outp1 = []
+	for arr,name in zip(arrays,names):
+		outp1.append(name+' '+hash[arr.dtype.type])
+	return outp + '(' + ','.join(outp1)+')'
+
+def print_arrays(arrays, f):
+	hash = dict([
+		(np.int32,'%d'),
+		(np.int64,'%d'),
+		(np.float32,'%.18e'),
+		(np.float64,'%.18e'),
+		(np.string_,'%s')
+			])
+	fmt = [ hash[x.dtype.type] for x in arrays]
+	recarr = np.rec.fromarrays(arrays)	
+	np.savetxt(f, recarr, fmt=fmt)
+		
+def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
+										password=None, host='locahost',
+										conn=None, preamb=None, timeout=None,
+										noCommit=False, temp=False):
+	connSupplied = (conn is not None)
+	if not connSupplied:
+		conn = getConnection(db=db,driver=driver,user=user,password=password,
+				host=host, timeout=timeout)
+	try:
+		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
+		query1 = create_schema(tableName, arrays, names, temp=temp)
+		cur.execute(query1)
+		import StringIO
+		f = StringIO.StringIO()
+		print_arrays(arrays, f)
+		f.seek(0)
+		cur.copy_from(f,tableName,sep=' ')
+	except BaseException:
+		try:
+			conn.rollback()
+		except Exception:
+			pass
+		if not connSupplied:
+			try:
+				conn.close() # do not close if we were given the connection
+			except:
+				pass
+		raise
+	cur.close()
+	if not noCommit:
+		conn.commit()
+	if not connSupplied:
+		conn.close() # do not close if we were given the connection
+	
+
+		
+def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
+										password=None, host='locahost',
+										conn=None, preamb=None, timeout=None):
+	connSupplied = (conn is not None)
+	if not connSupplied:
+		conn = getConnection(db=db,driver=driver,user=user,password=password,
+				host=host, timeout=timeout)
+	
+	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True)
+	res=get(query,conn=conn)
+	
+	if not connSupplied:
+		conn.close()
+	return res
+
+					
