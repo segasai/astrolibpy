@@ -210,6 +210,7 @@ def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None,
 										noCommit=False):
+	"Execute a given SQL command without returning the results"
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
@@ -270,6 +271,12 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None,
 										noCommit=False, temp=False):
+	""" Upload the data stored in the tuple of arrays in the DB
+	x=np.arange(10)
+	y=x**.5
+	sqlutil.upload('mytable',(x,y),('xcol','ycol'))
+	"""
+	
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
@@ -305,6 +312,14 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None):
+	""" This function allows joining the data from python with the data in the DB,it
+	first uploads the data in the DB and then run a user specified query:
+	x=np.arange(10)
+	y=x**.5
+	sqlutil.local_join('select * from mytable as m, sometable as s where s.id=m.xcol', 
+							'mytable',(x,y),('xcol','ycol'))
+	"""
+
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
