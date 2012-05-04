@@ -16,7 +16,7 @@
 
 
 import matplotlib.pyplot as plt
-import numpy
+import numpy, numpy as np
 import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator, LogLocator
 import scipy.ndimage.filters, scipy.stats
@@ -478,7 +478,8 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar=False, bar_label='', bar_fraction=0.05, 
 				bar_pad=0.05, bar_ticks_locator=None,
 				bar_formatter=None, apply_func = None, zsqrt=False,
-				ret_hist=False, interpolation='nearest',
+				ret_hist=False, interpolation='nearest', scatter_thresh=None,
+				scatter_opt={},
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -573,6 +574,18 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		else:
 			raise Exception('unknown normy mode')
 
+	if scatter_thresh is not None:
+		locx = np.linspace(xmin,xmax, bins[0]+1, True)
+		locy = np.linspace(ymin, ymax, bins[1]+1, True)
+		posx = np.digitize(x1, locx)
+		posy = np.digitize(y1, locy)
+		#select points within the histogram
+		ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
+		hhsub = hh.T[posx[ind] - 1, posy[ind] - 1] # values of the histogram where the points are
+		x1 = x1[ind][hhsub < scatter_thresh] # low density points
+		y1 = y1[ind][hhsub < scatter_thresh]
+		hh[hh < scatter_thresh] = np.nan # fill the areas with low density by NaNs
+
 	if xflip:
 		range1 = (range1[1], range1[0], range1[2], range1[3])
 		hh = numpy.fliplr(hh)
@@ -614,8 +627,12 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		norm = matplotlib.colors.SqrtNorm(vmin=vmin, vmax=vmax)
 	else:
 		norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)		
+	
 	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation=interpolation,
 					cmap=cmap, norm=norm, **kw)
+	if scatter_thresh is not None:
+		oplot(x1,y1,ps=3,**scatter_opt)
+
 	if bar:
 		if bar_formatter is None:
 			bar_formatter = matplotlib.ticker.ScalarFormatter()
