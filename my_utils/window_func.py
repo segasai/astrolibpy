@@ -65,12 +65,12 @@ def window_func2d(x,y,z,func,xmin=None,xmax=None,ymin=None,ymax=None,nbins=[10,1
 		ymax = y.max()
 
 	hh,locx,locy=scipy.histogram2d(x,y,range=((xmin,xmax),(ymin,ymax)),bins=nbins)
-	xinds= numpy.digitize(x,locx)
-	yinds= numpy.digitize(y,locy)
+	xinds = numpy.digitize(x,locx)
+	yinds = numpy.digitize(y,locy)
 	mask=numpy.zeros(hh.shape,bool)
 	retv=hh*0.	
 	for i in range(nbins[0]):
 		for j in range(nbins[1]):
 			curz=z[(xinds==(i+1))&(yinds==(j+1))]
 			retv[i,j]=func(curz)
-	return retv, locx[0], locx[-1], locy[0], locy[-1]
+	return retv, locx[0], locx[-1], locy[0], locy[-1], hh
