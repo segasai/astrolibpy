@@ -21,9 +21,8 @@ import scipy
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator, LogLocator
 import scipy.ndimage.filters, scipy.stats
 from matplotlib.pyplot import draw_if_interactive
-
 import matplotlib
-import types, sys, math
+import types, sys, math, copy
 import warnings,array
 
 # this module is by default in interactive regime 
@@ -631,7 +630,10 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	axim=plt.imshow(hh, extent=range1, aspect='auto', interpolation=interpolation,
 					cmap=cmap, norm=norm, **kw)
 	if scatter_thresh is not None:
-		oplot(x1,y1,ps=3,**scatter_opt)
+		if 'ps' not in scatter_opt:
+			scatter_opt=copy.copy(scatter_opt)
+			scatter_opt['ps']=3
+		oplot(x1,y1,**scatter_opt)
 
 	if bar:
 		if bar_formatter is None:
