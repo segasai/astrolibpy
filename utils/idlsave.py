@@ -69,7 +69,7 @@ class idlsave:
 			return "idlsave.save(\"%s\",\"%s\",%s)"%(filename,names,names)
 
 		if type(names)==types.StringType:
-			names=names.split(',')
+			names=names.replace(' ','').split(',')
 		if len(names)!=len(args):
 			raise Exception("The number of variable names should \
 					be equal to the number of variables)")
@@ -128,7 +128,7 @@ class idlsave:
 				buf=buf+"=idlsave.getallvars()"
 				return buf
 			else:
-				names=names.split(',')
+				names=names.replace(' ','').split(',')
 				res=[idlsave.dhash[a] for a in names]
 				del idlsave.dhash
 				return res
@@ -139,7 +139,7 @@ class idlsave:
 			if names is None:
 				names1 = offsets.keys()
 			else:
-				names1 = names.split(',')
+				names1 = names.replace(' ','').split(',')
 			hash = {}
 			for name in names1:
 				off = offsets[name]
