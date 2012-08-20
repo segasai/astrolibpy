@@ -35,7 +35,7 @@ def match_lists(ra1, dec1, ra2, dec2, dist, numNei=1):
 	"""
 	cosd = lambda x : cos(deg2rad(x))
 	sind = lambda x : sin(deg2rad(x))
-	mindist = 2 * sind(dist/2)	
+	mindist = 2 * sind(dist/2.)	
 	getxyz = lambda r, d: [cosd(r)*cosd(d), sind(r)*cosd(d), sind(d)]
 	xyz1 = numpy.array(getxyz(ra1, dec1))
 	xyz2 = numpy.array(getxyz(ra2, dec2))
