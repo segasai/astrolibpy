@@ -479,6 +479,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar_formatter=None, apply_func = None, zsqrt=False,
 				ret_hist=False, interpolation='nearest', scatter_thresh=None,
 				scatter_opt={},
+				subplot=None,
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -591,7 +592,9 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if yflip:
 		range1 = (range1[0], range1[1], range1[3], range1[2])
 		hh = numpy.flipud(hh)
-
+	if subplot is not None:
+		noerase=True
+		plt.subplot(subplot)
 	if not noerase:
 		plt.gcf().clf()
 	if position is not None:
