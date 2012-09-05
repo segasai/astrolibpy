@@ -175,14 +175,9 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			import adabinner
 			hh, loc = adabinner.hist(dat, xmin=min, xmax=max, hi=adaptive_depth,
 						thresh=adaptive_thresh)
-		hh1 = numpy.zeros(2*len(hh)+2)
-		loc1 = numpy.zeros_like(hh1)
-		hh1[1:-1:2]=hh
-		hh1[2::2]=hh
-		loc1[1:-1:2]=loc[:-1]
-		loc1[2::2]=loc[1:]
-		loc1[-1]=loc1[-2]
-		loc1[0]=loc[0]
+		
+		hh1 = np.repeat(hh,2)
+		loc1 = np.concatenate(([loc[0]],np.repeat(loc[1:-1],2),[loc[-1]]))
 	else:
 		loc1=numpy.linspace(min,max,nbins*5)
 		import statistics
