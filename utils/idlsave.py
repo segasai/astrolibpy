@@ -50,6 +50,15 @@ class idlsave:
 			return 1
 		else:
 			return int(m.group(1))
+	
+
+	@staticmethod
+	def __cureString(s):
+		return s.replace('\n','').replace(' ','')
+
+	@staticmethod
+	def __splitString(s):
+		return idlsave.__cureString(s).split(',')
 		
 	@staticmethod
 	def save(filename=None, names=None, *args, **kw):
@@ -66,10 +75,10 @@ class idlsave:
 		using idlsave.restore (see there for the doc)
 		"""
 		if len(args)==0:
-			return "idlsave.save(\"%s\",\"%s\",%s)"%(filename,names,names)
+			return "idlsave.save(\"%s\",\"%s\",%s)"%(filename,idlsave.__cureString(names),names)
 
 		if type(names)==types.StringType:
-			names=names.replace(' ','').split(',')
+			names = idlsave.__splitString(names)
 		if len(names)!=len(args):
 			raise Exception("The number of variable names should \
 					be equal to the number of variables)")
@@ -98,7 +107,7 @@ class idlsave:
 		return None
 
 	@staticmethod
-	def restore(filename=None, names=None, asdict=False, version=None):
+	def restore(filename=None, names=None, asdict=False, version=None, printVars=False):
 		"""Restores the variables stored in a file by idlsave.save routine
 		Example: 
 		> exec(idlsave.restore("mydat.psav"))
@@ -125,21 +134,21 @@ class idlsave:
 				buf=",".join(idlsave.dhash.iterkeys())
 				if len(idlsave.dhash)==1:
 					buf=buf+','
-				buf=buf+"=idlsave.getallvars()"
+				buf=buf+"=idlsave.getallvars(printVars=%s)"%(str(printVars))
 				return buf
 			else:
-				names=names.replace(' ','').split(',')
+				names = idlsave.__splitString(names)
 				res=[idlsave.dhash[a] for a in names]
 				del idlsave.dhash
 				return res
 		elif version==2:
 			offOff = struct.unpack('!q',f.read(8))[0]
 			f.seek(offOff)
-			offsets=cPickle.load(f)
+			offsets = cPickle.load(f)
 			if names is None:
 				names1 = offsets.keys()
 			else:
-				names1 = names.replace(' ','').split(',')
+				names1 = idlsave.__splitString(names)
 			hash = {}
 			for name in names1:
 				off = offsets[name]
@@ -153,7 +162,7 @@ class idlsave:
 				buf=",".join(idlsave.dhash.iterkeys())
 				if len(idlsave.dhash)==1:
 					buf=buf+','
-				buf=buf+"=idlsave.getallvars()"
+				buf=buf+"=idlsave.getallvars(%s)"%str(printVars)
 				return buf # return the string for exec
 			else:
 				res=[idlsave.dhash[a] for a in names1]
@@ -161,7 +170,9 @@ class idlsave:
 				return res
 
 	@staticmethod
-	def getallvars():
+	def getallvars(printVars=False):
 		tup=tuple(a for a in idlsave.dhash.itervalues())
+		if printVars:
+			print ','.join([k for k in idlsave.dhash.keys()])
 		del idlsave.dhash
 		return tup
