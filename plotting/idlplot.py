@@ -316,7 +316,8 @@ def oplot (x, y=None, **kw):
 @exceptionDecorator
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
-				markersize=None, autoscalex=False, autoscaley=False, **kw):
+				markersize=None, markeredgecolor=None, markerfacecolor=None,
+				autoscalex=False, autoscaley=False, **kw):
 	"""
 	Plot the data with error-bars
 	
@@ -341,15 +342,25 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	kw0 = kw.copy()
 	if kw0.get('yr') is None:
 		kw0['yr'] = [numpy.nanmin(y-erry),numpy.nanmax(y+erry)]
+	
 	if markersize is not None:
 		kw0['markersize']=markersize
-	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, markersize=markersize,
+	if markeredgecolor is not None:
+		kw0['markeredgecolor']=markeredgecolor
+	if markerfacecolor is not None:
+		kw0['markerfacecolor']=markerfacecolor
+	plot (x, y, color=color, ps=ps, overplot=overplot, noerase=noerase,
 		 **kw0)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
 			'elinewidth':elinewidth,'markeredgewidth':elinewidth} 
 	if markersize is not None:
 		kw1['markersize']=markersize
+	if markeredgecolor is not None:
+		kw1['markeredgecolor']=markeredgecolor
+	if markerfacecolor is not None:
+		kw1['markerfacecolor']=markerfacecolor
+
 	if capsize is not None:
 		kw1['capsize']=capsize
 
