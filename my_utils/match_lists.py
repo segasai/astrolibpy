@@ -53,7 +53,9 @@ def match_lists(ra1, dec1, ra2, dec2, dist, numNei=1):
 		tree2 = scipy.spatial.KDTree(xyz2.T)
 	else:
 		tree2 = scipy.spatial.cKDTree(xyz2.T)
+	del xyz2
 	ret = tree2.query(xyz1.T, numNei, 0, 2, mindist)
+	del xyz1
 	dist, ind = ret
 	finite = numpy.isfinite(dist)
 	dist[finite] = rad2deg(2*arcsin(dist[finite]/2))
