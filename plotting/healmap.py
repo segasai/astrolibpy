@@ -88,7 +88,7 @@ class bovy_healpy:
 					
 def healmap(ras,decs, ramin=0,ramax=360,decmin=-90, decmax=90, nside=64,
 			xflip=False,vmax=None,vmin=None,cmap=plt.cm.gray_r,
-			linewidth=1,weights=None, wrap_angle=None, skip_empty=True):
+			linewidth=1,weights=None, wrap_angle=None, skip_empty=True,weight_norm=False):
 	"""
 		Make the 2D histogram of the datapoints on the sky using the Healpix
 		pixels 
@@ -100,8 +100,13 @@ def healmap(ras,decs, ramin=0,ramax=360,decmin=-90, decmax=90, nside=64,
 	ipix=healpy.ang2pix(nside,numpy.deg2rad(decs)+numpy.pi*0.5,numpy.deg2rad(ras))
 	hh=quick_hist.quick_hist((ipix,), nbins=[nel],
 		range=[[0, nel]],weights=weights)
+	hhsum=quick_hist.quick_hist((ipix,), nbins=[nel],
+		range=[[0, nel]])
+
 	pixarea = (4*numpy.pi*(180/numpy.pi)**2)/nel # in sq. deg
 	hh = hh / pixarea
+	hhsum = hhsum / pixarea
+
 	xloc=numpy.arange(nel)
 
 	#fi,psi=healpy.pix2ang(nside,xloc)
@@ -153,7 +158,9 @@ def healmap(ras,decs, ramin=0,ramax=360,decmin=-90, decmax=90, nside=64,
 		vmin = 0 
 	if vmax is None:
 		vmax = hh.max()
-	
+
+	if weight_norm:
+		hh = hh*1./(hhsum+1*(hhsum==0))
 	
 	if skip_empty:
 		hh1=hh[hh>0]
