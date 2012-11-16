@@ -86,9 +86,10 @@ class bovy_healpy:
 		else:
 			return 2.-sc.sqrt((3.*(1-z)))
 					
-def healmap(ras,decs, ramin=0,ramax=360,decmin=-90, decmax=90, nside=64,
-			xflip=False,vmax=None,vmin=None,cmap=plt.cm.gray_r,
-			linewidth=1,weights=None, wrap_angle=None, skip_empty=True,weight_norm=False):
+def healmap(ras, decs, ramin=0, ramax=360, decmin=-90, decmax=90, nside=64,
+			xflip=False, vmax=None, vmin=None, cmap=plt.cm.gray_r,
+			linewidth=1, weights=None, wrap_angle=None, skip_empty=True,
+			weight_norm=False, rasterized=True):
 	"""
 		Make the 2D histogram of the datapoints on the sky using the Healpix
 		pixels 
@@ -97,83 +98,75 @@ def healmap(ras,decs, ramin=0,ramax=360,decmin=-90, decmax=90, nside=64,
 	plt.ioff()
 
 	nel = 12 * nside**2
-	ipix=healpy.ang2pix(nside,numpy.deg2rad(decs)+numpy.pi*0.5,numpy.deg2rad(ras))
-	hh=quick_hist.quick_hist((ipix,), nbins=[nel],
+	ipix = healpy.ang2pix(nside, numpy.deg2rad(decs)+numpy.pi*0.5, numpy.deg2rad(ras))
+	hh = quick_hist.quick_hist((ipix,), nbins=[nel],
 		range=[[0, nel]],weights=weights)
-	hhsum=quick_hist.quick_hist((ipix,), nbins=[nel],
+	hhsum = quick_hist.quick_hist((ipix,), nbins=[nel],
 		range=[[0, nel]])
 
 	pixarea = (4*numpy.pi*(180/numpy.pi)**2)/nel # in sq. deg
 	hh = hh / pixarea
 	hhsum = hhsum / pixarea
 
-	xloc=numpy.arange(nel)
+	xloc = numpy.arange(nel)
+	verts = [bovy_healpy.pix2vert(nside, xx) for xx in xloc]
 
-	#fi,psi=healpy.pix2ang(nside,xloc)
-
-	verts=[bovy_healpy.pix2vert(nside,xx) for xx in xloc]
-	#print len (verts)
-	#plot(psi,fi,ps=3)
-	collist=[]
-	fac=180/numpy.pi
+	collist = []
+	fac = 180/numpy.pi
 	if wrap_angle is None:
-		wrap_angle = 2*numpy.pi
+		wrap_angle = 2 * numpy.pi
 	else:
 		wrap_angle = numpy.deg2rad(wrap_angle)
-	for ii,v in enumerate(verts):
-		if skip_empty and hh[ii]==0:
+	for ii, v in enumerate(verts):
+		if skip_empty and hhsum[ii] == 0:
 			continue
 		
-		b,a=v.T
+		b,a = v.T
 		if (a.max()-a.min())>(numpy.pi):
-			a=(a+(numpy.pi-a[0]))%(2*numpy.pi)-(numpy.pi-a[0])
-		if a.mean()<0:
-			a = (a + 2*numpy.pi)
-		elif a.mean()>wrap_angle:
-			a = (a - 2*numpy.pi)
-		xys=numpy.array([a*fac,b*fac-90]).T
-		#print xys
-		curpoly =matplotlib.patches.Polygon(xys,closed=True)
+			a = ((a + (numpy.pi - a[0])) % (2 * numpy.pi)) - (numpy.pi-a[0])
+		if a.mean() < 0:
+			a = (a + 2 * numpy.pi)
+		elif a.mean() > wrap_angle:
+			a -= 2 * numpy.pi
+		xys = numpy.array([a * fac, b * fac - 90]).T
+
+		curpoly = matplotlib.patches.Polygon(xys, closed=True)
 		collist.append(curpoly)
 
-		#oplot(numpy.concatenate((a,[a[0]])),numpy.concatenate((b,[b[0]])))
-	raranges =[ramin,ramax]
+	raranges = [ramin,ramax]
 	if xflip:
 		raranges = raranges[::-1]
-	plot([-1],xr=raranges,yr=[decmin,decmax])
-	ax=plt.gca()
-
-	tmppol=matplotlib.patches.Polygon(numpy.array(([0,360,360,0],[-90,-90,90,90])).T,closed=True)
-	tmpcoll=matplotlib.collections.PatchCollection([tmppol],linewidths=0.01,
-		edgecolors='black',facecolors='black')
-	#ax.add_collection(tmpcoll)
+	plot([-1], xr=raranges, yr=[decmin,decmax])
+	ax = plt.gca()
+	tmppol = matplotlib.patches.Polygon(numpy.array(([0, 360, 360, 0],
+										[-90, -90, 90, 90])).T,closed=True)
+	tmpcoll = matplotlib.collections.PatchCollection([tmppol], linewidths=0.01,
+		edgecolors='black', facecolors='black')
 	tmpcoll.set_array(numpy.array([0]))
 
 
-	coll=matplotlib.collections.PatchCollection(collist,
-		linewidths=linewidth
-		)
-	#edgecolors='none')
+	coll = matplotlib.collections.PatchCollection(collist,
+		linewidths=linewidth)
+
 	if vmin is None:
 		vmin = 0 
 	if vmax is None:
 		vmax = hh.max()
 
 	if weight_norm:
-		hh = hh*1./(hhsum+1*(hhsum==0))
+		hh = hh * 1. / (hhsum + 1 * (hhsum == 0))
 	
 	if skip_empty:
-		hh1=hh[hh>0]
+		hh1 = hh[hhsum > 0]
 	else:
-		hh1=hh
+		hh1 = hh
 
 	coll.set_array(hh1)
-	
 	coll.set_cmap(cmap)
-	coll.set_clim(vmin,vmax)
+	coll.set_clim(vmin, vmax)
 	coll.set_edgecolors(coll.cmap(coll.norm(hh1)))
-	coll.set_rasterized(True)
-	tmpcoll.set_clim(vmin,vmax)
+	coll.set_rasterized(rasterized)
+	tmpcoll.set_clim(vmin, vmax)
 
 	ax.add_collection(coll)
 	return coll
