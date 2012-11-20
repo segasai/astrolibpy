@@ -126,7 +126,7 @@ def healmap(ras, decs, ramin=0, ramax=360, decmin=-90, decmax=90, nside=64,
 			a = ((a + (numpy.pi - a[0])) % (2 * numpy.pi)) - (numpy.pi-a[0])
 		if a.mean() < 0:
 			a = (a + 2 * numpy.pi)
-		elif a.mean() > wrap_angle:
+		if a.mean() > wrap_angle:
 			a -= 2 * numpy.pi
 		xys = numpy.array([a * fac, b * fac - 90]).T
 

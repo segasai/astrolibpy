@@ -88,8 +88,4 @@ def window_func2d(x,y,z,func,xmin=None,xmax=None,ymin=None,ymax=None,nbins=[10,1
 			right = poss[i]+1
 		curval = valind[left]
 		retv[curval%(nbins[0]),curval/(nbins[0])]= func(z1[left:right])
-	#for i in range(nbins[0]):
-	#	for j in range(nbins[1]):
-	##		curz=z[(xinds==(i+1))&(yinds==(j+1))]
-	#		retv[i,j]=func(curz)
 	return retv, locx[0], locx[-1], locy[0], locy[-1], hh
