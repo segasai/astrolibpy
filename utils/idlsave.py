@@ -54,7 +54,7 @@ class idlsave:
 
 	@staticmethod
 	def __cureString(s):
-		return s.replace('\n','').replace(' ','')
+		return s.replace('\n','').replace(' ','').replace('\t','')
 
 	@staticmethod
 	def __splitString(s):
