@@ -317,7 +317,7 @@ def oplot (x, y=None, **kw):
 def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 				overplot=False, noerase=False, elinewidth=None, capsize=None,
 				markersize=None, markeredgecolor=None, markerfacecolor=None,
-				autoscalex=False, autoscaley=False, **kw):
+				autoscalex=False, autoscaley=False, label=None, **kw):
 	"""
 	Plot the data with error-bars
 	
@@ -354,6 +354,11 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
 			'elinewidth':elinewidth,'markeredgewidth':elinewidth} 
+	if 'zorder' in kw0:
+		kw1['zorder']=kw0['zorder']
+	if label is not None:
+		kw1['label']=label
+
 	if markersize is not None:
 		kw1['markersize']=markersize
 	if markeredgecolor is not None:
@@ -370,8 +375,7 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 	if err1 is None:
 		plt.gca().errorbar(x, y, erry, **kw1)
 	else:
-		plt.gca().errorbar(x, y, xerr=errx, **kw1)
-		plt.gca().errorbar(x, y, yerr=erry, **kw1)
+		plt.gca().errorbar(x, y, xerr=errx, yerr=erry, **kw1)
 
 @exceptionDecorator
 def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle="", title="",
