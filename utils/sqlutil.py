@@ -23,7 +23,11 @@ import collections
 try:
 	dictclass = collections.OrderedDict
 except:
-	dictclass = dict
+	try:
+		import ordereddict
+		dictclass = ordereddict.OrderedDict
+	except:
+		dictclass = dict
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None,port=5432, timeout=None):
