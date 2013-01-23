@@ -19,6 +19,11 @@ import types
 import numpy, sys, numpy as np
 import time,psycopg2
 import threading, Queue
+import collections
+try:
+	dictclass = collections.OrderedDict
+except:
+	dictclass = dict
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None,port=5432, timeout=None):
@@ -194,7 +199,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	cur.close()
 	#conn.commit()
 	if asDict:
-		resDict = {}
+		resDict = dictclass()
 		for _n, _v in zip(colNames,res):
 			resDict[_n]=_v
 		res=resDict	
