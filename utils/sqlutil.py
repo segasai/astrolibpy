@@ -19,14 +19,15 @@ import types
 import numpy, sys, numpy as np
 import time,psycopg2
 import threading, Queue
-import collections
+import collections, warnings
 try:
 	dictclass = collections.OrderedDict
-except:
+except AttributeError:
 	try:
 		import ordereddict
 		dictclass = ordereddict.OrderedDict
-	except:
+	except ImportError:
+		warnings.warn('No ordered dict library found')
 		dictclass = dict
 
 def getConnection( db=None, driver=None, user=None,
