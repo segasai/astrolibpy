@@ -65,7 +65,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	mults = (reduce(lambda x, y: x + [y * x[-1]], nbins_rev, [1]))[:-1]
  	mults.reverse()	
 	for i in xrange(nd):
-		cur_arr = numpy.ascontiguousarray(arrs[i])
+		cur_arr = numpy.ascontiguousarray(arrs[i],dtype=np.float64)
 		cur_range0 = float(range[i][0])
 		cur_range1 = float(range[i][1])
 		cur_nbins = nbins[i]
