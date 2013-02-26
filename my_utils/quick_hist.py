@@ -15,14 +15,14 @@
 #    along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import numpy
+import numpy as np
 import scipy.weave, scipy.weave.converters
 
 def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	"""
 	N-dimensional histogram routine.
 	Example:
-	> xs=numpy.random.uniform(size=100); ys= numpy.random.uniform(size=100)
+	> xs=np.random.uniform(size=100); ys= np.random.uniform(size=100)
 	> hh = quick_hist((xs,ys), range=[(0,1),(0,1)], nbins=[20,10])
 	Arguments:
 		arr -- tuple of N-arrays
@@ -57,15 +57,15 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	# convert all the bins into integers 
 	nbins = [ int(_tmp) for _tmp in nbins]
 
-	poss = numpy.zeros((nx,), dtype=numpy.int64)
+	poss = np.zeros((nx,), dtype=np.int64)
 
-	ind = numpy.ones_like(arrs[0]).astype(bool)
+	ind = np.ones_like(arrs[0]).astype(bool)
 	nbins_rev = nbins + []
 	nbins_rev.reverse()
 	mults = (reduce(lambda x, y: x + [y * x[-1]], nbins_rev, [1]))[:-1]
  	mults.reverse()	
 	for i in xrange(nd):
-		cur_arr = numpy.ascontiguousarray(arrs[i],dtype=np.float64)
+		cur_arr = np.ascontiguousarray(arrs[i],dtype=np.float64)
 		cur_range0 = float(range[i][0])
 		cur_range1 = float(range[i][1])
 		cur_nbins = nbins[i]
@@ -93,7 +93,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 			print "Sorry the compiled version didn't work :("
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins * 
 									1. / (cur_range1 - cur_range0))
-			cur_pos = numpy.floor(cur_pos).astype(numpy.int64)
+			cur_pos = np.floor(cur_pos).astype(np.int64)
 			ind &= ((cur_pos >= 0) & ( cur_pos < cur_nbins))
 			poss += cur_pos * cur_mult
 
@@ -106,7 +106,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 		weights_str = 'weightsind(i)'
 	if not getPos:	
 		del ind
-	res = numpy.zeros(numpy.array(nbins, dtype=numpy.int64).prod())
+	res = np.zeros(np.array(nbins, dtype=np.int64).prod())
 
 	code = """
 	int i;
@@ -132,7 +132,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	if not getPos:
 		return res.reshape(nbins)
 	else:
-		H = numpy.zeros(len(ind),dtype=numpy.int64)-1
+		H = np.zeros(len(ind),dtype=np.int64)-1
 		H[ind] = poss
 		return res.reshape(nbins),H	
 		
