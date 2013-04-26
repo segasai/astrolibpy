@@ -1,6 +1,6 @@
 import healpy,numpy as np
 
-def radec2ipix(nside,ra,dec,nest=True):
+def radec2pix(nside,ra,dec,nest=True):
 	_,__=np.pi/2-np.deg2rad(dec),np.deg2rad(ra)
 	return healpy.ang2pix(nside,_,__,nest=nest)
 
