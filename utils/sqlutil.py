@@ -192,7 +192,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	except BaseException:
 		try:
 			conn.rollback()
-		except Exception:
+		except:
 			pass
 		if not connSupplied:
 			try:
@@ -280,7 +280,8 @@ def print_arrays(arrays, f):
 def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None,
-										noCommit=False, temp=False):
+										noCommit=False, temp=False, 
+										analyze=False):
 	""" Upload the data stored in the tuple of arrays in the DB
 	x=np.arange(10)
 	y=x**.5
@@ -311,6 +312,8 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 			except:
 				pass
 		raise
+	if analyze:
+		cur.execute('analyze %s'%tableName)
 	cur.close()
 	if not noCommit:
 		conn.commit()
@@ -335,8 +338,9 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
 				host=host, timeout=timeout)
 	
-	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True)
-	res=get(query,conn=conn)
+	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True,
+		analyze=True)
+	res = get(query, conn=conn, preamb=preamb)
 	
 	if not connSupplied:
 		conn.close()
