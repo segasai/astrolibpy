@@ -301,7 +301,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		f = StringIO.StringIO()
 		print_arrays(arrays, f)
 		f.seek(0)
-		cur.copy_from(f,tableName,sep=' ')
+		cur.copy_from(f,tableName,sep=' ',columns=names)
 	except BaseException:
 		try:
 			conn.rollback()
