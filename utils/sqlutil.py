@@ -281,7 +281,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None,
 										noCommit=False, temp=False, 
-										analyze=False):
+										analyze=False, createTable=True):
 	""" Upload the data stored in the tuple of arrays in the DB
 	x=np.arange(10)
 	y=x**.5
@@ -294,8 +294,9 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 				host=host, timeout=timeout)
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
-		query1 = create_schema(tableName, arrays, names, temp=temp)
-		cur.execute(query1)
+		if createTable:
+			query1 = create_schema(tableName, arrays, names, temp=temp)
+			cur.execute(query1)
 		import StringIO
 		f = StringIO.StringIO()
 		print_arrays(arrays, f)
