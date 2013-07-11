@@ -93,6 +93,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
 	__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',25:'|S%d'%strLength,700:'f4',701:'f8',
+		1042:'|S%d'%strLength,#character() 
 		1043:'|S%d'%strLength,#varchar
 		1700:'f8' #numeric
 		} 
