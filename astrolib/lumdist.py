@@ -93,7 +93,7 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
    scalret = lambda x : x[0] if scal else x
 
    if isinstance(z, list):
-      z = numpy.array(z)
+      z = array(z)
    elif isinstance(z, ndarray):
       pass
    else:

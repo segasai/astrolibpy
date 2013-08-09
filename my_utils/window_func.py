@@ -64,28 +64,29 @@ def window_func2d(x,y,z,func,xmin=None,xmax=None,ymin=None,ymax=None,nbins=[10,1
 	if ymax is None:
 		ymax = y.max()
 
-	hh,locx,locy=scipy.histogram2d(x,y,range=((xmin,xmax),(ymin,ymax)),bins=nbins)
+	hh, locx, locy = scipy.histogram2d(x, y,
+			range=((xmin,xmax), (ymin,ymax)), bins=nbins)
 	xinds = numpy.digitize(x, locx) - 1
 	yinds = numpy.digitize(y, locy) - 1
 	mask = numpy.zeros(hh.shape, bool)
 	retv = hh  * 0.	
-	subind = (xinds>=0)&(yinds>=0)&(xinds<nbins[0])&(yinds<nbins[1])
-	xinds,yinds,z1 = [_[subind] for _ in [xinds,yinds,z]]
-	valind = yinds*(nbins[0])+xinds
+	subind = (xinds >= 0) & (yinds >= 0) & (xinds < nbins[0]) & (yinds < nbins[1])
+	xinds, yinds, z1 = [_[subind] for _ in [xinds,yinds,z]]
+	valind = yinds * (nbins[0]) + xinds
 	sortind = np.argsort(valind)
-	valind=valind[sortind]
-	poss=np.where(np.diff(valind)>0)[0]
-	z1=z1[sortind]
-	for  i in range(len(poss)+1):
-		if i==0:
+	valind = valind[sortind]
+	poss = np.where(np.diff(valind) > 0)[0]
+	z1 = z1[sortind]
+	for  i in range(len(poss) + 1):
+		if i == 0:
 			left = 0
-			right = poss[0]+1
+			right = poss[0] + 1
 		elif i == len(poss):
-			left = poss[-1]+1
+			left = poss[-1] + 1
 			right = len(valind)
 		else:
-			left = poss[i-1]+1
-			right = poss[i]+1
+			left = poss[i-1] + 1
+			right = poss[i] + 1
 		curval = valind[left]
-		retv[curval%(nbins[0]),curval/(nbins[0])]= func(z1[left:right])
+		retv[curval % (nbins[0]), curval / (nbins[0])] = func(z1[left:right])
 	return retv, locx[0], locx[-1], locy[0], locy[-1], hh

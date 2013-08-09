@@ -69,7 +69,7 @@ def exceptionDecorator(func):
 			isInteractive = plt.isinteractive()
 
 			# switch to non-interactive mode
-			matplotlib.interactive(False)
+			#matplotlib.interactive(False)
 
 			ret = func(*args, **kwargs)
 

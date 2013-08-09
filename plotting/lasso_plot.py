@@ -15,7 +15,7 @@
 #    along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
 from matplotlib.widgets import Lasso
-from matplotlib.nxutils import points_inside_poly
+import matplotlib.path as mplpa
 from matplotlib.pyplot import gca
 from numpy import nonzero,array
 
@@ -41,7 +41,8 @@ class lasso_plot:
         self.verts = None
 
     def callback(self, verts):
-        mask = points_inside_poly(self.xys, verts)
+        self.path = mplpa.Path(verts)
+        mask = self.path.contains_points(self.xys)
         ind = nonzero(mask)[0]
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)
@@ -54,7 +55,7 @@ class lasso_plot:
 
     def inside(self, xs,ys):
         tmpxys = zip(xs,ys)
-        return points_inside_poly(tmpxys, self.verts)
+        return self.path.contains_points(tmpxys)
 
     def onpress(self, event):
         if self.canvas.widgetlock.locked(): return
