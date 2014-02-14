@@ -43,7 +43,7 @@ def get_marker(ps, linestyle):
 	try:
 		marker = markerHash[ps]
 	except KeyError:
-		if isinstance(ps,types.StringType):
+		if isinstance(ps, str):
 			marker=ps
 		else:
 			marker=' '
