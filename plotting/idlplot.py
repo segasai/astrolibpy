@@ -29,19 +29,9 @@ import warnings,array
 plt.ion()
 
 def listToArr(x):
-	if isinstance(x, types.ListType) or isinstance(x,array.array):
-		return numpy.array(x)
-	else:
-		return x
-
+	return np.asarray(x)
 def listToArrFlat(x):
-	if isinstance(x, types.ListType):
-		return numpy.array(x).flatten()
-	else:
-		if x.ndim!=1:
-			return x.flatten()
-		else:
-			return x
+	return np.asarray(x).flatten()
 
 def get_marker(ps, linestyle):
 	"""
