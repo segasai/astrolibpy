@@ -77,7 +77,7 @@ def exceptionDecorator(func):
 
 			draw_if_interactive()
 			return ret
-		except Exception, exc:
+		except Exception as exc:
 			# switch back
 			matplotlib.interactive(isInteractive)
 			raise
@@ -799,7 +799,7 @@ def contour (z, x=None, y=None, xrange=None, yrange=None, zrange=None,
 
 # Add contour lines:
 	if c_levels is None:
-		c_levels = levels[0:len(levels):int(nlevels/12)]
+		c_levels = levels#[0:len(levels):int(nlevels/12)]
 	cset2 = axis.contour(x, y, z, c_levels, colors = c_color,linewidths=c_thick,hold='on')
 	if label is not None:
 		cset2.collections[0].set_label(label)

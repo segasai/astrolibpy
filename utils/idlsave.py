@@ -27,7 +27,10 @@ exec (idlsave.restore('xx.sav'))
 
 """
 
-import cPickle
+try:
+	import cPickle as pickle
+except ImportError:
+	import pickle
 import types
 import re,struct
 
@@ -89,7 +92,7 @@ class idlsave:
 			curhash[names[a]]=args[a]
 
 		if version==1:
-			cPickle.dump(curhash, f, 2)
+			pickle.dump(curhash, f, 2)
 		elif version==2:
 			f.write(idlsave.versionId(version))
 			headlen1 = f.tell()
@@ -97,9 +100,9 @@ class idlsave:
 			offsets = dict([(name,long(0)) for name in names])
 			for name in names:
 				offsets[name] = long(f.tell())
-				cPickle.dump(curhash[name], f, 2)
+				pickle.dump(curhash[name], f, 2)
 			offOffs = f.tell()
-			cPickle.dump(offsets, f, 2)
+			pickle.dump(offsets, f, 2)
 			f.seek(headlen1)
 			f.write(struct.pack('!q',long(offOffs)))
 		f.close()
@@ -123,7 +126,7 @@ class idlsave:
 			f.seek(0) # there is no header in the version1 files
 		
 		if version==1:
-			xx=cPickle.load(f)
+			xx=pickle.load(f)
 			idlsave.dhash=xx
 			f.close()
 			if names is None:
@@ -144,7 +147,7 @@ class idlsave:
 		elif version==2:
 			offOff = struct.unpack('!q',f.read(8))[0]
 			f.seek(offOff)
-			offsets = cPickle.load(f)
+			offsets = pickle.load(f)
 			if names is None:
 				names1 = offsets.keys()
 			else:
@@ -153,7 +156,7 @@ class idlsave:
 			for name in names1:
 				off = offsets[name]
 				f.seek(off)
-				hash[name] = cPickle.load(f)
+				hash[name] = pickle.load(f)
 			if asdict:
 				return hash
 			idlsave.dhash=hash
@@ -173,6 +176,6 @@ class idlsave:
 	def getallvars(printVars=False):
 		tup=tuple(a for a in idlsave.dhash.itervalues())
 		if printVars:
-			print ','.join([k for k in idlsave.dhash.keys()])
+			print (','.join([k for k in idlsave.dhash.keys()]))
 		del idlsave.dhash
 		return tup

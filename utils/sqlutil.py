@@ -326,7 +326,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		
 def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
-										conn=None, preamb=None, timeout=None):
+										conn=None, preamb=None, timeout=None, strLength=20):
 	""" This function allows joining the data from python with the data in the DB,it
 	first uploads the data in the DB and then run a user specified query:
 	x=np.arange(10)
@@ -342,7 +342,7 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 	
 	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True,
 		analyze=True)
-	res = get(query, conn=conn, preamb=preamb)
+	res = get(query, conn=conn, preamb=preamb, strLength=strLength)
 	
 	if not connSupplied:
 		conn.close()
