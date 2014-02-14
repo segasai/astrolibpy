@@ -18,7 +18,11 @@
 import types
 import numpy, sys, numpy as np
 import time,psycopg2
-import threading, Queue
+import threading
+try:
+	import queue
+except:
+	import Queue as queue
 import collections, warnings
 try:
 	dictclass = collections.OrderedDict
@@ -69,12 +73,12 @@ def __converter(qIn, qOut, endEvent, dtype):
 	while(not endEvent.is_set()):
 		try:
 			tups = qIn.get(True,0.1)
-		except Queue.Empty:
+		except queue.Empty:
 			continue
 		try:
 			res=numpy.core.records.array(tups,dtype=dtype)
 		except:
-			print 'Failed to convert input data into array'
+			print ('Failed to convert input data into array')
 			endEvent.set()
 			raise
 		qOut.put(res)
@@ -110,8 +114,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		else:
 			res = cur.execute(query, params)
 		
-		qIn = Queue.Queue(1)
-		qOut = Queue.Queue()
+		qIn = queue.Queue(1)
+		qOut = queue.Queue()
 		endEvent = threading.Event()
 		nrec = 0 ## keeps the number of arrays sent to the other thread
 				##  minus number received
@@ -137,7 +141,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 					try:
 						reslist.append(qOut.get(False))
 						nrec -= 1
-					except Queue.Empty:
+					except queue.Empty:
 						pass
 				try:
 					while(nrec!=0):
@@ -147,7 +151,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						except:
 							if endEvent.is_set():
 								raise Exception('Child thread failed')
-				except Queue.Empty:
+				except queue.Empty:
 					pass
 				endEvent.set()
 			except BaseException:
