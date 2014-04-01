@@ -157,7 +157,12 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		# it uses both nbins and bin options
 	if kernel is None:
 		if not adaptive:
-			hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
+			if not np.isscalar(weights):
+				hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=weights)
+			else:
+				hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins)
+				hh = hh * weights
+
 			if weight_norm:
 				hh1, loc = numpy.histogram(dat, range=(min, max), bins=nbins, weights=None)	
 				hh = hh*1./hh1
@@ -171,7 +176,11 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 	else:
 		loc1=numpy.linspace(min,max,nbins*5)
 		import statistics
-		hh1=statistics.pdf( dat,loc1,h=bin/2.,kernel=kernel)*bin*len(dat)
+		if weights is not None:
+			hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel,weight=weights)*bin*len(dat)
+		else:
+			hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
+
 	if overplot:
 		func = oplot 
 	else:
