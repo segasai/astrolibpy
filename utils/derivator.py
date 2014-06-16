@@ -9,7 +9,7 @@ import workerpool
 
 class derivator:
 	# class which compute finite difference derivatives using multiple cpus
-	def __init__(self, func, kw = {}, eps1=1e-4, eps2=1e-8, nthreads=1):
+	def __init__(self, func, eps1=1e-4, eps2=1e-8, nthreads=1 ,kw={}):
 		self.func=func
 		if nthreads > 1:
 			self.pool = workerpool.pool(func, nthreads=nthreads, kw=kw)
