@@ -56,6 +56,9 @@ class pool:
 		return ret
 		
 	def __del__(self):
+		self.join()
+			
+	def join(self):
 		for p in self.procs:
 			self.queuein.put(None)
 		for p in self.procs:
