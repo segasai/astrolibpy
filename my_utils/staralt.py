@@ -58,5 +58,5 @@ def getalt(ra, dec, yr, mon, day, hr, minu, sec=0, lon='-111:35:59', lat='31:57:
 		ret.append(altSun)
 	if retDistMoon:
 		ret.append(distMoon)
-	return tuple(ret)
+	return ret
 	
