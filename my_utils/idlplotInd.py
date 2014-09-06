@@ -1,4 +1,5 @@
 import idlplot
+import numpy as np
 
 """ 
 This module is a set wrappers around idlplot designed to make 
@@ -27,7 +28,8 @@ def plothist(a,*args,**kw):
 	else:
 		weights = kw.get('weights')
 		if weights is not None:
-			kw['weights']=kw['weights'][ind]
+			if not np.isscalar(kw['weights']):
+				kw['weights']=kw['weights'][ind]
 		del kw['ind']
 		ret=idlplot.plothist(a[ind],*args,**kw)
 	return ret

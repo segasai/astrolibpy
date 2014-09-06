@@ -25,3 +25,7 @@ def sphdist (ra1, dec1, ra2, dec2):
 				)
 			)
 	
+def sphdist_fast(ra1,dec1,ra2,dec2):
+	import numexpr
+	return numexpr.evaluate('2*57.295779513082323*(arcsin(sqrt((sin(0.017453292519943295*(dec1-dec2)/2))**2+cos(0.017453292519943295*dec1)*cos(0.017453292519943295*dec2)*(sin(0.017453292519943295*((ra1-ra2))/2))**2)))')
+	
