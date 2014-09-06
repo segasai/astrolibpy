@@ -17,9 +17,10 @@
 
 import ephem,numpy as np
 
+import sphdist
 
-def getalt(ra,dec, yr, mon, day, hr, minu, lon='-111:35:59', lat='31:57:12',
-		elev=2000):
+def getalt(ra, dec, yr, mon, day, hr, minu, lon='-111:35:59', lat='31:57:12',
+		elev=2000, retSun=False, retDistMoon=False):
 	#computes the altitude in degrees of a given object at the given utc time
 	#ra dec in degress	
 	#yr mon day hr minu in utc
@@ -30,9 +31,24 @@ def getalt(ra,dec, yr, mon, day, hr, minu, lon='-111:35:59', lat='31:57:12',
 	obs.lat = lat #latitude
 	obs.elevation=elev;
 	fb = ephem.FixedBody();
+	fbSun = ephem.Sun();
+	fbMoon = ephem.Moon();
 	fb._ra=np.deg2rad(ra);
 	fb._dec=np.deg2rad(dec)
 	obs.date=ephem.Date('%d/%02d/%d %d:%d:0'%(yr,mon,day,hr,minu))
 	fb.compute(obs);
-	alt=np.rad2deg(1*(fb.alt))
-	return alt
+	fbSun.compute(obs);
+	fbMoon.compute(obs);
+	alt = np.rad2deg(1*fb.alt)
+	az = np.rad2deg(1*fb.az);
+	altSun = np.rad2deg(1*(fbSun.alt))
+	altMoon = np.rad2deg(1*fbMoon.alt)
+	azMoon = np.rad2deg(1*fbMoon.az);
+	distMoon = sphdist.sphdist(az,alt,azMoon,altMoon)
+	ret=[alt]
+	if retSun:
+		ret.append(altSun)
+	if retDistMoon:
+		ret.append(distMoon)
+	return tuple(ret)
+	
