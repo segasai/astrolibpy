@@ -330,6 +330,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		
 def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
+										port=5432,
 										conn=None, preamb=None, timeout=None, strLength=20):
 	""" This function allows joining the data from python with the data in the DB,it
 	first uploads the data in the DB and then run a user specified query:
@@ -342,7 +343,7 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
-				host=host, timeout=timeout)
+				host=host, timeout=timeout,port=port)
 	
 	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True,
 		analyze=True)
