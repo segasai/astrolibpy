@@ -348,6 +348,7 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True,
 		analyze=True)
 	res = get(query, conn=conn, preamb=preamb, strLength=strLength)
+	conn.rollback()	
 	
 	if not connSupplied:
 		conn.close()
