@@ -1,6 +1,7 @@
 import urllib2,StringIO,aplpy,pyfits
 import matplotlib.pyplot  as plt
-def get_dss(ra, dec, survey='all', radius = 15, debug=False):
+def get_dss(ra, dec, survey='all', radius = 15, debug=False, noerase=False,
+		subplot=(1,1,1)):
 	"""
 	radius is in arcmins
 	survey: 'all', 'poss2ukstu', 'dss1'.. 
@@ -15,8 +16,9 @@ def get_dss(ra, dec, survey='all', radius = 15, debug=False):
 	f=StringIO.StringIO(html)
 	
 	dat=pyfits.open(f)
-	plt.clf()
-	gc=aplpy.FITSFigure(dat,figure=plt.gcf())
+	if not noerase:
+		plt.clf()
+	gc=aplpy.FITSFigure(dat,figure=plt.gcf(),subplot=subplot)
 	gc.set_tick_labels_format('ddd.dddd','ddd.dddd')
 	gc.show_grayscale()
 	return gc
