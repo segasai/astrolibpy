@@ -64,6 +64,9 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	nbins_rev.reverse()
 	mults = (reduce(lambda x, y: x + [y * x[-1]], nbins_rev, [1]))[:-1]
  	mults.reverse()	
+ 	assert(poss.flags['C_CONTIGUOUS'])
+ 	assert(ind.flags['C_CONTIGUOUS'])
+
 	for i in xrange(nd):
 		cur_arr = np.ascontiguousarray(arrs[i],dtype=np.float64)
 		cur_range0 = float(range[i][0])
@@ -102,11 +105,12 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	if weights is None:
 		weights_str = '1'
 	else:
-		weightsind = weights[ind]
+		weightsind = np.ascontiguousarray(weights[ind])
 		weights_str = 'weightsind(i)'
 	if not getPos:	
 		del ind
 	res = np.zeros(np.array(nbins, dtype=np.int64).prod())
+ 	assert(res.flags['C_CONTIGUOUS'])
 
 	code = """
 	int i;
