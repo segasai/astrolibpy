@@ -130,4 +130,4 @@ def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 
 
 if __name__=='__main__':
-	get(sys.argv[1],sys.argv[2],host='cappc118')
+	get(sys.argv[1],sys.argv[2],host='cappc127')
