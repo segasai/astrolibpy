@@ -53,6 +53,35 @@ def get_marker(ps, linestyle):
 				outlinestyle='-'
 	return (marker, outlinestyle)
 
+def filter_epa(im, kernsize):
+	if not hasattr(kernsize,'__iter__'):
+		kernsize1, kernsize2 = kernsize, kernsize
+	else:
+		kernsize1,kernsize2 = kernsize[0:2]
+	k11 = math.ceil(kernsize1)
+	k12 = math.ceil(kernsize2)
+	xgrid, ygrid = np.mgrid[-k11:k11:1, -k12:k12:1]
+	r2 = (xgrid/kernsize1)**2 + (ygrid/kernsize2)**2
+	filt = (1-r2) * (r2<=1)
+	filt = filt/filt.sum()
+	# IMPORTANT TRANSPOSITION, because the image first dimension is y
+	im1 = scipy.ndimage.filters.convolve(im, filt.T,mode='reflect')
+	return im1
+
+def smoother(arr, smooth = None, kernel = None): 
+	if smooth is not None:
+		if kernel=='gau':
+			if hasattr(smooth, '__iter__'):
+				smooth = smooth[::-1]
+				# because gaussian_filter convention is second dimension is x
+			arr = scipy.ndimage.filters.gaussian_filter(arr, smooth)
+		elif kernel=='epa':
+			arr = filter_epa(arr, smooth)
+		else:
+			raise Exception('Wrong kernel')
+	return arr
+
+
 def exceptionDecorator(func):
 	def wrapper(*args, **kwargs):
 		try:
@@ -381,7 +410,7 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 			vmin=None, vmax=None, aspect="auto", xlog=False ,ylog=False,
 			position=None, noerase=False, bar=False, bar_label='',
 			bar_fraction=0.05, zlog=False, smooth=None, vmaxfrac=None,
-			xflip=False, yflip=False,
+			xflip=False, yflip=False, kernel='gau',
 			vminfrac=None, **kw):
 	"""
 	Display the 2D image with proper axes (similar to plt.imshow)
@@ -429,8 +458,8 @@ def tvaxis (image, xmin=None, xmax=None, ymin=None,ymax=None, xtitle="", ytitle=
 		im = image.T
 	else:
 		raise ValueError('Wrong dimensions of the input array')
-	if smooth is not None:
-		im = scipy.ndimage.filters.gaussian_filter(im, [smooth,smooth])
+	im = smoother (im, smooth = smooth, kernel = kernel)
+
 	if vminfrac is not None and vmin is None:
 		vmin = scipy.stats.scoreatpercentile(im.flat, 100 * vminfrac)
 	if vmaxfrac is not None and vmax is None:
@@ -488,7 +517,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				bar_formatter=None, apply_func = None, zsqrt=False,
 				ret_hist=False, interpolation='nearest', scatter_thresh=None,
 				scatter_opt={},
-				subplot=None,
+				subplot=None, kernel='gau',
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -621,8 +650,8 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if yaxis_formatter is not None:
 		axis.yaxis.set_major_formatter(yaxis_formatter)
 
-	if smooth is not None:
-		hh = scipy.ndimage.filters.gaussian_filter(hh, [smooth, smooth])
+	hh = smoother (hh, smooth = smooth, kernel = kernel)
+
 	if vminfrac is not None and vmin is None:
 		vmin = scipy.stats.scoreatpercentile(hh.flat, 100 * vminfrac)
 	if vmaxfrac is not None and vmax is None:
