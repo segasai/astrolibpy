@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 # This file is part of astrolibpy
 #
@@ -332,7 +333,8 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										port=5432,
-										conn=None, preamb=None, timeout=None, strLength=20):
+										conn=None, preamb=None, timeout=None,
+					strLength=20, asDict=False):
 	""" This function allows joining the data from python with the data in the DB,it
 	first uploads the data in the DB and then run a user specified query:
 	x=np.arange(10)
@@ -348,7 +350,8 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 	
 	upload(tableName, arrays, names, conn=conn, noCommit=True, temp=True,
 		analyze=True)
-	res = get(query, conn=conn, preamb=preamb, strLength=strLength)
+	res = get(query, conn=conn, preamb=preamb, strLength=strLength,
+			asDict=asDict)
 	conn.rollback()	
 	
 	if not connSupplied:
