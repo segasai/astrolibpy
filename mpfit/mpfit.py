@@ -1203,7 +1203,7 @@ class mpfit:
 					# Obey any max step values.
 					if qminmax:
 						nwa1 = wa1 * alpha
-						whmax = (numpy.nonzero((qmax != 0.) & (maxstep > 0)))[0]
+						whmax = (numpy.nonzero((qmax[ifree] != 0.) & (maxstep[ifree] > 0)))[0]
 						if len(whmax) > 0:
 							mrat = numpy.max(numpy.abs(nwa1[whmax]) /
 									   numpy.abs(maxstep[ifree[whmax]]))
