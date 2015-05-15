@@ -597,18 +597,28 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 			hh = hh*1./hh1
 	if apply_func is not None:
 		hh = apply_func (hh)
+
 	if normx is not None:
 		if normx == 'sum':
-			hh = hh*1./hh.sum(axis=0)[numpy.newaxis,:]#/numpy.maximum(hh.sum(axis=0),1)[numpy.newaxis,:]
+			hhs = hh.sum(axis=0)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[None,:]
 		elif normx == 'max':
-			hh = hh*1./numpy.max(hh,axis=0)[numpy.newaxis,:]
+			hhs = np.max(hh,axis=0)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[None,:]
 		else:
 			raise Exception('unknown normx mode')
+		
 	if normy is not None:
 		if normy == 'sum':
-			hh = hh*1./hh.sum(axis=1)[:,numpy.newaxis]#/numpy.maximum(hh.sum(axis=1),1)[:,numpy.newaxis]
+			hhs = hh.sum(axis=1)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[:,None]
 		elif normy == 'max':
-			hh = hh*1./numpy.max(hh,axis=1)[:,numpy.newaxis]
+			hhs = np.max(hh,axis=1)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[:,None]
 		else:
 			raise Exception('unknown normy mode')
 
