@@ -1,4 +1,15 @@
-import glob, tables, numpy, Queue,psycopg2,threading,sys
+import glob, numpy, Queue,psycopg2,threading,sys
+import h5py
+
+__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',
+	700:'f4',701:'f8',
+	1700:'f8',# numeric
+	1114:'<M8[us]'  #timestamp
+# 25:'|S%d'%strLength,
+#	1042:'|S%d'%strLength,#character() 
+#	1043:'|S%d'%strLength,#varchar
+# I decided not supporting the strings
+	} 
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None):
@@ -20,33 +31,30 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 	if notNamed:
 		return cur
 	cur = conn.cursor(name='sqlutilcursor')
-	cur.arraysize=100000
+	cur.arraysize=1000000
 	return cur
 
-def __inserter(desc, filename, qIn, endEvent):
-	h5 = tables.openFile(filename, 'w')
+def __inserter(dtype, filename, qIn, endEvent):
+	fp = h5py.File(filename, 'w')
 	i=0;
 	while(not endEvent.is_set()):
 		try:
 			tups = qIn.get(True,0.1)
-			i+=1;
-			#names='ra,dec,rmag,flag,psfr,aa,kk,airm,sky,camcol,typ'.split(',')
-			#qOut.put(numpy.core.records.array(tups))
-			names = [ x.name  for x in desc]
-			if i==1:
-				desc= {}
-				desc1=[]
-				for j,x, in enumerate(tups[0]):
-					#desc[names[j]]=j.dtype
-					desc1.append((names[j],type(x)))
-				desc1=numpy.dtype(desc1)
-				tab=h5.createTable('/','Table',desc1)
-			tab.append(tups)
+			res=numpy.core.records.array(tups,dtype=dtype)
+			if i==0:
+				for _i, n in enumerate(res.dtype.names):
+					fp.create_dataset(n,data=res[n],maxshape=(None,))
+			else:
+				newN = len(tups)
+				N = len(fp[n])
+				for _i, n in enumerate(res.dtype.names):
+					fp[n].resize((N + newN,))
+					fp[n][-newN:]=res[n]
+			i+=1
 		except Queue.Empty:
 			continue
 		
-	tab.close()
-	h5.close()	
+	fp.close()	
 
 def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
@@ -76,7 +84,11 @@ def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 				tups = cur.fetchmany()
 				if nrec==0:
 					desc = cur.description
-					proc = threading.Thread(target=__inserter, args = (desc, filename, qIn, endEvent))
+					typeCodes = [_tmp.type_code for _tmp in desc]
+					colNames = [_tmp.name for _tmp in cur.description]
+					dtype=numpy.dtype([(colNames[_i],__pgTypeHash[_t]) for _i,_t in enumerate(typeCodes)])				
+
+					proc = threading.Thread(target=__inserter, args = (dtype, filename, qIn, endEvent))
 					proc.start()
 
 				if tups == []:
@@ -93,19 +105,6 @@ def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 				proc.terminate()
 			raise
 		proc.join()
-		if reslist == []:
-			nCols = len(cur.description)
-			res = numpy.array([],
-				dtype=numpy.dtype([('a%d'%i,'f') for i in range(nCols)])
-								)				
-		else:
-			res = numpy.concatenate(reslist)
-		res=[res[tmp] for tmp in res.dtype.names]
-		if maskNull:
-			for i in range(len(res)):
-				if res[i].dtype==numpy.object:
-					res[i]=res[i].astype(numpy.float)
-
 	except BaseException:
 		try:
 			conn.rollback()
