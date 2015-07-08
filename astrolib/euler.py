@@ -76,10 +76,11 @@ def euler(ai, bi, select=1, fk4=False):
    if select not in [1,2,3,4,5,6]:
       raise ValueError('Select parameter should be an integer between 1 and 6')
    i = select - 1
-   a = deg2rad(ai) - phi[i]
    b = deg2rad(bi)
-   sb = sin(b)
    cb = cos(b)
+   sb = sin(b)
+   del b
+   a = deg2rad(ai) - phi[i]
    cbsa = cb * sin(a)
    b = -stheta[i] * cbsa + ctheta[i] * sb
    bo = rad2deg(arcsin(minimum(b, 1.0)))
