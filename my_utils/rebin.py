@@ -9,7 +9,6 @@ def rebin(arr, shape1):
 	for r, s0, s1 in zip(rats,shape0,shape1):
 		if r*s1!=s0:
 			raise Exception('Wrong array sizes')
-	R = rats.prod()
 	conv=scipy.signal.convolve(arr,
 		np.ones(dtype=np.int64,shape=rats),'valid')
 	ret = conv[tuple([slice(0,None,_) for _ in rats])]
