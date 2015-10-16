@@ -234,8 +234,11 @@ def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				host=host, timeout=timeout)
 	try:
 		cur = getCursor(conn, driver=driver, preamb=preamb, notNamed=True)
-		
-		cur.execute(query, params)
+		if params is not None:
+			cur.execute(query, params)
+		else:
+			# sqlite3 doesn't like params here...
+			cur.execute(query)
 	except BaseException:
 		try:
 			conn.rollback()
