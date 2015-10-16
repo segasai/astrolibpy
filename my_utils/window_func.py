@@ -21,6 +21,8 @@ def window_func(x, y, func, xmin=None, xmax=None, nbin=100, empty=False,
 		xmax = x.max()
 	if xlog:
 		xmin,xmax,x=[numpy.log10(tmp) for tmp in [xmin,xmax,x]]
+	if (len(x)!=len(y) and x.ndim==1) or (x.shape!=y.shape and x.ndim>1):
+		raise ValueError('Input arrays must have the same size')
 	#hh,loc=scipy.histogram(x,range=(xmin,xmax),bins=nbin)
 	inds = ((x-xmin)/float(xmax-xmin)*nbin).astype(int)
 	mask = numpy.zeros(nbin, bool)
