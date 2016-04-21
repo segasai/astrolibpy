@@ -22,7 +22,7 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 		if arraylist.dtype.type is numpy.void:
 			iter=itertools.izip(arraylist.dtype.names, itertools.imap (arraylist.__getitem__ , arraylist.dtype.names))
 	else:
-		if isinstance(arraylist,types.ListType):
+		if isinstance(arraylist,types.ListType) or isinstance(arraylist,types.TupleType):
 			iter= zip(namelist, arraylist)
 		elif isinstance(arraylist,types.DictType):
 			iter= arraylist.iteritems()
