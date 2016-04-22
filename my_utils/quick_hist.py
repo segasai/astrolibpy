@@ -105,7 +105,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	if weights is None:
 		weights_str = '1'
 	else:
-		weightsind = np.ascontiguousarray(weights[ind])
+		weightsind = np.ascontiguousarray(weights[ind], dtype=np.float64)
 		weights_str = 'weightsind(i)'
 	if not getPos:	
 		del ind
