@@ -42,6 +42,8 @@ def mwrfits(filename, arraylist, namelist=None, header=None):
 			format='D'
 		elif arr.dtype.type==numpy.string_:
 			format='%dA'%arr.dtype.itemsize
+		elif arr.dtype.type==numpy.bool_:
+			format='I' # bool as int
 		else:
 			raise Exception("Oops unknown datatype %s"%arr.dtype)
 		tmplist.append(pyfits.Column(name=name, array=arr, format=format))
