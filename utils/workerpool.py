@@ -12,10 +12,17 @@ def doit(func, queuein, queout, args, kw):
 		queout.put((i, res))
 
 class pool:
-	def __init__(self, func, args=None, kw={}, nthreads=1):
+	def __init__(self, func, args=None, kw={}, nthreads=1, mpmap=False):
+		# create a processing pool that has the function that needs to 
+		# be called stored
+		# that reduces the overhead of constantly pickling the function
+		# mpmap=True flag enables the multiprocessing.Pool.map syntax of map
+		# e.g. map(func, list) 
+		# the first argument is then ignored
 		self.nthreads = nthreads
 		self.queuein = mp.Queue()
 		self.queueout = mp.Queue()
+		self.mpmap = mpmap
 		self.procs = [mp.Process(target=doit, name='xpool_%d'%i,
 				args=(func, self.queuein, self.queueout, args, kw))
 					for i in range(nthreads) ]
@@ -46,7 +53,11 @@ class pool:
 			iret, ret = self.queueout.get()
 			return iret, ret
 
-	def map0(self, params):
+	def map(self, *args):
+		if self.mpmap:
+			params=args[1]
+		else:
+			params=args[0]
 		for i, p in enumerate(params):
 			self.queuein.put((i, p))
 		ret = [None] * len(params)
@@ -55,9 +66,6 @@ class pool:
 			ret[resi] = res
 		return ret
 
-	def map(self, params):
-		return self.map0(params)
-		
 	def __del__(self):
 		self.join()
 			
