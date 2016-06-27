@@ -34,6 +34,8 @@ except AttributeError:
 	except ImportError:
 		warnings.warn('No ordered dict library found')
 		dictclass = dict
+from numpy.core import numeric as sb
+from numpy.core import numerictypes as nt
 
 def getConnection( db=None, driver=None, user=None,
 						password=None, host=None,port=5432, timeout=None):
@@ -70,25 +72,112 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 		cur = conn.cursor()
 	return cur
 
-def __converter(qIn, qOut, endEvent, dtype):
+# shape must be 1-d if you use list of lists...
+def fromrecords(recList, dtype=None, shape=None, formats=None, names=None,
+				titles=None, aligned=False, byteorder=None, intNullVal=None):
+	""" This function was taken from np.core.records and updated to
+		support conversion null integers to intNullVal
+	"""
+	""" create a recarray from a list of records in text form
+
+		The data in the same field can be heterogeneous, they will be promoted
+		to the highest data type.  This method is intended for creating
+		smaller record arrays.  If used to create large array without formats
+		defined
+
+		r=fromrecords([(2,3.,'abc')]*100000)
+
+		it can be slow.
+
+		If formats is None, then this will auto-detect formats. Use list of
+		tuples rather than list of lists for faster processing.
+
+	>>> r=np.core.records.fromrecords([(456,'dbe',1.2),(2,'de',1.3)],
+	... names='col1,col2,col3')
+	>>> print(r[0])
+	(456, 'dbe', 1.2)
+	>>> r.col1
+	array([456,   2])
+	>>> r.col2
+	array(['dbe', 'de'],
+		  dtype='|S3')
+	>>> import pickle
+	>>> print(pickle.loads(pickle.dumps(r)))
+	[(456, 'dbe', 1.2) (2, 'de', 1.3)]
+	"""
+
+	nfields = len(recList[0])
+	if formats is None and dtype is None:  # slower
+		obj = sb.array(recList, dtype=object)
+		arrlist = [sb.array(obj[..., i].tolist()) for i in range(nfields)]
+		return np.core.records.fromarrays(arrlist, formats=formats, shape=shape, names=names,
+						  titles=titles, aligned=aligned, byteorder=byteorder)
+
+	if dtype is not None:
+		descr = sb.dtype((np.core.records.record, dtype))
+	else:
+		descr = np.core.records.format_parser(formats, names, titles, aligned, byteorder)._descr
+
+	try:
+		retval = sb.array(recList, dtype=descr)
+	except TypeError:  # list of lists instead of list of tuples
+		if (shape is None or shape == 0):
+			shape = len(recList)
+		if isinstance(shape, (int, long)):
+			shape = (shape,)
+		if len(shape) > 1:
+			raise ValueError("Can only deal with 1-d array.")
+		_array = np.core.records.recarray(shape, descr)
+		try:
+			for k in range(_array.size):
+				_array[k] = tuple(recList[k])
+		except TypeError:
+			convs = []
+			ncols = len(dtype.fields)
+			for _k,_v in dtype.fields.iteritems():
+				if _v[0] in [np.int16,np.int32,np.int64]:
+					convs.append(lambda x: x or intNullVal) 
+				else:
+					convs.append(lambda x:x)
+			convs = tuple(convs)
+			convF = lambda x: [convs[_](x[_]) for _ in range(ncols)]
+				
+			for k in range(k, _array.size):
+				try:
+					_array[k] = tuple(recList[k])
+				except TypeError:
+					_array[k] = tuple(convF(recList[k]))
+					
+				
+		return _array
+	else:
+		if shape is not None and retval.shape != shape:
+			retval.shape = shape
+
+	res = retval.view(numpy.core.records.recarray)
+
+	return res
+
+
+def __converter(qIn, qOut, endEvent, dtype, intNullVal):
 	while(not endEvent.is_set()):
 		try:
 			tups = qIn.get(True,0.1)
 		except queue.Empty:
 			continue
 		try:
-			res=numpy.core.records.array(tups,dtype=dtype)
+			res=fromrecords(tups,dtype=dtype, intNullVal=intNullVal)
 		except:
 			print ('Failed to convert input data into array')
 			endEvent.set()
 			raise
 		qOut.put(res)
 
-
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
 						getConn=False, conn=None, maskNull=False, port=5432,
-						strLength=10, timeout=None, notNamed=False, asDict=False):
+						strLength=10, timeout=None, notNamed=False, 
+						asDict=False, intNullVal=-9999):
 	'''This program executes the sql query and returns 
 	the tuple of the numpy arrays.
 	Example:
@@ -97,11 +186,19 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 	Example:
 	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
-	__pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',25:'|S%d'%strLength,700:'f4',701:'f8',
-		1042:'|S%d'%strLength,#character() 
-		1043:'|S%d'%strLength,#varchar
-		1700:'f8',
-		1114:'<M8[us]' #numeric.
+	__pgTypeHash = {
+		16: bool,
+		18: str,
+		20: 'i8',
+		21: 'i2',
+		23: 'i4',
+		25: '|S%d'%strLength,
+		700: 'f4',
+		701: 'f8',
+		1042:'|S%d'%strLength, # character() 
+		1043:'|S%d'%strLength, # varchar
+		1700:'f8', # numeric 
+		1114:'<M8[us]' # timestamp
 		} 
 
 	connSupplied = (conn is not None)
@@ -128,12 +225,12 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			try:
 				while(True):
 					tups = cur.fetchmany()
-					if nrec==0:
+					if nrec == 0:
 						desc = cur.description
 						typeCodes = [_tmp.type_code for _tmp in desc]
 						colNames = [_tmp.name for _tmp in cur.description]
-						dtype=numpy.dtype([('a%d'%_i,__pgTypeHash[_t]) for _i,_t in enumerate(typeCodes)])				
-						proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent,dtype))
+						dtype=numpy.dtype([('a%d'%_i, __pgTypeHash[_t]) for _i,_t in enumerate(typeCodes)])		
+						proc = threading.Thread(target=__converter, args = (qIn, qOut, endEvent,dtype, intNullVal))
 						proc.start()
 
 					if tups == []:
