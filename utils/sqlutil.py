@@ -175,7 +175,7 @@ def __converter(qIn, qOut, endEvent, dtype, intNullVal):
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						password=None, host='localhost', preamb=None,
-						getConn=False, conn=None, maskNull=False, port=5432,
+						getConn=False, conn=None, port=5432,
 						strLength=10, timeout=None, notNamed=False, 
 						asDict=False, intNullVal=-9999):
 	'''This program executes the sql query and returns 
@@ -288,10 +288,6 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 				return None
 
 		res=[res[tmp] for tmp in res.dtype.names]
-		if maskNull:
-			for i in range(len(res)):
-				if res[i].dtype==numpy.object:
-					res[i]=res[i].astype(numpy.float)
 
 	except BaseException:
 		try:
