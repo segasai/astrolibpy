@@ -78,40 +78,8 @@ def fromrecords(recList, dtype=None, shape=None, formats=None, names=None,
 	""" This function was taken from np.core.records and updated to
 		support conversion null integers to intNullVal
 	"""
-	""" create a recarray from a list of records in text form
-
-		The data in the same field can be heterogeneous, they will be promoted
-		to the highest data type.  This method is intended for creating
-		smaller record arrays.  If used to create large array without formats
-		defined
-
-		r=fromrecords([(2,3.,'abc')]*100000)
-
-		it can be slow.
-
-		If formats is None, then this will auto-detect formats. Use list of
-		tuples rather than list of lists for faster processing.
-
-	>>> r=np.core.records.fromrecords([(456,'dbe',1.2),(2,'de',1.3)],
-	... names='col1,col2,col3')
-	>>> print(r[0])
-	(456, 'dbe', 1.2)
-	>>> r.col1
-	array([456,   2])
-	>>> r.col2
-	array(['dbe', 'de'],
-		  dtype='|S3')
-	>>> import pickle
-	>>> print(pickle.loads(pickle.dumps(r)))
-	[(456, 'dbe', 1.2) (2, 'de', 1.3)]
-	"""
 
 	nfields = len(recList[0])
-	if formats is None and dtype is None:  # slower
-		obj = sb.array(recList, dtype=object)
-		arrlist = [sb.array(obj[..., i].tolist()) for i in range(nfields)]
-		return np.core.records.fromarrays(arrlist, formats=formats, shape=shape, names=names,
-						  titles=titles, aligned=aligned, byteorder=byteorder)
 
 	if dtype is not None:
 		descr = sb.dtype((np.core.records.record, dtype))
@@ -177,13 +145,32 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 						getConn=False, conn=None, port=5432,
 						strLength=10, timeout=None, notNamed=False, 
 						asDict=False, intNullVal=-9999):
-	'''This program executes the sql query and returns 
-	the tuple of the numpy arrays.
+	'''Executes the sql query and returns the tuple or dictionary with the numpy arrays.
+	
+	Parameters:
+	------
+	query : string with the query you want to execute, can include question 
+	        marks to refer to query parameters
+	params : tuple with query parameters
+	conn : the connection object to the DB (optional) to avoid reconnecting
+	asDict : boolean to retrieve the results as a dictionary with column names
+	        as keys
+	strLength : all the strings will be truncated to this length
+	intNullVal : all the integer columns with nulls will have null replaced by
+	             this value
+	db : string with the name of the database
+	driver : the sql driver to be used (psycopg2 and sqlite3 are supported)
+	user : user name for the DB connection
+	password : DB connection password
+	host : hostname of the database
+	port : port of the database	
+	preamb: bit of SQL code to be executed before the query
+		
 	Example:
-	a,b, c = sqlutil.get('select ra,dec,d25 from rc3')
+	>>> a, b, c = sqlutil.get('select ra,dec,d25 from rc3')
 	You can also use the parameters in your query:
 	Example:
-	a,b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
+	>>> a, b = squlil.get('select ra,dec from rc3 where name=?',"NGC 3166")
 	'''
 	__pgTypeHash = {
 		16: bool,
@@ -319,7 +306,7 @@ def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 										password=None, host='locahost',
 										conn=None, preamb=None, timeout=None,
 										noCommit=False):
-	"Execute a given SQL command without returning the results"
+	"""Execute a given SQL command without returning the results"""
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db,driver=driver,user=user,password=password,
@@ -385,9 +372,11 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 										noCommit=False, temp=False, 
 										analyze=False, createTable=True):
 	""" Upload the data stored in the tuple of arrays in the DB
-	x=np.arange(10)
-	y=x**.5
-	sqlutil.upload('mytable',(x,y),('xcol','ycol'))
+
+	Example:
+	>>> x = np.arange(10)
+	>>> y = x**.5
+	>>> sqlutil.upload('mytable',(x,y),('xcol','ycol'))
 	"""
 	
 	connSupplied = (conn is not None)
@@ -430,11 +419,21 @@ def local_join(query, tableName, arrays, names, db="wsdb", driver="psycopg2", us
 										port=5432,
 										conn=None, preamb=None, timeout=None,
 					strLength=20, asDict=False):
-	""" This function allows joining the data from python with the data in the DB,it
-	first uploads the data in the DB and then run a user specified query:
-	x=np.arange(10)
-	y=x**.5
-	sqlutil.local_join('select * from mytable as m, sometable as s where s.id=m.xcol', 
+	""" Join the data from python with the data in the database
+	This command first uploads the data in the DB and then runs a 
+	user specified query.
+	
+	Parameters
+	----------
+	query : String with the query to be executed 
+	tableName : The name of the temporary table that is going to be created
+	arrays : The tuple with list of arrays with the data to be loaded in the DB
+	names : The tuple with the column names for the user table
+	
+	Example: 
+	>>> x = np.arange(10)
+	>>> y = x**.5
+	>>> sqlutil.local_join('select * from mytable as m, sometable as s where s.id=m.xcol', 
 							'mytable',(x,y),('xcol','ycol'))
 	"""
 
