@@ -23,7 +23,11 @@ import numpy as np
 import time
 import psycopg2
 import threading
-import cStringIO
+try:
+	import cStringIO as StringIO
+except ImportError:
+	# for python3
+	from io import StringIO 
 try:
 	import queue
 except:
@@ -92,12 +96,7 @@ def fromrecords(recList, dtype=None, intNullVal=None):
 	try:
 		retval = sb.array(recList, dtype=descr)
 	except TypeError:  # list of lists instead of list of tuples
-		if (shape is None or shape == 0):
-			shape = len(recList)
-		if isinstance(shape, (int, long)):
-			shape = (shape,)
-		if len(shape) > 1:
-			raise ValueError("Can only deal with 1-d array.")
+		shape = (len(recList),)
 		_array = np.core.records.recarray(shape, descr)
 		try:
 			for k in range(_array.size):
