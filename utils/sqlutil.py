@@ -134,7 +134,8 @@ def fromrecords(recList, dtype=None, shape=None, formats=None, names=None,
 		except TypeError:
 			convs = []
 			ncols = len(dtype.fields)
-			for _k,_v in dtype.fields.iteritems():
+			for _k in dtype.names:
+				_v = dtype.fields[_k]
 				if _v[0] in [np.int16,np.int32,np.int64]:
 					convs.append(lambda x: x or intNullVal) 
 				else:
@@ -147,8 +148,6 @@ def fromrecords(recList, dtype=None, shape=None, formats=None, names=None,
 					_array[k] = tuple(recList[k])
 				except TypeError:
 					_array[k] = tuple(convF(recList[k]))
-					
-				
 		return _array
 	else:
 		if shape is not None and retval.shape != shape:
