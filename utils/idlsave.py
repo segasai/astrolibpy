@@ -26,7 +26,7 @@ idlsave.save('xx.sav','x,y',2,3)
 exec (idlsave.restore('xx.sav'))
 
 """
-
+from __future__ import print_function
 try:
 	import cPickle as pickle
 except ImportError:
@@ -80,12 +80,12 @@ class idlsave:
 		if len(args)==0:
 			return "idlsave.save(\"%s\",\"%s\",%s)"%(filename,idlsave.__cureString(names),names)
 
-		if type(names)==types.StringType:
+		if isinstance(names, str):
 			names = idlsave.__splitString(names)
 		if len(names)!=len(args):
 			raise Exception("The number of variable names should \
 					be equal to the number of variables)")
-		f=open(filename,"w")
+		f=open(filename,"wb")
 		version = kw.get('version',2)
 		curhash={}
 		for a in range(len(names)):
@@ -94,17 +94,17 @@ class idlsave:
 		if version==1:
 			pickle.dump(curhash, f, 2)
 		elif version==2:
-			f.write(idlsave.versionId(version))
+			f.write(idlsave.versionId(version).encode('ascii'))
 			headlen1 = f.tell()
-			f.write(struct.pack('!q',long(0)))			
-			offsets = dict([(name,long(0)) for name in names])
+			f.write(struct.pack('!q', 0))			
+			offsets = dict([(name, 0 ) for name in names])
 			for name in names:
-				offsets[name] = long(f.tell())
+				offsets[name] = f.tell()
 				pickle.dump(curhash[name], f, 2)
 			offOffs = f.tell()
 			pickle.dump(offsets, f, 2)
 			f.seek(headlen1)
-			f.write(struct.pack('!q',long(offOffs)))
+			f.write(struct.pack('!q',offOffs))
 		f.close()
 		del curhash
 		return None
@@ -117,9 +117,9 @@ class idlsave:
 		> ra,dec = idlsave.restore("mysav.psav","ra,dec")
 		Note that you MUST use this exact form exec(idlsave.restore(...))
 		"""
-		f=open(filename,"r")
+		f=open(filename,"rb")
 		vid = idlsave.versionId(1)
-		prefix=f.read(len(vid))
+		prefix=f.read(len(vid)).decode('ascii')
 		if version is None:
 			version=idlsave.parseVersion(prefix) 
 		if version==1:
@@ -162,7 +162,7 @@ class idlsave:
 			idlsave.dhash=hash
 			f.close()
 			if names is None:
-				buf=",".join(idlsave.dhash.iterkeys())
+				buf=",".join(idlsave.dhash.keys())
 				if len(idlsave.dhash)==1:
 					buf=buf+','
 				buf=buf+"=idlsave.getallvars(%s)"%str(printVars)
@@ -174,7 +174,7 @@ class idlsave:
 
 	@staticmethod
 	def getallvars(printVars=False):
-		tup=tuple(a for a in idlsave.dhash.itervalues())
+		tup=tuple(a for a in idlsave.dhash.values())
 		if printVars:
 			print (','.join([k for k in idlsave.dhash.keys()]))
 		del idlsave.dhash
