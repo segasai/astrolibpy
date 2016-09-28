@@ -107,7 +107,7 @@ def fromrecords(recList, dtype=None, intNullVal=None):
 			for _k in dtype.names:
 				_v = dtype.fields[_k]
 				if _v[0] in [np.int16, np.int32, np.int64]:
-					convs.append(lambda x: x or intNullVal)
+					convs.append(lambda x: intNullVal if x is None else x)
 				else:
 					convs.append(lambda x: x)
 			convs = tuple(convs)
@@ -399,7 +399,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		if createTable:
 			query1 = __create_schema(tableName, arrays, names, temp=temp)
 			cur.execute(query1)
-		f = cStringIO.StringIO()
+		f = StringIO.StringIO()
 		__print_arrays(arrays, f)
 		f.seek(0)
 		cur.copy_from(f, tableName, sep=' ', columns=names)
