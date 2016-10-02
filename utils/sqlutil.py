@@ -27,7 +27,7 @@ try:
 	import cStringIO as StringIO
 except ImportError:
 	# for python3
-	from io import StringIO 
+	from io import BytesIO as  StringIO 
 try:
 	import queue
 except:
