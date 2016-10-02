@@ -1,4 +1,14 @@
-import urllib2,StringIO,aplpy
+from __future__ import print_function
+import aplpy
+try:
+	from urllib2 import urlopen
+except:
+	from urllib.request import urlopen
+try:
+	from StringIO import StringIO
+except:
+	from io import BytesIO as StringIO
+		
 import astropy.io.fits as pyfits
 import matplotlib.pyplot  as plt
 def get_dss(ra, dec, survey='all', radius = 15, debug=False, noerase=False,
@@ -10,11 +20,11 @@ def get_dss(ra, dec, survey='all', radius = 15, debug=False, noerase=False,
 	#survey='poss2ukstu'
 	url='http://archive.stsci.edu/cgi-bin/dss_search?v=%s&r=%fd&d=%fd&e=J2000&h=%f&w=%f&f=fits&c=none&fov=NONE&v3='%(survey,ra,dec,radius,radius)
 	
-	response = urllib2.urlopen(url)
+	response = urlopen(url)
 	if debug:
-		print url
+		print( url)
 	html = response.read()
-	f=StringIO.StringIO(html)
+	f=StringIO(html)
 	
 	dat=pyfits.open(f)
 	if not noerase:
