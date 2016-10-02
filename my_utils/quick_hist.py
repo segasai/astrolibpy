@@ -14,9 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
-
+from __future__ import print_function
 import numpy as np
-import scipy.weave, scipy.weave.converters
 
 def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	"""
@@ -63,9 +62,9 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	nbins_rev = nbins + []
 	nbins_rev.reverse()
 	mults = (reduce(lambda x, y: x + [y * x[-1]], nbins_rev, [1]))[:-1]
- 	mults.reverse()	
- 	assert(poss.flags['C_CONTIGUOUS'])
- 	assert(ind.flags['C_CONTIGUOUS'])
+	mults.reverse()	
+	assert(poss.flags['C_CONTIGUOUS'])
+	assert(ind.flags['C_CONTIGUOUS'])
 
 	for i in xrange(nd):
 		cur_arr = np.ascontiguousarray(arrs[i],dtype=np.float64)
@@ -90,10 +89,11 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 			}
 		}"""
 		try:
+			import scipy.weave, scipy.weave.converters
 			scipy.weave.inline(code1, ['cur_range0', 'cur_range1', 'cur_nbins','poss','ind','nx','cur_arr','cur_mult'],
 				type_converters=scipy.weave.converters.blitz)
 		except:
-			print "Sorry the compiled version didn't work :("
+			print( "Sorry the compiled version didn't work :(")
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins * 
 									1. / (cur_range1 - cur_range0))
 			cur_pos = np.floor(cur_pos).astype(np.int64)
@@ -110,7 +110,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	if not getPos:	
 		del ind
 	res = np.zeros(np.array(nbins, dtype=np.int64).prod())
- 	assert(res.flags['C_CONTIGUOUS'])
+	assert(res.flags['C_CONTIGUOUS'])
 
 	code = """
 	int i;
@@ -119,6 +119,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 		res(poss(i)) = res(poss(i)) + %s;
 	}"""%weights_str
 	try:
+		import scipy.weave, scipy.weave.converters
 		if weights is None:
 			scipy.weave.inline(code, ['res', 'poss', 'newlen'],
 				type_converters=scipy.weave.converters.blitz)
@@ -126,7 +127,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 			scipy.weave.inline(code, ['res', 'poss', 'newlen','weightsind'],
 				type_converters=scipy.weave.converters.blitz)			
 	except Exception:
-		print "Sorry the compiled version didn't work :("
+		print ( "Sorry the compiled version didn't work :(")
 		if weights is None:
 			for i in xrange(len(poss)):
 				res[poss[i]]+=1
