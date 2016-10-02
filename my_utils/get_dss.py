@@ -1,4 +1,5 @@
-import urllib2,StringIO,aplpy,pyfits
+import urllib2,StringIO,aplpy
+import astropy.io.fits as pyfits
 import matplotlib.pyplot  as plt
 def get_dss(ra, dec, survey='all', radius = 15, debug=False, noerase=False,
 		subplot=(1,1,1)):
