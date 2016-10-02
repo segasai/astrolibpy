@@ -134,7 +134,10 @@ class idlsave:
 		"""
 		f = open(filename, "rb")
 		vid = idlsave.versionId(1)
-		prefix = f.read(len(vid)).decode('ascii')
+		try:
+			prefix = f.read(len(vid)).decode('ascii')
+		except:	
+			version = 1
 		if version is None:
 			version = idlsave.parseVersion(prefix)
 		if version == 1:
