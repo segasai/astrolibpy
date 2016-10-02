@@ -399,7 +399,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		if createTable:
 			query1 = __create_schema(tableName, arrays, names, temp=temp)
 			cur.execute(query1)
-		f = StringIO.StringIO()
+		f = StringIO()
 		__print_arrays(arrays, f)
 		f.seek(0)
 		cur.copy_from(f, tableName, sep=' ', columns=names)
