@@ -15,6 +15,8 @@
 #    along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+from functools import reduce
+
 import numpy as np
 
 def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
@@ -32,11 +34,10 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 		getPos -- return the 1D vector of the positions within the histogram
 					(-1 if the point is outside the range)
 	"""
-	from __builtin__ import range as xrange
 	nd = len(arrs)
 	if range is None:
 		range=[]
-		for i in xrange(nd):
+		for i in np.arange(nd):
 			range.append((arrs[0].min(),arrs[0].max()))
 	if nbins is None:
 		nbins = [10]*nd
@@ -66,7 +67,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	assert(poss.flags['C_CONTIGUOUS'])
 	assert(ind.flags['C_CONTIGUOUS'])
 
-	for i in xrange(nd):
+	for i in np.arange(nd):
 		cur_arr = np.ascontiguousarray(arrs[i],dtype=np.float64)
 		cur_range0 = float(range[i][0])
 		cur_range1 = float(range[i][1])
@@ -129,10 +130,10 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 	except Exception:
 		print ( "Sorry the compiled version didn't work :(")
 		if weights is None:
-			for i in xrange(len(poss)):
+			for i in np.arange(len(poss)):
 				res[poss[i]]+=1
 		else:
-			for i in xrange(len(poss)):
+			for i in np.arange(len(poss)):
 				res[poss[i]]+=weights[i]
 	if not getPos:
 		return res.reshape(nbins)

@@ -174,8 +174,12 @@ class idlsave:
 			hash = {}
 			for name in names1:
 				off = offsets[name]
-				f.seek(off)
-				hash[name] = pickle.load(f)
+				try:
+					f.seek(off)
+					hash[name] = pickle.load(f)
+				except UnicodeDecodeError:
+					f.seek(off)
+					hash[name] = pickle.load(f, encoding='latin1')
 			if asdict:
 				return hash
 			idlsave.dhash = hash
