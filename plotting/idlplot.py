@@ -642,7 +642,10 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		hh = numpy.flipud(hh)
 	if subplot is not None:
 		noerase=True
-		plt.subplot(subplot)
+		if hasattr(subplot, '__iter__'):
+			plt.subplot(*subplot)
+		else:
+			plt.subplot(subplot)
 	if not noerase:
 		plt.gcf().clf()
 	if position is not None:
