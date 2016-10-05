@@ -193,7 +193,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 					   cur_mult, cur_arr_ffi,
 					   poss_ffi, ind_ffi, nx)
 		except:
-			warnings.warn("""Sorry the compiled version didn't work :(, executing slower version\nYou need to do execute python _quick_hist_build.py to """)
+			warnings.warn("""Sorry the compiled version didn't work :(, executing a slower Python-only version.""")
 			slow = False
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins *
 												1. / (cur_range1 - cur_range0))
