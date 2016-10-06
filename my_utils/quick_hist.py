@@ -194,7 +194,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 					   poss_ffi, ind_ffi, nx)
 		except:
 			warnings.warn("""Sorry the compiled version didn't work :(, executing a slower Python-only version.""")
-			slow = False
+			slow = True
 			cur_pos = (cur_arr - cur_range0) * (cur_nbins *
 												1. / (cur_range1 - cur_range0))
 			cur_pos = np.floor(cur_pos).astype(np.int64)
