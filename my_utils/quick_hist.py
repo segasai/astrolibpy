@@ -20,6 +20,7 @@ import warnings
 import numpy as np
 import hashlib
 import importlib
+import os
 
 def _getcode():
 	cdef="""
@@ -117,7 +118,8 @@ def _buildlib():
 	ffibuilder = FFI()
 	ffibuilder.cdef(cdef)
 	ffibuilder.set_source(libname, src)
-	ffibuilder.compile(verbose=True)
+	dir = os.path.abspath(os.path.dirname(__file__))
+	ffibuilder.compile(tmpdir=dir,verbose=True)
 
 
 def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
