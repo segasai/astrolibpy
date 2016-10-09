@@ -666,9 +666,9 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	hh = smoother (hh, smooth = smooth, kernel = kernel)
 
 	if vminfrac is not None and vmin is None:
-		vmin = scipy.stats.scoreatpercentile(hh.flat, 100 * vminfrac)
+		vmin = scipy.stats.scoreatpercentile(hh[np.isfinite(hh)], 100 * vminfrac)
 	if vmaxfrac is not None and vmax is None:
-		vmax = scipy.stats.scoreatpercentile(hh.flat, 100 * vmaxfrac)
+		vmax = scipy.stats.scoreatpercentile(hh[np.isfinite(hh)], 100 * vmaxfrac)
 	if vmin is not None and vmax is not None and vmin>=vmax:
 		warnings.warn("vmin is >= vmax... Resetting their values",RuntimeWarning)
 		vmin=None
