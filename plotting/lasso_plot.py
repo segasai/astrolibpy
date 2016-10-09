@@ -39,28 +39,38 @@ class lasso_plot:
 	def __init__(self, xs, ys, bins=None):
 		self.axes = gca()
 		self.canvas = self.axes.figure.canvas
-		self.xys = np.array([xs,ys]).T#[d for d in zip(xs,ys)]
+		self.xys = (xs, ys)
 		fig = self.axes.figure
 		self.cid = self.canvas.mpl_connect('button_press_event', self.onpress)
-		self.ind = None
 		self.mask = None
 		self.verts = None
 		self.bins = bins
 
 	def callback(self, verts):
-		verts = np.array(verts)
-		self.path = mplpa.Path(verts)
-		if self.bins is None:
-			mask = self.path.contains_points(self.xys)
-			ind = np.nonzero(mask)[0]
+		self.verts = np.array(verts)
+		mask = self.inside(self.xys[0], self.xys[1], self.bins)
+		self.mask = mask
+		self.canvas.draw_idle()
+		self.canvas.widgetlock.release(self.lasso)
+		self.canvas.mpl_disconnect(self.cid)
+		del self.xys
 
+	def inside(self, xs, ys, bins=None):
+		xys = np.array([xs,ys]).T
+		verts = self.verts
+		if bins is None:
+			bins = self.bins
+		path = mplpa.Path(verts)
+		if bins is None:
+			mask = path.contains_points(xys)
+			ind = np.nonzero(mask)[0]
 		else:
 			minx,maxx=verts[:,0].min(),verts[:,0].max()
 			miny,maxy=verts[:,1].min(),verts[:,1].max()
-			hh,pos= quick_hist.quick_hist(self.xys.T, nbins = [self.bins]*2,
+			hh,pos= quick_hist.quick_hist(xys.T, nbins = [bins]*2,
 					range=[[minx,maxx],[miny,maxy]],getPos=True)
-			xbincens = np.linspace(minx,maxx,self.bins+1,True)
-			ybincens = np.linspace(miny, maxy, self.bins+1,True)
+			xbincens = np.linspace(minx,maxx,bins+1,True)
+			ybincens = np.linspace(miny, maxy, bins+1,True)
 
 			xbincens = .5*(xbincens[1:]+xbincens[:-1])
 			ybincens = .5*(ybincens[1:]+ybincens[:-1])
@@ -68,24 +78,9 @@ class lasso_plot:
 			ybincens = ybincens[None,:] + xbincens[:,None]*0
 			xybincens = np.array([xbincens.flatten(),ybincens.flatten()])	
 			
-			mask = self.path.contains_points(xybincens.T)
+			mask = path.contains_points(xybincens.T)
 			mask = mask[pos] & (pos>=0)
-			ind = mask	
-		self.canvas.draw_idle()
-		self.canvas.widgetlock.release(self.lasso)
-		self.canvas.mpl_disconnect(self.cid)		
-		del self.lasso
-		del self.xys
-		self.verts = verts
-		self.ind = ind
-		self.mask = mask
-
-	def inside(self, xs,ys):
-		if self.bins is None:
-			tmpxys = zip(xs,ys)
-			return self.path.contains_points(tmpxys)
-		else:
-			pass
+		return mask
 
 	def onpress(self, event):
 		if self.canvas.widgetlock.locked(): return
