@@ -24,7 +24,7 @@ import time
 import psycopg2
 import threading
 try:
-	import cStringIO as StringIO
+	from cStringIO import StringIO
 except ImportError:
 	# for python3
 	from io import BytesIO as  StringIO 
