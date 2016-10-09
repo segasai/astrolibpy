@@ -75,9 +75,9 @@ def gal_uvw(distance=None, lsr=None, ra=None, dec=None, pmra=None, pmdec=None, v
    n_params = 3
    
    if n_params == 0:   
-      print 'Syntax - GAL_UVW, U, V, W, [/LSR, RA=, DEC=, PMRA= ,PMDEC=, VRAD='
-      print '                  Distance=, PLX='
-      print '         U, V, W - output Galactic space velocities (km/s)'
+      print( 'Syntax - GAL_UVW, U, V, W, [/LSR, RA=, DEC=, PMRA= ,PMDEC=, VRAD=')
+      print( '                  Distance=, PLX=')
+      print( '         U, V, W - output Galactic space velocities (km/s)')
       return None
    
    if ra is None or dec is None:   
