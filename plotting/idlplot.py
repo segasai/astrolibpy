@@ -18,6 +18,7 @@
 import matplotlib.pyplot as plt
 import numpy, numpy as np
 import scipy
+import scipy.stats
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator, LogLocator
 import scipy.ndimage.filters, scipy.stats
 from matplotlib.pyplot import draw_if_interactive
@@ -518,6 +519,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 				ret_hist=False, interpolation='nearest', scatter_thresh=None,
 				scatter_opt={},
 				subplot=None, kernel='gau',
+				statistic = None,
 				**kw):
 	""" Plot the 2D histogram of the data
 	Example:
@@ -580,21 +582,25 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		ymin,ymax=numpy.log10(ymin),numpy.log10(ymax)
 	range = [[ymin, ymax],[xmin, xmax]]
 	binsRev = bins[::-1]
-	if not quick:
-		hh, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
-												bins=binsRev, weights=weights)
-		if weight_norm:
-			hh1, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
-												bins=binsRev, weights=None)
-			hh = hh*1./hh1
-			
+	if statistic is None:
+		if not quick:
+			hh, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
+													bins=binsRev, weights=weights)
+			if weight_norm:
+				hh1, yedges, xedges = scipy.histogram2d(y1, x1, range=range,
+													bins=binsRev, weights=None)
+				hh = hh*1./hh1
+				
+		else:
+			import quick_hist
+			hh = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev,
+									weights=weights)
+			if weight_norm:
+				hh1 = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev)
+				hh = hh*1./hh1
 	else:
-		import quick_hist
-		hh = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev,
-								weights=weights)
-		if weight_norm:
-			hh1 = quick_hist.quick_hist((y1, x1), range=range, nbins=binsRev)
-			hh = hh*1./hh1
+		hh = scipy.stats.binned_statistic_2d(y1,x1, weights,statistic,
+				range=range,bins = binsRev).statistic
 	if apply_func is not None:
 		hh = apply_func (hh)
 
