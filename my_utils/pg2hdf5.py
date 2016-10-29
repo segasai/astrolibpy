@@ -1,7 +1,12 @@
-import glob, numpy, Queue,psycopg2,threading,sys
+import glob, numpy, psycopg2,threading,sys
 import h5py
-
+try:
+	from Queue import Queue, Empty
+except:
+	from queue import Queue, Empty
+strLength = 20
 __pgTypeHash = {16:bool,18:str,20:'i8',21:'i2',23:'i4',
+		25: '|S%d' % strLength,
 	700:'f4',701:'f8',
 	1700:'f8',# numeric
 	1114:'<M8[us]'  #timestamp
@@ -51,7 +56,7 @@ def __inserter(dtype, filename, qIn, endEvent):
 					fp[n].resize((N + newN,))
 					fp[n][-newN:]=res[n]
 			i+=1
-		except Queue.Empty:
+		except Empty:
 			continue
 		
 	fp.close()	
@@ -75,7 +80,7 @@ def get(query, filename, params=None, db="wsdb", driver="psycopg2", user=None,
 		else:
 			res = cur.execute(query, params)
 
-		qIn = Queue.Queue(1)
+		qIn = Queue(1)
 		endEvent = threading.Event()
 		nrec = 0
 		reslist = []
