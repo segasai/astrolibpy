@@ -188,7 +188,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			1042: '|S%d' % strLength,  # character()
 			1043: '|S%d' % strLength,  # varchar
 			1700: 'f8',	 # numeric
-			1114: '<M8[us]'	 # timestamp
+			1114: '<M8[us]', # timestamp
+			1082: '<M8[us]'	 # date
 	}
 
 	connSupplied = (conn is not None)
