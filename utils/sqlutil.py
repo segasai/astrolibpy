@@ -45,7 +45,29 @@ except AttributeError:
 		dictclass = dict
 from numpy.core import numeric as sb
 from numpy.core import numerictypes as nt
+from select import select
+from psycopg2.extensions import POLL_OK, POLL_READ, POLL_WRITE
 
+def wait_select_inter(conn):
+	# Make the queries interruptable by Ctrl-C
+	# Taken from http://initd.org/psycopg/articles/2014/07/20/cancelling-postgresql-statements-python/
+	while True:
+		try:
+			state = conn.poll()
+			if state == POLL_OK:
+				break
+			elif state == POLL_READ:
+				select([conn.fileno()], [], [])
+			elif state == POLL_WRITE:
+				select([], [conn.fileno()], [])
+			else:
+				raise conn.OperationalError(
+					"bad state from poll: %s" % state)
+		except KeyboardInterrupt:
+			conn.cancel()
+			# the loop will be broken by a server error
+			continue
+psycopg2.extensions.set_wait_callback(wait_select_inter)
 
 def getConnection(db=None, driver=None, user=None,
 				  password=None, host=None, port=5432, timeout=None):
@@ -146,7 +168,7 @@ def __converter(qIn, qOut, endEvent, dtype, intNullVal):
 
 def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		password=None, host='localhost', preamb=None,
-		getConn=False, conn=None, port=5432,
+		conn=None, port=5432,
 		strLength=10, timeout=None, notNamed=False,
 		asDict=False, intNullVal=-9999):
 	'''Executes the sql query and returns the tuple or dictionary with the numpy arrays.
@@ -304,14 +326,7 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 		for _n, _v in zip(colNames, res):
 			resDict[_n] = _v
 		res = resDict
-	if not getConn:
-		if not connSupplied:
-
-			conn.close()  # do not close if we were given the connection
-		return res
-	else:
-		return conn, res
-
+	return res
 
 def execute(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			password=None, host='locahost',
