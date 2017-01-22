@@ -419,7 +419,12 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 		f = StringIO()
 		__print_arrays(arrays, f)
 		f.seek(0)
-		cur.copy_from(f, tableName, sep=' ', columns=names)
+		try:
+			thread = psycopg2.extensions.get_wait_callback()
+			psycopg2.extensions.set_wait_callback(None)
+			cur.copy_from(f, tableName, sep=' ', columns=names)
+		finally:
+			psycopg2.extensions.set_wait_callback(thread)
 	except BaseException:
 		try:
 			conn.rollback()
