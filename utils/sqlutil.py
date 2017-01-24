@@ -328,6 +328,8 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 			if _n in resDict:
 				curn = _n + '_%d'%(repeats[_n])
 				repeats[_n]+=1
+				warnings.warn(('Column name %s is repeated in the output, '+
+								'new name %s assigned')%(_n,curn))
 			else:
 				repeats[_n]=1
 				curn = _n
