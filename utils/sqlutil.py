@@ -323,8 +323,15 @@ def get(query, params=None, db="wsdb", driver="psycopg2", user=None,
 
 	if asDict:
 		resDict = dictclass()
+		repeats = {}
 		for _n, _v in zip(colNames, res):
-			resDict[_n] = _v
+			if _n in resDict:
+				curn = _n + '_%d'%(repeats[_n])
+				repeats[_n]+=1
+			else:
+				repeats[_n]=1
+				curn = _n
+			resDict[curn] = _v
 		res = resDict
 	return res
 
