@@ -52,7 +52,7 @@ def readcol(filename, delimiter=' ', format=None, skiprows=0, **kw):
 				raise Exception("Sorry, Unknown type in the format string\n The allowed types are S,I,F,D (string, int, float, double)")
 			types.append(("a%d"%i,curtype))
 		
-		rec=numpy.loadtxt(file(filename),dtype=types, delimiter=delimiter, 
+		rec=numpy.loadtxt(filename,dtype=types, delimiter=delimiter, 
 						skiprows=skiprows,converters=convs)
 		ncols=len(rec[0])
 		nrows=len(rec)
