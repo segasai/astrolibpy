@@ -1419,11 +1419,11 @@ class mpfit:
 		nprint = len(x)
 		print ("Iter ", ('%6i' % iter),"   CHI-SQUARE = ",('%.10g' % fnorm)," DOF = ", ('%i' % dof))
 		for i in range(nprint):
-			if (parinfo is not None) and (parinfo[i].has_key('parname')):
+			if (parinfo is not None) and ('parname' in parinfo[i]):
 				p = '   ' + parinfo[i]['parname'] + ' = '
 			else:
 				p = '   P' + str(i) + ' = '
-			if (parinfo is not None) and (parinfo[i].has_key('mpprint')):
+			if (parinfo is not None) and ('mpprint' in parinfo[i]):
 				iprint = parinfo[i]['mpprint']
 			else:
 				iprint = 1
@@ -1460,7 +1460,7 @@ class mpfit:
 			return values
 		values = []
 		for i in range(n):
-			if (parinfo is not None) and (parinfo[i].has_key(key)):
+			if (parinfo is not None) and (key in parinfo[i]):
 				values.append(parinfo[i][key])
 			else:
 				values.append(default)
@@ -1469,10 +1469,7 @@ class mpfit:
 		test = default
 		if type(default) is list:
 			test=default[0]
-		if isinstance(test, types.IntType):
-			values = numpy.asarray(values, int)
-		elif isinstance(test, types.FloatType):
-			values = numpy.asarray(values, float)
+		values = numpy.asarray(values)
 		return values
 	
 	# Call user function or procedure, with _EXTRA or not, with
