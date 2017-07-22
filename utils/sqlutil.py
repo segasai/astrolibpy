@@ -415,7 +415,7 @@ def upload(tableName, arrays, names, db="wsdb", driver="psycopg2", user=None,
 	>>> y = x**.5
 	>>> sqlutil.upload('mytable',(x,y),('xcol','ycol'))
 	"""
-
+	arrays = [np.asarray(_) for _ in arrays]
 	connSupplied = (conn is not None)
 	if not connSupplied:
 		conn = getConnection(db=db, driver=driver, user=user, password=password,
