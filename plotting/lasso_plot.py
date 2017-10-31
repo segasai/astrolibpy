@@ -35,6 +35,8 @@ class lasso_plot:
 	The option bins is helpful when the dataset is very large. Then
 	the data is binned first before checking whether it is inside the
 	contour
+        plt.plot(xs, ys)
+        las = lasso_plot.lasso_plot(xs,ys,bins=200)
 	"""
 	def __init__(self, xs, ys, bins=None):
 		self.axes = gca()
