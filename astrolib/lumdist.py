@@ -1,3 +1,4 @@
+from __future__ import print_function
 """
  NAME:
     LUMDIST
@@ -108,7 +109,7 @@ def lumdist(z, h0=None, k=None, lambda0=None, omega_m=None, q0=None, silent=None
    if h0 is None:
       h0 = 70
    if not silent:
-      print 'LUMDIST: H0:', h0, ' Omega_m:', omega_m, ' Lambda0', lambda0, ' q0: ', q0, ' k: ', k#, format='(A,I3,A,f5.2,A,f5.2,A,f5.2,A,F5.2)'
+      print( 'LUMDIST: H0:', h0, ' Omega_m:', omega_m, ' Lambda0', lambda0, ' q0: ', q0, ' k: ', k)
    
    # For the case of Lambda = 0, we use the closed form from equation 5.238 of
    # Astrophysical Formulae (Lang 1998).   This avoids terms that almost cancel
