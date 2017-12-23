@@ -239,7 +239,7 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 				res[poss[i]] += 1
 		else:
 			for i in np.arange(len(poss)):
-				res[poss[i]] += weights[i]
+				res[poss[i]] += weightsind[i]
 	if not getPos:
 		return res.reshape(nbins)
 	else:
