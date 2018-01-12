@@ -105,12 +105,32 @@ def exceptionDecorator(func):
 
 	return wrapper
 
+def __findKnuth(x ,minv, maxv):
+        """
+	Implement Knuth method for histogram bin selection
+		
+	"""
+        N  = ((x>=minv)&(x<=maxv)).sum()
+        def funcer(M):
+                hh,loc=scipy.histogram(x,bins=M, range=[minv,maxv])
+                return np.log(M)+1./N*(scipy.special.gammaln(M/2.)-M*scipy.special.gammaln(0.5)-scipy.special.gammaln(N+M/2.)+scipy.special.gammaln(hh+0.5).sum())
+        maxN = 1000
+        ns = np.arange(1, maxN + 1)
+        vals = ns * 0.
+        for i in range(len(ns)):
+                vals[i] = funcer(ns[i])
+        bestn = ns[np.argmax(vals)]
+        if bestn == maxN:
+                print('WARNING the best number of bins is > maxbin(%d)'%(maxn))
+        return bestn		
+
+
 @exceptionDecorator
 def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 			max=None, overplot=False, color='black', xlog=False, ylog=False,
 			nan=False, weights=None, norm=False, kernel=None, retpoints=False,
 			adaptive=False, adaptive_thresh=30, adaptive_depth=[2,10],
-			weight_norm=False, apply_func=None, **kw):
+			weight_norm=False, apply_func=None, knuth=False, **kw):
 	"""
 	Plot the 1D histogram
 	Example:
@@ -171,7 +191,10 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		max = numpy.max(dat)
 	
 	if bin is None and nbins is None:
-		nbins = 100
+		if not knuth:
+			nbins = 100
+		else:
+			nbins = __findKnuth(dat, min, max)
 		bin = (max - min) * 1. / nbins
 	elif nbins is None:
 		nbins = int(math.ceil((max - min) * 1. / bin))
