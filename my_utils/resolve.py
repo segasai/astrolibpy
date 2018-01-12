@@ -29,6 +29,6 @@ def resolve(objectName):
 if __name__=='__main__':
 	res = resolve(sys.argv[1])
 	if len(res)>0:
-		print res[0],res[1]
+		print (res[0],res[1])
 	else:
-		print 'Not found'
+		print ('Not found')
