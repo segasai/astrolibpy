@@ -75,7 +75,7 @@ def smoother(arr, smooth = None, kernel = None):
 			if hasattr(smooth, '__iter__'):
 				smooth = smooth[::-1]
 				# because gaussian_filter convention is second dimension is x
-			arr = scipy.ndimage.filters.gaussian_filter(arr, smooth)
+			arr = scipy.ndimage.filters.gaussian_filter(arr*1., smooth)
 		elif kernel=='epa':
 			arr = filter_epa(arr, smooth)
 		else:
