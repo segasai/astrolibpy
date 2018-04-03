@@ -284,9 +284,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if axis is None:
 		axis = plt.gca()
 	if xlog:
-		axis.set_xscale('log',subsx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_xscale('log',subsx=[2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
-		axis.set_yscale('log',subsy=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_yscale('log',subsy=[2, 3, 4, 5, 6, 7, 8, 9])
 	if xaxis_formatter is not None:
 		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
