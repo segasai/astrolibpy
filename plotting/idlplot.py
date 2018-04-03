@@ -258,7 +258,8 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
 		yaxis_formatter=None, autoscalex=False, autoscaley=False,
-		markerfacecolor=None, markeredgecolor=None, axis=None,
+		markerfacecolor=None, markeredgecolor=None, 
+		markeredgewidth=None, axis=None,
 		transpose=False, **kw):
 	""" Plot your data in an IDL-way
 		Example:
@@ -283,9 +284,9 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 	if axis is None:
 		axis = plt.gca()
 	if xlog:
-		axis.set_xscale('log',subx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_xscale('log',subsx=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if ylog:
-		axis.set_yscale('log',suby=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+		axis.set_yscale('log',subsy=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 	if xaxis_formatter is not None:
 		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
@@ -347,13 +348,15 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markerfacecolor=markerfacecolor,
-							markeredgecolor=markeredgecolor,**kw)
+							markeredgecolor=markeredgecolor,
+							markeredgewidth=markeredgewidth,**kw)
 		else:
 			axis.plot(x, y, marker=marker, linestyle=linestyle,
 							linewidth=thick, color=color, label=label,
 							markersize=markersize,
 							markerfacecolor=markerfacecolor,
-							markeredgecolor=markeredgecolor,**kw)	
+							markeredgecolor=markeredgecolor,
+							markeredgewidth=markeredgewidth,**kw)	
 	
 def oplot (x, y=None, **kw):
 	"""
@@ -405,7 +408,9 @@ def ploterror (x, y, err0, err1=None, color='black', ps=0, ecolor='black',
 		 **kw0)
 	(marker, outlinestyle) = get_marker(ps, None)
 	kw1 = {'ecolor':ecolor, 'marker':marker, 'color':color, 'linestyle':outlinestyle,
-			'elinewidth':elinewidth,'markeredgewidth':elinewidth} 
+			'elinewidth':elinewidth,'markeredgewidth':elinewidth}
+	if 'alpha' in kw0:
+		kw1['alpha'] = kw0['alpha']
 	if 'zorder' in kw0:
 		kw1['zorder']=kw0['zorder']
 	if label is not None:
