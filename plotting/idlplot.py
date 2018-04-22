@@ -283,14 +283,6 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		plt.axes(mypos)
 	if axis is None:
 		axis = plt.gca()
-	if xlog:
-		axis.set_xscale('log',subsx=[2, 3, 4, 5, 6, 7, 8, 9])
-	if ylog:
-		axis.set_yscale('log',subsy=[2, 3, 4, 5, 6, 7, 8, 9])
-	if xaxis_formatter is not None:
-		axis.xaxis.set_major_formatter(xaxis_formatter)
-	if yaxis_formatter is not None:
-		axis.yaxis.set_major_formatter(yaxis_formatter)
 	
 	marker, linestyle = get_marker(ps, linestyle)
 	if xr is not None:
@@ -339,6 +331,16 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		xrange,yrange=yrange,xrange
 	if not overplot:
 		axis.axis(numpy.concatenate((xrange,yrange)))
+
+	if xlog:
+		axis.set_xscale('log',subsx=[2, 3, 4, 5, 6, 7, 8, 9])
+	if ylog:
+		axis.set_yscale('log',subsy=[2, 3, 4, 5, 6, 7, 8, 9])
+	if xaxis_formatter is not None:
+		axis.xaxis.set_major_formatter(xaxis_formatter)
+	if yaxis_formatter is not None:
+		axis.yaxis.set_major_formatter(yaxis_formatter)
+
 	if title is not None:
 		plt.title(title)
 	if not nodata:
