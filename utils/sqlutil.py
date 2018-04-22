@@ -47,6 +47,11 @@ from numpy.core import numeric as sb
 from numpy.core import numerictypes as nt
 from select import select
 from psycopg2.extensions import POLL_OK, POLL_READ, POLL_WRITE
+import warnings
+
+warnings.warn('''This module is now deprecated. Use sqlutilpy module instead. 
+You can get it here https://github.com/segasai/sqlutilpy
+''',Warning)
 
 def wait_select_inter(conn):
 	# Make the queries interruptable by Ctrl-C
