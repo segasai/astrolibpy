@@ -1,7 +1,7 @@
 import gal_uvw, cv_coord, euler
 import numpy as np
 
-def get_uvw_sun():
+def get_uvw_sun(vlsr):
     
     usun, vsun, wsun = -11.1, 12.24 + vlsr, 7.25 # the signs are in the coord system of gal_uvw
 	# this is from schonrich, binney        
@@ -24,7 +24,7 @@ def correct_pm(ra, dec, pmra, pmdec, dist, vlsr=vlsr0):
     
     one = ra * 0 + 1
     zero = ra * 0
-    usun,vsun,wsun = get_uvw_sun(vlsr=vlsr)
+    usun,vsun,wsun = get_uvw_sun(vlsr)
     dist_pc = dist * 1000. 
     ur, vr, wr = gal_uvw.gal_uvw(distance=dist_pc, ra=ra, dec=dec,
         pmra=one, pmdec=zero, vrad=zero)
@@ -55,7 +55,7 @@ def correct_vel(ra, dec, vel, vlsr=vlsr0):
     l,b = euler.euler(ra, dec)
     l = np.deg2rad(l)
     b = np.deg2rad(b)
-    usun,vsun,wsun = get_uvw_sun(vlsr=vlsr)
+    usun,vsun,wsun = get_uvw_sun(vlsr)
 
     delta = -usun*np.cos(l)*np.cos(b) + vsun * np.sin(l) * np.cos(b) + wsun * np.sin(b)
     # projection of the sun's velocity to the lign of sight vector
