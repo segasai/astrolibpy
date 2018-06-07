@@ -4,7 +4,7 @@ import numpy as np
 
 def doit(tabname, ra, dec, colstring, radeccols=('ra', 'dec'), rad=1.,
 		 extra=None, yourradeccols=('ra', 'dec'), host=None,
-		 db=None):
+		 db=None,user=None,password=None):
 	"""
 	Performs the nearest neighbor crossmatch within specified radius in arcseconds
 	with the remote table the input is given by ra,dec columns 
@@ -39,5 +39,5 @@ def doit(tabname, ra, dec, colstring, radeccols=('ra', 'dec'), rad=1.,
 				on true order by xid """, **locals()), 'mytable',
 		(ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'),
 		preamb='set enable_seqscan to off; set enable_mergejoin to off; set enable_hashjoin to off;',
-		host=host,db=db)
+		host=host,db=db,user=user,password=password)
 	return RES
