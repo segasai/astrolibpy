@@ -152,12 +152,12 @@ def quick_hist(arrs, range=None, nbins=None, weights=None, getPos=False):
 		raise ValueError(
 			'The array of ranges MUST have the same length as the number of input data vectors')
 
-	nx = len(arrs[0])
+	nx = arrs[0].size
 	for curarr in arrs:
-		if len(curarr) != nx:
+		if (curarr.size) != nx:
 			raise ValueError('All the input arrays MUST have the same length!')
 	if weights is not None:
-		if len(weights) != nx:
+		if (weights.size) != nx:
 			raise ValueError(
 				'The weights array MUST have the same length as the input arrays')
 	# convert all the bins into integers
