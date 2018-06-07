@@ -1,10 +1,10 @@
-import sqlutil
+import sqlutilpy
 import numpy as np
 
 
 def doit(tabname, ra, dec, colstring, radeccols=('ra', 'dec'), rad=1.,
 		 extra=None, yourradeccols=('ra', 'dec'), host=None,
-		 ):
+		 db=None):
 	"""
 	Performs the nearest neighbor crossmatch within specified radius in arcseconds
 	with the remote table the input is given by ra,dec columns 
@@ -26,7 +26,7 @@ def doit(tabname, ra, dec, colstring, radeccols=('ra', 'dec'), rad=1.,
 	if extra is None:
 		extra = 'true'
 	your_ra, your_dec = yourradeccols  
-	RES = sqlutil.local_join(str.format("""
+	RES = sqlutilpy.local_join(str.format("""
 		select {colstring} from mytable as m 
 			left join lateral (select * from {tabname} as s 
 					where 
@@ -39,5 +39,5 @@ def doit(tabname, ra, dec, colstring, radeccols=('ra', 'dec'), rad=1.,
 				on true order by xid """, **locals()), 'mytable',
 		(ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'),
 		preamb='set enable_seqscan to off; set enable_mergejoin to off; set enable_hashjoin to off;',
-		host=host)
+		host=host,db=db)
 	return RES
