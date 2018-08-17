@@ -59,6 +59,13 @@ def oplot(a, b=None, **kw):
 		else:
 			idlplot.oplot(a[ind], **kw)
 
+def errorfixer(var, ind):
+	var = np.asarray(var)
+	if var.ndim==2 and var.shape[0]==2:
+		var1 = [var[0][ind],var[1][ind]]
+	else:
+		var1 = var[ind]
+	return var1
 
 def ploterror(a,b,c,*args,**kw):
 	ind = kw.get('ind')
@@ -69,9 +76,11 @@ def ploterror(a,b,c,*args,**kw):
 		del kw['ind']
 		l = len(args)
 		args1=[None]*l
+		c1 = errorfixer(c, ind)
+
 		for i in range(l):
-			args1[i]=args[i][ind]
-		idlplot.ploterror(a[ind],b[ind],c[ind],*args1,**kw)
+			args1[i] = errorfixer(args[i],ind)
+		idlplot.ploterror(a[ind],b[ind],c1,*args1,**kw)
 
 tvhist2d.__doc__ = idlplot.tvhist2d.__doc__
 plot.__doc__ = idlplot.plot.__doc__
