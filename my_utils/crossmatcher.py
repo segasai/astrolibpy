@@ -14,7 +14,7 @@ def doit(tabname,
          db=None,
          user=None,
          password=None,
-         asDict=True):
+         asDict=False):
     """
     Performs the nearest neighbor crossmatch within specified radius
     with the remote table the input is given by ra,dec columns 
