@@ -52,7 +52,9 @@ def doit(tabname,
     RES = sqlutilpy.local_join(
         str.format(
             """
-		select {colstring} from mytable as m 
+		select {colstring} from 
+                  ( select * from mytable order by q3c_ang2ipix({your_ra},{your_dec})
+                  ) as m 
 			left join lateral (select * from {tabname} as s 
 					where 
 					q3c_join(m.{your_ra}, m.{your_dec}, 
