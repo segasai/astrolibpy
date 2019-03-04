@@ -91,3 +91,29 @@ class lasso_plot:
 		# acquire a lock on the widget drawing
 		self.canvas.widgetlock(self.lasso)
 	
+
+
+def inside(xs, ys, verts, bins=None):
+        xys = np.array([xs,ys]).T
+
+        path = mplpa.Path(verts)
+        if bins is None:
+                mask = path.contains_points(xys)
+                ind = np.nonzero(mask)[0]
+        else:
+                minx,maxx=verts[:,0].min(),verts[:,0].max()
+                miny,maxy=verts[:,1].min(),verts[:,1].max()
+                hh,pos= quick_hist.quick_hist(xys.T, nbins = [bins]*2,
+					range=[[minx,maxx],[miny,maxy]],getPos=True)
+                xbincens = np.linspace(minx,maxx,bins+1,True)
+                ybincens = np.linspace(miny, maxy, bins+1,True)
+
+                xbincens = .5*(xbincens[1:]+xbincens[:-1])
+                ybincens = .5*(ybincens[1:]+ybincens[:-1])
+                xbincens = xbincens[:,None] + ybincens[None,:]*0
+                ybincens = ybincens[None,:] + xbincens[:,None]*0
+                xybincens = np.array([xbincens.flatten(),ybincens.flatten()])	
+			
+                mask = path.contains_points(xybincens.T)
+                mask = mask[pos] & (pos>=0)
+        return mask
