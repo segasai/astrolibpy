@@ -185,10 +185,10 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		dat = x
 	maxNone = False
 	if min is None:
-		min = numpy.min(dat)
+		min = numpy.nanmin(dat)
 	if max is None:
 		maxNone = True
-		max = numpy.max(dat)
+		max = numpy.nanmax(dat)
 	
 	if bin is None and nbins is None:
 		if not knuth:
