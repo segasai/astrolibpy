@@ -259,7 +259,7 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 		linestyle=None, markersize=None, xaxis_formatter=None,
 		yaxis_formatter=None, autoscalex=False, autoscaley=False,
 		markerfacecolor=None, markeredgecolor=None, 
-		markeredgewidth=None, axis=None,
+		markeredgewidth=None, axis=None, pad_range=0,
 		transpose=False, **kw):
 	""" Plot your data in an IDL-way
 		Example:
@@ -301,6 +301,12 @@ def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None,
 			yrange=[0,1]
 		else:
 			yrange=[numpy.min(y[ind]),numpy.max(y[ind])]
+		assert(pad_range>=0)
+		xrange = [xrange[0]-pad_range*(xrange[1]-xrange[0]),
+			xrange[1]+pad_range*(xrange[1]-xrange[0])]
+		yrange = [yrange[0]-pad_range*(yrange[1]-yrange[0]),
+			yrange[1]+pad_range*(yrange[1]-yrange[0])]
+                               
 		del ind
 	elif xrange is None and yrange is not None:
 		ind=(y<numpy.maximum(yrange[1],yrange[0])) & (y>numpy.minimum(yrange[0],yrange[1])) & numpy.isfinite(x)
