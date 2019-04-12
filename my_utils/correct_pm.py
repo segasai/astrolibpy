@@ -1,5 +1,7 @@
 import gal_uvw, cv_coord, euler
 import numpy as np
+import astropy.coordinates as acoo
+import astropy.units as auni
 
 def get_uvw_sun(vlsr):
     
@@ -51,16 +53,18 @@ def correct_vel(ra, dec, vel, vlsr=vlsr0):
         (pmra,pmdec) the tuple with the proper motions corrected for the Sun's motion
     """
     
-    
-    l,b = euler.euler(ra, dec)
-    l = np.deg2rad(l)
-    b = np.deg2rad(b)
-    usun,vsun,wsun = get_uvw_sun(vlsr)
-
-    delta = -usun*np.cos(l)*np.cos(b) + vsun * np.sin(l) * np.cos(b) + wsun * np.sin(b)
-    # projection of the sun's velocity to the lign of sight vector
-    # notice the first minus -- it is because the usun is in the coord system where 
-    # X points towards anticenter
-
-    #return the corrected velocity
-    return vel + delta
+    C=acoo.ICRS(ra=ra*auni.deg,dec=dec*auni.deg,
+                    radial_velocity=vel*auni.km/auni.s,
+                    distance=1*auni.kpc,
+                    pm_ra_cosdec=0*auni.mas/auni.year,
+                    pm_dec=0*auni.mas/auni.year)
+    #frame = acoo.Galactocentric (galcen_vsun = np.array([ 11.1, vlsr+12.24, 7.25])*auni.km/auni.s)
+    kw = dict(galcen_v_sun = acoo.CartesianDifferential(np.array([ 11.1, vlsr+12.24, 7.25])*auni.km/auni.s))                                 
+    frame = acoo.Galactocentric (**kw)
+    Cg = C.transform_to(frame)
+    Cg1 = acoo.Galactocentric(x=Cg.x, y=Cg.y, z=Cg.z,
+                              v_x=Cg.v_x*0,
+                              v_y=Cg.v_y*0,
+                              v_z=Cg.v_z*0, **kw)
+    C1=Cg1.transform_to(acoo.ICRS)
+    return np.asarray(((C.radial_velocity-C1.radial_velocity)/(auni.km/auni.s)).decompose())
