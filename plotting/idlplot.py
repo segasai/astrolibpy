@@ -253,7 +253,7 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		return 0.5*(loc[1:]+loc[:-1]),hh
 
 @exceptionDecorator	 
-def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=1, xtitle=None, ytitle=None,
+def plot (arg1, arg2=None, xrange=None, yrange=None, ps=0, thick=None, xtitle=None, ytitle=None,
 		color='black', noerase=False, overplot=False,position=None, ylog=False,
 		xlog=False, xr=None, yr=None, title=None, label=None, nodata=False,
 		linestyle=None, markersize=None, xaxis_formatter=None,
