@@ -55,9 +55,9 @@ def correct_vel(ra, dec, vel, vlsr=vlsr0):
     
     C=acoo.ICRS(ra=ra*auni.deg,dec=dec*auni.deg,
                     radial_velocity=vel*auni.km/auni.s,
-                    distance=1*auni.kpc,
-                    pm_ra_cosdec=0*auni.mas/auni.year,
-                    pm_dec=0*auni.mas/auni.year)
+                    distance=np.ones_like(vel)*auni.kpc,
+                    pm_ra_cosdec=np.zeros_like(vel)*auni.mas/auni.year,
+                    pm_dec=np.zeros_like(vel)*auni.mas/auni.year)
     #frame = acoo.Galactocentric (galcen_vsun = np.array([ 11.1, vlsr+12.24, 7.25])*auni.km/auni.s)
     kw = dict(galcen_v_sun = acoo.CartesianDifferential(np.array([ 11.1, vlsr+12.24, 7.25])*auni.km/auni.s))                                 
     frame = acoo.Galactocentric (**kw)
