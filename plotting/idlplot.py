@@ -227,12 +227,14 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		hh1 = np.repeat(hh,2)
 		loc1 = np.concatenate(([loc[0]],np.repeat(loc[1:-1],2),[loc[-1]]))
 	else:
-		loc1=numpy.linspace(min,max,nbins*5)
-		import statistics
+		loc1=numpy.linspace(min,max,nbins*10)
+		import sklearn.neighbors
+		kde=sklearn.neighbors.KernelDensity(bandwidth = bin, kernel=kernel)
+		kde.fit(np.asarray(dat).flatten().reshape(-1,1))
+		hh1 = np.exp(kde.score_samples(loc1.reshape(-1,1)))
 		if weights is not None:
-			hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel,weight=weights)*bin*len(dat)
-		else:
-			hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
+			print ('WARNING weights ignored for KDE !')
+			#hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
 
 	if overplot:
 		func = oplot 
