@@ -244,7 +244,7 @@ def plothist(x, bin=None, nbins=None, xrange=None, yrange=None, min=None,
 		hh1=hh1*1./hh1.max()
 	kw['ps'] = kw.get('ps') or 0
 	if 'yr' not in kw:
-		kw['yr']=[hh1.min(),hh1.max()]
+		kw['yr']=[np.nanmin(hh1),np.nanmax(hh1)]
 	if 'xr' not in kw:
 		kw['xr']=[min,max]
 	if apply_func is not None:
