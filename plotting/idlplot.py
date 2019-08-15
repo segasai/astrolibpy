@@ -77,7 +77,7 @@ def smoother(arr, smooth = None, kernel = None):
 				# because gaussian_filter convention is second dimension is x
 			arr = scipy.ndimage.filters.gaussian_filter(arr*1., smooth)
 		elif kernel=='epa':
-			arr = filter_epa(arr, smooth)
+			arr = filter_epa(arr*1., smooth)
 		else:
 			raise Exception('Wrong kernel')
 	return arr
@@ -642,6 +642,9 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 	if apply_func is not None:
 		hh = apply_func (hh)
 
+	hh = smoother (hh, smooth = smooth, kernel = kernel)
+
+
 	if normx is not None:
 		if normx == 'sum':
 			hhs = hh.sum(axis=0)
@@ -649,6 +652,10 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 			hh = hh*1./hhs[None,:]
 		elif normx == 'max':
 			hhs = np.max(hh,axis=0)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[None,:]
+		elif normx == 'median':
+			hhs = np.median(hh,axis=0)
 			hhs = hhs + (hhs==0)
 			hh = hh*1./hhs[None,:]
 		else:
@@ -661,6 +668,10 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 			hh = hh*1./hhs[:,None]
 		elif normy == 'max':
 			hhs = np.max(hh,axis=1)
+			hhs = hhs + (hhs==0)
+			hh = hh*1./hhs[:,None]
+		elif normy == 'median':
+			hhs = np.median(hh,axis=1)
 			hhs = hhs + (hhs==0)
 			hh = hh*1./hhs[:,None]
 		else:
@@ -706,8 +717,6 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		axis.xaxis.set_major_formatter(xaxis_formatter)
 	if yaxis_formatter is not None:
 		axis.yaxis.set_major_formatter(yaxis_formatter)
-
-	hh = smoother (hh, smooth = smooth, kernel = kernel)
 
 	if vminfrac is not None and vmin is None:
 		vmin = scipy.stats.scoreatpercentile(hh[np.isfinite(hh)], 100 * vminfrac)
