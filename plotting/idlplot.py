@@ -687,6 +687,7 @@ def tvhist2d (x, y, xmin=None, xmax=None, ymin=None, ymax=None,
 		hhsub = hh.T[posx[ind] - 1, posy[ind] - 1] # values of the histogram where the points are
 		x1 = x1[ind][hhsub < scatter_thresh] # low density points
 		y1 = y1[ind][hhsub < scatter_thresh]
+		hh = hh.astype(np.float)
 		hh[hh < scatter_thresh] = np.nan # fill the areas with low density by NaNs
 
 	if xflip:
