@@ -160,6 +160,7 @@ def plothist(x,
              weight_norm=False,
              apply_func=None,
              knuth=False,
+             cumulative=False,
              **kw):
     """
 	Plot the 1D histogram
@@ -240,6 +241,11 @@ def plothist(x,
         # if both nbins and bin are defined I don't do anything
         # it may be non-intuitive if kernel option is used, because
         # it uses both nbins and bin options
+    if cumulative:
+        if (kernel is not None or adaptive or weights is not None):
+            raise RuntimeError(
+                'cumulative is incompatibel with weights, kernel or adaptive options'
+            )
     if kernel is None:
         if not adaptive:
             if not np.isscalar(weights):
@@ -264,7 +270,8 @@ def plothist(x,
                                      xmax=max,
                                      hi=adaptive_depth,
                                      thresh=adaptive_thresh)
-
+        if cumulative:
+            hh = np.cumsum(hh)
         hh1 = np.repeat(hh, 2)
         loc1 = np.concatenate(([loc[0]], np.repeat(loc[1:-1], 2), [loc[-1]]))
     else:
@@ -380,7 +387,7 @@ def plot(arg1,
 
         del ind
     elif xrange is None and yrange is not None:
-        ind = (y < numpy.maximum(yrange[1], yrange[0])) & (y > numpy.minimum(
+        ind = (y < max(yrange[1], yrange[0])) & (y > min(
             yrange[0], yrange[1])) & numpy.isfinite(x)
         if ind.any():
             xrange = [numpy.min(x[ind]), numpy.max(x[ind])]
@@ -409,7 +416,8 @@ def plot(arg1,
     if transpose:
         xrange, yrange = yrange, xrange
     if not overplot:
-        axis.axis(numpy.concatenate((xrange, yrange)))
+        axis.set_xlim(xrange)
+        axis.set_ylim(yrange)
 
     if xlog:
         axis.set_xscale('log', subsx=[2, 3, 4, 5, 6, 7, 8, 9])
@@ -503,6 +511,8 @@ def ploterror(x,
     else:
         erry = listToArr(err1)
         errx = listToArr(err0)
+    x = listToArr(x)
+    y = listToArr(y)
     kw0 = kw.copy()
     if kw0.get('yr') is None:
         kw0['yr'] = [numpy.nanmin(y - erry), numpy.nanmax(y + erry)]
@@ -1085,7 +1095,8 @@ def contour(z,
 
     # For a new plot, we have to initialize axes:
     if not overplot:
-        axis.axis(xrange + yrange)
+        axis.set_xlim(xlim)
+        axis.set_ylim(ylim)
 
 # Setup format of the major ticks:
     if xticklabel is not None:
