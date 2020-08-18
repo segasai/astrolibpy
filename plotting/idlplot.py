@@ -420,9 +420,9 @@ def plot(arg1,
         axis.set_ylim(yrange)
 
     if xlog:
-        axis.set_xscale('log', subsx=[2, 3, 4, 5, 6, 7, 8, 9])
+        axis.set_xscale('log', subs=[2, 3, 4, 5, 6, 7, 8, 9])
     if ylog:
-        axis.set_yscale('log', subsy=[2, 3, 4, 5, 6, 7, 8, 9])
+        axis.set_yscale('log', subs=[2, 3, 4, 5, 6, 7, 8, 9])
     if xaxis_formatter is not None:
         axis.xaxis.set_major_formatter(xaxis_formatter)
     if yaxis_formatter is not None:
