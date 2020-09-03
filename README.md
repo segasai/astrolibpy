@@ -1,10 +1,7 @@
-This library contains a few useful routines I wrote or I converted from IDL. 
-
-My contacts are: 
-Sergey Koposov skoposov __AT __ ed __DOT__ ac __DOT__ uk
-
-If you have found a bug or have a patch, you can send them to me. 
-With my library I do not promise a stable interface, so beware.
+astrolibpy 
+This library contains a few routines I wrote or I converted from IDL. 
+Author (2008-2020) Sergey Koposov
+Email: skoposov __AT __ ed __DOT__ ac __DOT__ uk
 
 The licensing for the programs I wrote myself is GPL3. For all other
 programs (mainly converted from IDL) I guess the license is either BSD or 
