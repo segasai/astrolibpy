@@ -650,8 +650,6 @@ def tvaxis(image,
 
     axim = plt.imshow(im,
                       extent=(xmin, xmax, ymin, ymax),
-                      vmin=vmin,
-                      vmax=vmax,
                       aspect=aspect,
                       norm=norm,
                       origin='lower',
