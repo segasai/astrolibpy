@@ -1,29 +1,30 @@
 # Copyright (C) 2009-2010 Sergey Koposov
 # This file is part of astrolibpy
 #
-#	astrolibpy is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# astrolibpy is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#	astrolibpy is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+# astrolibpy is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with astrolibpy.  If not, see <http://www.gnu.org/licenses/>.
 
 import matplotlib.pyplot as plt
-import numpy, numpy as np
+import numpy as np
 import scipy
 import scipy.stats
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter, MaxNLocator, LogLocator
-import scipy.ndimage.filters, scipy.stats
+import scipy.ndimage.filters
+import scipy.stats
 from matplotlib.pyplot import draw_if_interactive
 import matplotlib
-import types, sys, math, copy
-import warnings, array
+import math
+import copy
+import warnings
 
 # this module is by default in interactive regime
 plt.ion()
@@ -39,9 +40,9 @@ def listToArrFlat(x):
 
 def get_marker(ps, linestyle):
     """
-	Wrapper for point markers which understand idl-like ps options
-	(e.g. ps=3 for the point, ps=4 for the diamond)
-	"""
+    Wrapper for point markers which understand idl-like ps options
+    (e.g. ps=3 for the point, ps=4 for the diamond)
+    """
     outlinestyle = ' '
     markerHash = {3: '.', 4: 'D', 7: '+', 2: '*', 6: 's'}
     try:
@@ -94,7 +95,7 @@ def exceptionDecorator(func):
             isInteractive = plt.isinteractive()
 
             # switch to non-interactive mode
-            #matplotlib.interactive(False)
+            # matplotlib.interactive(False)
 
             ret = func(*args, **kwargs)
 
@@ -133,7 +134,7 @@ def __findKnuth(x, minv, maxv):
         vals[i] = funcer(ns[i])
     bestn = ns[np.argmax(vals)]
     if bestn == maxN:
-        print('WARNING the best number of bins is > maxbin(%d)' % (maxn))
+        print('WARNING the best number of bins is > maxbin(%d)' % (maxN))
     return bestn
 
 
@@ -163,52 +164,51 @@ def plothist(x,
              cumulative=False,
              **kw):
     """
-	Plot the 1D histogram
-	Example:
-	>> plothist(dat, bin=0.1, min=0, max=3)
+    Plot the 1D histogram
+    Example:
+    >> plothist(dat, bin=0.1, min=0, max=3)
 
-	Keyword parameters:
-	------------------
-	bin
-		the binsize(float)
-	nbins
-		number of bins(integer)
-		It cannot be specified together with the bin= parameter
-	xlog, ylog
-		log the appropriate axis
-	weights
-		the 1-D array of weights used in the histogram creation
-	nan
-		boolean flag to ignore nan's
-	norm
-		boolean flag to normalize the histogram by the peak value
-	min,max
-		range of data for which the histogram is constructed
-	retpoints
-		boolean parameter controlling whether to return or not the
-		computed histogram.
-		If yes the tuple with two arrays (bin centers, Number of points in bins) 
-		is returned
-	overplot
-		boolean parameter for overplotting 
-	adaptive
-		boolean for turning on/off the adaptive regime of
-		histogramming (adaptive bin size). 
-		If True weights, nbins, bin,kernel parameters are ignored
-	adaptive_thresh
-		the limiting number of points in the bin for the adaptive 
-		histogramming (default 30)
-	adaptive_depth
-		the list of two integers for the detalisation levels of 
-		adaptive histogramming (default [2,10]) 
-	weight_norm
-		if True the value in each bin is mean weight of points within
-		the bin
-	"""
+    Keyword parameters:
+    ------------------
+    bin
+        the binsize(float)
+    nbins
+        number of bins(integer)
+        It cannot be specified together with the bin= parameter
+    xlog, ylog
+        log the appropriate axis
+    weights
+        the 1-D array of weights used in the histogram creation
+    nan
+        boolean flag to ignore nan's
+    norm
+        boolean flag to normalize the histogram by the peak value
+    min,max
+        range of data for which the histogram is constructed
+    retpoints
+        boolean parameter controlling whether to return or not the
+        computed histogram. If yes the tuple with two arrays
+        (bin centers, Number of points in bins) is returned
+    overplot
+        boolean parameter for overplotting
+    adaptive
+        boolean for turning on/off the adaptive regime of
+        histogramming (adaptive bin size).
+        If True weights, nbins, bin,kernel parameters are ignored
+    adaptive_thresh
+        the limiting number of points in the bin for the adaptive
+        histogramming (default 30)
+    adaptive_depth
+        the list of two integers for the detalisation levels of
+        adaptive histogramming (default [2,10])
+    weight_norm
+        if True the value in each bin is mean weight of points within
+        the bin
+    """
     if nan:
-        ind = numpy.isfinite(x)
+        ind = np.isfinite(x)
         if weights is not None:
-            ind = numpy.isfinite(weights) & ind
+            ind = np.isfinite(weights) & ind
         dat = x[ind]
         if weights is not None:
             weights = weights[ind]
@@ -216,10 +216,10 @@ def plothist(x,
         dat = x
     maxNone = False
     if min is None:
-        min = numpy.nanmin(dat)
+        min = np.nanmin(dat)
     if max is None:
         maxNone = True
-        max = numpy.nanmax(dat)
+        max = np.nanmax(dat)
 
     if bin is None and nbins is None:
         if not knuth:
@@ -244,24 +244,24 @@ def plothist(x,
     if cumulative:
         if (kernel is not None or adaptive or weights is not None):
             raise RuntimeError(
-                'cumulative is incompatibel with weights, kernel or adaptive options'
+                'cumulative is incompatible with weights, kernel or adaptive options'
             )
     if kernel is None:
         if not adaptive:
             if not np.isscalar(weights):
-                hh, loc = numpy.histogram(dat,
-                                          range=(min, max),
-                                          bins=nbins,
-                                          weights=weights)
+                hh, loc = np.histogram(dat,
+                                       range=(min, max),
+                                       bins=nbins,
+                                       weights=weights)
             else:
-                hh, loc = numpy.histogram(dat, range=(min, max), bins=nbins)
+                hh, loc = np.histogram(dat, range=(min, max), bins=nbins)
                 hh = hh * weights
 
             if weight_norm:
-                hh1, loc = numpy.histogram(dat,
-                                           range=(min, max),
-                                           bins=nbins,
-                                           weights=None)
+                hh1, loc = np.histogram(dat,
+                                        range=(min, max),
+                                        bins=nbins,
+                                        weights=None)
                 hh = hh * 1. / hh1
         else:
             import adabinner
@@ -275,14 +275,14 @@ def plothist(x,
         hh1 = np.repeat(hh, 2)
         loc1 = np.concatenate(([loc[0]], np.repeat(loc[1:-1], 2), [loc[-1]]))
     else:
-        loc1 = numpy.linspace(min, max, nbins * 10)
+        loc1 = np.linspace(min, max, nbins * 10)
         import sklearn.neighbors
         kde = sklearn.neighbors.KernelDensity(bandwidth=bin, kernel=kernel)
         kde.fit(np.asarray(dat).flatten().reshape(-1, 1))
         hh1 = np.exp(kde.score_samples(loc1.reshape(-1, 1)))
         if weights is not None:
             print('WARNING weights ignored for KDE !')
-            #hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
+            # hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
 
     if overplot:
         func = oplot
@@ -335,15 +335,17 @@ def plot(arg1,
          pad_range=0,
          transpose=False,
          **kw):
-    """ Plot your data in an IDL-way
-		Example:
-		plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",\
-			color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
-	"""
+    """ Plot your data in an IDL-like way with a lot of options in one
+    command.
+    Example:
+    
+    >> plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",
+        color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
+    """
 
     if arg2 is None:
         y = listToArrFlat(arg1)
-        x = numpy.arange(len(y))
+        x = np.arange(len(y))
     else:
         x = listToArrFlat(arg1)
         y = listToArrFlat(arg2)
@@ -365,16 +367,16 @@ def plot(arg1,
         yrange = yr
 
     if xrange is None and yrange is None:
-        ind = numpy.isfinite(x)
+        ind = np.isfinite(x)
         if not ind.any():
             xrange = [0, 1]
         else:
-            xrange = [numpy.min(x[ind]), numpy.max(x[ind])]
-        ind = numpy.isfinite(y)
+            xrange = [np.min(x[ind]), np.max(x[ind])]
+        ind = np.isfinite(y)
         if not ind.any():
             yrange = [0, 1]
         else:
-            yrange = [numpy.min(y[ind]), numpy.max(y[ind])]
+            yrange = [np.min(y[ind]), np.max(y[ind])]
         assert (pad_range >= 0)
         xrange = [
             xrange[0] - pad_range * (xrange[1] - xrange[0]),
@@ -388,19 +390,19 @@ def plot(arg1,
         del ind
     elif xrange is None and yrange is not None:
         ind = (y < max(yrange[1], yrange[0])) & (y > min(
-            yrange[0], yrange[1])) & numpy.isfinite(x)
+            yrange[0], yrange[1])) & np.isfinite(x)
         if ind.any():
-            xrange = [numpy.min(x[ind]), numpy.max(x[ind])]
+            xrange = [np.min(x[ind]), np.max(x[ind])]
         else:
-            xrange = [numpy.min(x), numpy.max(x)]
+            xrange = [np.min(x), np.max(x)]
         del ind
     elif xrange is not None and yrange is None:
-        ind = (x < numpy.maximum(xrange[1], xrange[0])) & (x > numpy.minimum(
-            xrange[0], xrange[1])) & numpy.isfinite(y)
+        ind = (x < np.maximum(xrange[1], xrange[0])) & (x > np.minimum(
+            xrange[0], xrange[1])) & np.isfinite(y)
         if ind.any():
-            yrange = [numpy.min(y[ind]), numpy.max(y[ind])]
+            yrange = [np.min(y[ind]), np.max(y[ind])]
         else:
-            yrange = [numpy.min(y), numpy.max(y)]
+            yrange = [np.min(y), np.max(y)]
         del ind
     if len(yrange) != 2 or len(xrange) != 2:
         raise ValueError("Wrong xrange or yrange")
@@ -462,11 +464,11 @@ def plot(arg1,
 
 def oplot(x, y=None, **kw):
     """
-	Overplot your data
-	
-	Example:
-	>> oplot(x,2+y/10.,ps=3,color='blue')
-	"""
+    Overplot your data (just a simple wrapper around plot)
+    
+    Example:
+    >> oplot(x,2+y/10.,ps=3,color='blue')
+    """
 
     plot(x, y, noerase=True, overplot=True, **kw)
 
@@ -515,7 +517,7 @@ def ploterror(x,
     y = listToArr(y)
     kw0 = kw.copy()
     if kw0.get('yr') is None:
-        kw0['yr'] = [numpy.nanmin(y - erry), numpy.nanmax(y + erry)]
+        kw0['yr'] = [np.nanmin(y - erry), np.nanmax(y + erry)]
 
     if markersize is not None:
         kw0['markersize'] = markersize
@@ -622,7 +624,7 @@ def tvaxis(image,
     if ymax is None:
         ymax = image.shape[1]
     if image.ndim == 3:
-        im = numpy.transpose(image, axes=(1, 0, 2))
+        im = np.transpose(image, axes=(1, 0, 2))
     elif image.ndim == 2:
         im = image.T
     else:
@@ -644,9 +646,9 @@ def tvaxis(image,
     else:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
     if xflip:
-        im = numpy.fliplr(im)
+        im = np.fliplr(im)
     if yflip:
-        im = numpy.flipud(im)
+        im = np.flipud(im)
 
     axim = plt.imshow(im,
                       extent=(xmin, xmax, ymin, ymax),
@@ -766,21 +768,21 @@ def tvhist2d(x,
     y1 = listToArrFlat(y)
 
     if xmin is None:
-        xmin = numpy.nanmin(x1)
+        xmin = np.nanmin(x1)
     if ymin is None:
-        ymin = numpy.nanmin(y1)
+        ymin = np.nanmin(y1)
     if xmax is None:
-        xmax = numpy.nanmax(x1)
+        xmax = np.nanmax(x1)
     if ymax is None:
-        ymax = numpy.nanmax(y1)
+        ymax = np.nanmax(y1)
 
     range1 = (xmin, xmax, ymin, ymax)
     if xlog is True:
-        x1 = numpy.log10(x1)
-        xmin, xmax = numpy.log10(xmin), numpy.log10(xmax)
+        x1 = np.log10(x1)
+        xmin, xmax = np.log10(xmin), np.log10(xmax)
     if ylog is True:
-        y1 = numpy.log10(y1)
-        ymin, ymax = numpy.log10(ymin), numpy.log10(ymax)
+        y1 = np.log10(y1)
+        ymin, ymax = np.log10(ymin), np.log10(ymax)
     range = [[ymin, ymax], [xmin, xmax]]
     binsRev = bins[::-1]
     if statistic is None:
@@ -870,10 +872,10 @@ def tvhist2d(x,
 
     if xflip:
         range1 = (range1[1], range1[0], range1[2], range1[3])
-        hh = numpy.fliplr(hh)
+        hh = np.fliplr(hh)
     if yflip:
         range1 = (range1[0], range1[1], range1[3], range1[2])
-        hh = numpy.flipud(hh)
+        hh = np.flipud(hh)
     if subplot is not None:
         noerase = True
         if hasattr(subplot, '__iter__'):
@@ -1027,14 +1029,14 @@ def contour(z,
     if x is None or y is None:
         if z.ndim != 2:
             raise Exception("The 2D array is required")
-        x, y = numpy.mgrid[0:z.shape[0], 0:z.shape[1]]
+        x, y = np.mgrid[0:z.shape[0], 0:z.shape[1]]
     else:
         if x.ndim == 1:
-            x_new = x[:, numpy.newaxis] * (y * 0 + 1)
+            x_new = x[:, np.newaxis] * (y * 0 + 1)
         else:
             x_new = x
         if y.ndim == 1:
-            y_new = ((x * 0 + 1) * y[:, numpy.newaxis]).transpose()
+            y_new = ((x * 0 + 1) * y[:, np.newaxis]).transpose()
         else:
             y_new = y
         x = x_new
@@ -1056,7 +1058,7 @@ def contour(z,
     if ylog:
         axis.set_yscale('log')
     if zlog:
-        z = numpy.log10(z)
+        z = np.log10(z)
 
 # Setup axis ranges:
     if xr is not None:
@@ -1074,7 +1076,7 @@ def contour(z,
     if levels is None:
         zmin = zrange[0]
         zmax = zrange[1]
-        levels = numpy.linspace(zmin, zmax, nlevels)
+        levels = np.linspace(zmin, zmax, nlevels)
 
 # Setup frame thickness:
 #	axis.frame.set_linewidth(thick)
@@ -1162,8 +1164,8 @@ def contour(z,
             kw = {}
         plt.colorbar(
             cset1,
-            ticks=[numpy.min(levels),
-                   numpy.max(levels)],  #, shrink = 0.87, aspect=15, 
+            ticks=[np.min(levels),
+                   np.max(levels)],  #, shrink = 0.87, aspect=15, 
             fraction=bar_fraction,
             format=zFormatter,
             **kw)
