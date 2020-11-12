@@ -632,9 +632,9 @@ def tvaxis(image,
     im = smoother(im, smooth=smooth, kernel=kernel)
 
     if vminfrac is not None and vmin is None:
-        vmin = scipy.stats.scoreatpercentile(im, 100 * vminfrac)
+        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)], 100 * vminfrac)
     if vmaxfrac is not None and vmax is None:
-        vmax = scipy.stats.scoreatpercentile(im, 100 * vmaxfrac)
+        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)], 100 * vmaxfrac)
     if vmin is not None and vmax is not None and vmin >= vmax:
         warnings.warn("vmin is >= vmax... Resetting their values",
                       RuntimeWarning)
