@@ -11,6 +11,7 @@ def doit(tabname,
          extra=None,
          yourradeccols=('ra', 'dec'),
          host=None,
+         port=None
          db=None,
          user=None,
          password=None,
@@ -70,6 +71,7 @@ def doit(tabname,
         host=host,
         db=db,
         user=user,
+        port=port,
         password=password,
         asDict=asDict)
     return RES
