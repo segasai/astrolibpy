@@ -11,7 +11,7 @@ def doit(tabname,
          extra=None,
          yourradeccols=('ra', 'dec'),
          host=None,
-         port=None
+         port=None,
          db=None,
          user=None,
          password=None,
