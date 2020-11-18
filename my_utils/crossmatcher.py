@@ -71,7 +71,7 @@ def doit(tabname,
         host=host,
         db=db,
         user=user,
-        port=port,
+        port=(port or 5432),
         password=password,
         asDict=asDict)
     return RES
