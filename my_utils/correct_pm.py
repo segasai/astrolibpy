@@ -1,16 +1,6 @@
-import gal_uvw, cv_coord, euler
 import numpy as np
 import astropy.coordinates as acoo
 import astropy.units as auni
-
-
-def get_uvw_sun(vlsr):
-
-    usun, vsun, wsun = -11.1, 12.24 + vlsr, 7.25  # the signs are in the coord system of gal_uvw
-    # this is from schonrich, binney
-    # e.g. U points toward anticenter
-    return usun, vsun, wsun
-
 
 vlsr0 = 232.8  # from mcmillan 2017
 
@@ -43,7 +33,7 @@ def correct_pm(ra, dec, pmra, pmdec, dist, vlsr=vlsr0):
                               v_y=Cg.v_y * 0,
                               v_z=Cg.v_z * 0,
                               **kw)
-    C1 = Cg1.transform_to(acoo.ICRS)
+    C1 = Cg1.transform_to(acoo.ICRS())
     return ((C.pm_ra_cosdec - C1.pm_ra_cosdec).to_value(auni.mas / auni.year),
             (C.pm_dec - C1.pm_dec).to_value(auni.mas / auni.year))
 
@@ -66,7 +56,6 @@ def correct_vel(ra, dec, vel, vlsr=vlsr0):
                   distance=np.ones_like(vel) * auni.kpc,
                   pm_ra_cosdec=np.zeros_like(vel) * auni.mas / auni.year,
                   pm_dec=np.zeros_like(vel) * auni.mas / auni.year)
-    #frame = acoo.Galactocentric (galcen_vsun = np.array([ 11.1, vlsr+12.24, 7.25])*auni.km/auni.s)
     kw = dict(galcen_v_sun=acoo.CartesianDifferential(
         np.array([11.1, vlsr + 12.24, 7.25]) * auni.km / auni.s))
     frame = acoo.Galactocentric(**kw)
@@ -78,6 +67,6 @@ def correct_vel(ra, dec, vel, vlsr=vlsr0):
                               v_y=Cg.v_y * 0,
                               v_z=Cg.v_z * 0,
                               **kw)
-    C1 = Cg1.transform_to(acoo.ICRS)
+    C1 = Cg1.transform_to(acoo.ICRS())
     return np.asarray(((C.radial_velocity - C1.radial_velocity) /
                        (auni.km / auni.s)).decompose())
