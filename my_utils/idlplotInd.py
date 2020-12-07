@@ -94,6 +94,7 @@ def scatter(a, b, c=None, s=None, *args, **kw):
     if ind is None:
         plt.scatter(a, b, c=c, s=s, *args, **kw)
     else:
+        del kw['ind']
         if c is not None:
             c = c[ind]
         if s is not None:
