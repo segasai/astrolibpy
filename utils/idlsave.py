@@ -102,9 +102,12 @@ class idlsave:
         curhash = {}
         for a in range(len(names)):
             curhash[names[a]] = args[a]
-
+        if 'protocol' not in kw:
+            protocol = pickle.HIGHEST_PROTOCOL
+        else:
+            protocol = kw['protocol']
         if version == 1:
-            pickle.dump(curhash, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(curhash, f, protocol)
         elif version == 2:
             f.write(idlsave.versionId(version).encode('ascii'))
             headlen1 = f.tell()
@@ -112,9 +115,9 @@ class idlsave:
             offsets = dict([(name, 0) for name in names])
             for name in names:
                 offsets[name] = f.tell()
-                pickle.dump(curhash[name], f, pickle.HIGHEST_PROTOCOL)
+                pickle.dump(curhash[name], f, protocol)
             offOffs = f.tell()
-            pickle.dump(offsets, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(offsets, f, protocol)
             f.seek(headlen1)
             f.write(struct.pack('!q', offOffs))
         f.close()
