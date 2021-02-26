@@ -103,7 +103,7 @@ def exceptionDecorator(func):
 
             draw_if_interactive()
             return ret
-        except Exception as exc:
+        except Exception as exc:  # noqa
             # switch back
             matplotlib.interactive(isInteractive)
             raise
@@ -115,9 +115,9 @@ def exceptionDecorator(func):
 
 def __findKnuth(x, minv, maxv):
     """
-	Implement Knuth method for histogram bin selection
-		
-	"""
+    Implement Knuth method for histogram bin selection
+        
+    """
     N = ((x >= minv) & (x <= maxv)).sum()
 
     def funcer(M):
@@ -235,8 +235,8 @@ def plothist(x,
         bin = (max - min) * 1. / nbins
     else:
         warnings.warn(
-            "both bin= and nbins= keywords were specified in the plothist call",
-            RuntimeWarning)
+            'both bin= and nbins= keywords were specified in ' +
+            'the plothist call', RuntimeWarning)
         pass
         # if both nbins and bin are defined I don't do anything
         # it may be non-intuitive if kernel option is used, because
@@ -244,8 +244,8 @@ def plothist(x,
     if cumulative:
         if (kernel is not None or adaptive or weights is not None):
             raise RuntimeError(
-                'cumulative is incompatible with weights, kernel or adaptive options'
-            )
+                'cumulative is incompatible with weights, kernel ' +
+                'or adaptive options')
     if kernel is None:
         if not adaptive:
             if not np.isscalar(weights):
@@ -282,8 +282,6 @@ def plothist(x,
         hh1 = np.exp(kde.score_samples(loc1.reshape(-1, 1)))
         if weights is not None:
             print('WARNING weights ignored for KDE !')
-            # hh1 = statistics.pdf( dat, loc1, h=bin/2.,kernel=kernel)*bin*len(dat)
-
     if overplot:
         func = oplot
     else:
@@ -493,19 +491,19 @@ def ploterror(x,
               label=None,
               **kw):
     """
-	Plot the data with error-bars
-	
-	Example:
-	>> ploterror(x,y,erry) # plot only Y error-bars
-	>> ploterror(x,y,errx,erry) # plot data with X and Y error-bars	
-	
-	Keyword parameters:
-	------------------
-	capsize
-		integer param controlling the size of hats/caps of the error-bars
-	ecolor
-		color of the error-bars (different from the main color)	
-	"""
+    Plot the data with error-bars
+    
+    Example:
+    >> ploterror(x,y,erry) # plot only Y error-bars
+    >> ploterror(x,y,errx,erry) # plot data with X and Y error-bars
+    
+    Keyword parameters:
+    ------------------
+    capsize
+        integer param controlling the size of hats/caps of the error-bars
+    ecolor
+        color of the error-bars (different from the main color)
+    """
     if overplot:
         noerase = True
     if err1 is None:
@@ -589,23 +587,25 @@ def tvaxis(image,
            vminfrac=None,
            **kw):
     """
-	Display the 2D image with proper axes (similar to plt.imshow)
-	Example:
-	>> tvaxis(im,-20,10,-40,50)
-	
-	Keyword parameters:
-	------------------
-	xmin,xmax,ymin,ymax
-		the ranges for x,y where the histogram is constructed.
-		These params can be specified not only as keywords but also as normal arguments
-	vmin,vmax
-		the ranges of intensities shown on the plot
-	smooth
-		if not None this parameter controls additional smoothing of the 2D histogram
-	bar
-		boolean parameter for switching on/off the plotting of the color-bar
-	
-	"""
+    Display the 2D image with proper axes (similar to plt.imshow)
+    Example:
+    >> tvaxis(im,-20,10,-40,50)
+    
+    Keyword parameters:
+    ------------------
+    xmin,xmax,ymin,ymax
+        the ranges for x,y where the histogram is constructed.
+        These params can be specified not only as keywords but also as normal
+        arguments
+    vmin,vmax
+        the ranges of intensities shown on the plot
+    smooth
+        if not None this parameter controls additional smoothing of the 2D
+        histogram
+    bar
+        boolean parameter for switching on/off the plotting of the color-bar
+    
+    """
 
     if not noerase:
         plt.clf()
@@ -632,9 +632,11 @@ def tvaxis(image,
     im = smoother(im, smooth=smooth, kernel=kernel)
 
     if vminfrac is not None and vmin is None:
-        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)], 100 * vminfrac)
+        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
+                                             100 * vminfrac)
     if vmaxfrac is not None and vmax is None:
-        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)], 100 * vmaxfrac)
+        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
+                                             100 * vmaxfrac)
     if vmin is not None and vmax is not None and vmin >= vmax:
         warnings.warn("vmin is >= vmax... Resetting their values",
                       RuntimeWarning)
@@ -726,43 +728,45 @@ def tvhist2d(x,
              statistic=None,
              **kw):
     """ Plot the 2D histogram of the data
-	Example:
-	>> tvhist2d(xs,ys,bins=[30,30])
-	
-	>> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
-	
-	Keyword arguments:
-	-----------------
-	xmin,xmax,ymin,ymax
-		the ranges for x,y where the histogram is constructed.
-		These params can be specified not only as keywords but also as normal arguments
-		>> tvhist2d(xs,ys,xmin=0,ymin=10,ymin=-1,ymax=2,bins=[30,30])
-		>> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
-	vmin,vmax
-		the ranges of intensities shown on the plot
-	bins
-		the list of two integers specifying how many bins in x,y you want
-	smooth
-		if not None this parameter controls additional smoothing of the 2D histogram
-	xflip, yflip
-		boolean parameters allowing to flip x,y axes
-	normx, normy
-		params controlling the normalization of the histogram along X or Y axes
-		if normx=='sum' then the normalization is done in such way that the sum
-		is the same for each row/column
-		if normx=='max' then the normalization is don in such way that
-		the brightest pixel value will be the same for each row/column
-	weight_norm
-		if True the value in each bin is mean weight of points within
-		the bin
-	bar
-		boolean parameter for switching on/off the plotting of the color-bar
-	bar_pad, bar_fraction
-		padding and fraction for bar placement
-	bar_ticks_locator
-		locator for the tickmarks on the colorbar
+    Example:
+    >> tvhist2d(xs,ys,bins=[30,30])
+    
+    >> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
+    
+    Keyword arguments:
+    -----------------
+    xmin,xmax,ymin,ymax
+        the ranges for x,y where the histogram is constructed.
+        These params can be specified not only as keywords but also as
+        normal arguments
+        >> tvhist2d(xs,ys,xmin=0,ymin=10,ymin=-1,ymax=2,bins=[30,30])
+        >> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
+    vmin,vmax
+        the ranges of intensities shown on the plot
+    bins
+        the list of two integers specifying how many bins in x,y you want
+    smooth
+        if not None this parameter controls additional smoothing of the 2D
+        histogram
+    xflip, yflip
+        boolean parameters allowing to flip x,y axes
+    normx, normy
+        params controlling the normalization of the histogram along X or Y axes
+        if normx=='sum' then the normalization is done in such way that the sum
+        is the same for each row/column
+        if normx=='max' then the normalization is don in such way that
+        the brightest pixel value will be the same for each row/column
+    weight_norm
+        if True the value in each bin is mean weight of points within
+        the bin
+    bar
+        boolean parameter for switching on/off the plotting of the color-bar
+    bar_pad, bar_fraction
+        padding and fraction for bar placement
+    bar_ticks_locator
+        locator for the tickmarks on the colorbar
 
-	"""
+    """
 
     x1 = listToArrFlat(x)
     y1 = listToArrFlat(y)
@@ -860,7 +864,7 @@ def tvhist2d(x,
         locy = np.linspace(ymin, ymax, bins[1] + 1, True)
         posx = np.digitize(x1, locx)
         posy = np.digitize(y1, locy)
-        #select points within the histogram
+        # select points within the histogram
         ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
         hhsub = hh.T[posx[ind] - 1, posy[ind] -
                      1]  # values of the histogram where the points are
@@ -1001,30 +1005,33 @@ def contour(z,
             label=None,
             yaxis_formatter=None):
     """
-	Plot the contours of the 2d array. 
-	Example:
-	>> contour(z)
-	if you have the x and y coordinates of your array then you can use them
-	>> contour(z, x, y)
-	In that case  x,y can be either 2D arrays with the same shape as z, or 1D arrays with the
-	appropriate dimensions.
-	
-	Keyword arguments:
-	-----------------
-	
-	xr, xrange, yr, yrange
-		plot ranges for x and y
-	fill
-		boolean parameter controlling whether to fill area between contours or not
-	bar
-		boolean parameter for plotting of the color-bar
-	overplot
-		boolean parameter for overplotting
-	nlevels
-		integer number of number of contours
-	c_label
-		boolean parameter for labeling or not-labeling each contour with its value
-	"""
+    Plot the contours of the 2d array.
+    Example:
+    >> contour(z)
+    if you have the x and y coordinates of your array then you can use them
+    >> contour(z, x, y)
+    In that case  x,y can be either 2D arrays with the same shape as z, or
+    1D arrays with the
+    appropriate dimensions.
+    
+    Keyword arguments:
+    -----------------
+    
+    xr, xrange, yr, yrange
+        plot ranges for x and y
+    fill
+        boolean parameter controlling whether to fill area between contours
+        or not
+    bar
+        boolean parameter for plotting of the color-bar
+    overplot
+        boolean parameter for overplotting
+    nlevels
+        integer number of number of contours
+    c_label
+        boolean parameter for labeling or not-labeling each contour with
+        its value
+    """
     # Initialize x and y if these are not provided:
     if x is None or y is None:
         if z.ndim != 2:
@@ -1079,7 +1086,7 @@ def contour(z,
         levels = np.linspace(zmin, zmax, nlevels)
 
 # Setup frame thickness:
-#	axis.frame.set_linewidth(thick)
+#    axis.frame.set_linewidth(thick)
 
 # Setup x-, y-titles and the main title:
 
@@ -1090,15 +1097,10 @@ def contour(z,
     if title is not None:
         plt.title(title)
 
-# Assume autoscale is off:
+    # Assume autoscale is off:
     axis.set_autoscale_on(False)
 
-    # For a new plot, we have to initialize axes:
-    if not overplot:
-        axis.set_xlim(xlim)
-        axis.set_ylim(ylim)
-
-# Setup format of the major ticks:
+    # Setup format of the major ticks:
     if xticklabel is not None:
         xFormatter = matplotlib.ticker.FormatStrFormatter(xticklabel)
         axis.xaxis.set_major_formatter(xFormatter)
@@ -1123,7 +1125,7 @@ def contour(z,
 
 # Add contour lines:
     if c_levels is None:
-        c_levels = levels  #[0:len(levels):int(nlevels/12)]
+        c_levels = levels  # [0:len(levels):int(nlevels/12)]
     cset2 = axis.contour(x,
                          y,
                          z,
@@ -1148,24 +1150,18 @@ def contour(z,
             args = {'fmt': zticklabel}
         else:
             args = {}
-        cset3 = axis.clabel(cset2,
-                            c_levels,
-                            inline=1,
-                            fontsize=c_charsize,
-                            **args)
+        axis.clabel(cset2, c_levels, inline=1, fontsize=c_charsize, **args)
 
 
 # Do we need a color bar?:
     if fill & bar:
-        #		matplotlib.rcParams['ytick.labelsize']=c_charsize
+        #        matplotlib.rcParams['ytick.labelsize']=c_charsize
         if int(''.join((matplotlib.__version__).split('.')[:2])) >= 11:
             kw = {'use_gridspec': True}
         else:
             kw = {}
-        plt.colorbar(
-            cset1,
-            ticks=[np.min(levels),
-                   np.max(levels)],  #, shrink = 0.87, aspect=15, 
-            fraction=bar_fraction,
-            format=zFormatter,
-            **kw)
+        plt.colorbar(cset1,
+                     ticks=[np.min(levels), np.max(levels)],
+                     fraction=bar_fraction,
+                     format=zFormatter,
+                     **kw)
