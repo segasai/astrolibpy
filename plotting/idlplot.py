@@ -781,12 +781,6 @@ def tvhist2d(x,
         ymax = np.nanmax(y1)
 
     range1 = (xmin, xmax, ymin, ymax)
-    if xlog is True:
-        x1 = np.log10(x1)
-        xmin, xmax = np.log10(xmin), np.log10(xmax)
-    if ylog is True:
-        y1 = np.log10(y1)
-        ymin, ymax = np.log10(ymin), np.log10(ymax)
     range = [[ymin, ymax], [xmin, xmax]]
     binsRev = bins[::-1]
     if statistic is None:
