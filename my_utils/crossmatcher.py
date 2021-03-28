@@ -17,7 +17,8 @@ def doit(tabname,
          password=None,
          asDict=False,
          tab_alias='tt',
-         conn=None):
+         conn=None,
+         preamb=None):
     """
     Performs the nearest neighbor crossmatch within specified radius
     with the remote table the input is given by ra,dec columns
@@ -55,6 +56,7 @@ def doit(tabname,
     if extra is None:
         extra = 'true'
     your_ra, your_dec = yourradeccols
+    preamb = '' or preamb
     RES = sqlutilpy.local_join(
         str.format(
             """
@@ -70,7 +72,7 @@ def doit(tabname,
             on true order by xid """, **locals()),
         'mytable', (ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'),
         preamb=('set enable_seqscan to off;' + 'set enable_mergejoin to off;' +
-                'set enable_hashjoin to off;'),
+                'set enable_hashjoin to off;' + preamb),
         host=host,
         db=db,
         user=user,
