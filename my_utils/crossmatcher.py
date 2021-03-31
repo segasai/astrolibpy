@@ -72,7 +72,7 @@ def doit(tabname,
             on true order by xid """, **locals()),
         'mytable', (ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'),
         preamb=('set enable_seqscan to off;' + 'set enable_mergejoin to off;' +
-                'set enable_hashjoin to off;' + preamb),
+                'set enable_hashjoin to off;' + (preamb or '')),
         host=host,
         db=db,
         user=user,
