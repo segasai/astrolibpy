@@ -939,7 +939,6 @@ def tvhist2d(x,
             kw = {}
         cb = plt.colorbar(fraction=bar_fraction,
                           pad=bar_pad,
-                          norm=axim.norm,
                           ax=axis,
                           format=bar_formatter,
                           ticks=bar_ticks_locator,
