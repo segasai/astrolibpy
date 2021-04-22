@@ -10,13 +10,13 @@ def doit(tabname,
          rad=1.,
          extra=None,
          yourradeccols=('ra', 'dec'),
+         tab_alias='tt',
          host=None,
          port=None,
          db=None,
          user=None,
          password=None,
          asDict=False,
-         tab_alias='tt',
          conn=None,
          preamb=None):
     """
@@ -43,6 +43,14 @@ def doit(tabname,
     tab_alias: string
         The alias for the table that you are crossmatching against, so you can
         refer to its columns
+    host,port,db,user,password: string
+        The connection parameters to the DB if needed
+    asDict: bool
+        if True instead of returning a tuple a dictionary is returned
+    preamb: string (optional)
+        additional commands to be executed before the query
+    conn: connection object(optional)
+        An explicit connection to the DB can be provided
 
     Example:
     --------
