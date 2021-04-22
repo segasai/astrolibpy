@@ -13,6 +13,12 @@ The tools that may be still interesting to users are
 * idlplot -- set of wrappers for plotting in IDL style where your command has all 
   the options you want. Also allows efficient histogramming, subsetting etc
 
+### Installation
+This package does not need to be installed in the sense if of 'pip install', so if you
+want to you use it, you can either copy a script that you want and add it to the current
+directory or clone the repo and add the path to PYTHONPATH
+
+
 The astrolib part of this repo is probably obsolete with the arrival of astropy
 
 The licensing for the programs I wrote myself is GPL3. For all other
