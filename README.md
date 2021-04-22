@@ -1,7 +1,7 @@
 # astrolibpy 
-# This library contains a few routines I wrote or I converted from IDL.
-# Author (2008-2021) Sergey Koposov
-# Email: skoposov __AT__ ed __DOT__ ac __DOT__ uk
+### This library contains a few routines I wrote or I converted from IDL.
+### Author (2008-2021) Sergey Koposov
+### Email: skoposov __AT__ ed __DOT__ ac __DOT__ uk
 
 The tools that may be still interesting to users are 
 * idlsave.py -- module for saving restoring variables 
