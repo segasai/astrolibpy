@@ -277,8 +277,9 @@ def plothist(x,
     else:
         loc1 = np.linspace(min, max, nbins * 10)
         import sklearn.neighbors
+        xind = np.isfinite(dat)
         kde = sklearn.neighbors.KernelDensity(bandwidth=bin, kernel=kernel)
-        kde.fit(np.asarray(dat).flatten().reshape(-1, 1))
+        kde.fit(np.asarray(dat[xind]).flatten().reshape(-1, 1))
         hh1 = np.exp(kde.score_samples(loc1.reshape(-1, 1)))
         if weights is not None:
             print('WARNING weights ignored for KDE !')
