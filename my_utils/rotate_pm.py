@@ -3,7 +3,25 @@ import numpy as np
 
 
 def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
-    # rotate the proper motion to the sphere_rotate coord sys
+    """ 
+    Rotate the proper motion to the sphere_rotate coord system 
+    using finite differences. 
+    I assume all angles are indeg and proper motions are in mas/yr
+    Arguments:
+    ra: 
+    dec:
+    pmra:
+    pmdec:
+    rapol: float
+        RA of the pole
+    decpol float
+        Dec of the pole
+    ra0: float
+        RA of the (0,0) point of the new coordinate system 
+    Returns:
+    pmphi1, pmphi2 in the new coordinate system
+    """
+
     fi1, fi2 = sphere_rotate.sphere_rotate(ra,
                                            dec,
                                            rapol,
@@ -11,7 +29,7 @@ def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
                                            ra0,
                                            revert=revert)
     dt = 1  # year
-    mult = 3600e3
+    mult = 3600e3  # conversion from  degrees to mas
     ra1 = ra + pmra * dt / mult / np.cos(np.deg2rad(dec))
     dec1 = dec + pmdec * dt / mult
     fi1_1, fi2_1 = sphere_rotate.sphere_rotate(ra1,
