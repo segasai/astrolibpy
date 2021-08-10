@@ -2,8 +2,7 @@ import numpy as np
 import astropy.coordinates as acoo
 import astropy.units as auni
 
-frame = aco
-
+# Use v4.0 defaults
 GCPARAMS = acoo.galactocentric_frame_defaults.get_from_registry("v4.0")['parameters']
 
 def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
@@ -32,7 +31,7 @@ def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
                             curdec,
                             curpmra,
                             curpmdec,
-                            curdist)
+                            curdist))
         retpm1 = np.concatenate([_[0] for _ in ret])
         retpm2 = np.concatenate([_[1] for _ in ret])
         return retpm1, retpm2
