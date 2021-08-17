@@ -18,6 +18,9 @@ def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
         Dec of the pole
     ra0: float
         RA of the (0,0) point of the new coordinate system 
+    revert: bool
+        if true do the inverse transformation. I.e. convert fi1,fi2,pmfi1,pmfi2
+        to pmra,pmdec
     Returns:
     pmphi1, pmphi2 in the new coordinate system
     """
