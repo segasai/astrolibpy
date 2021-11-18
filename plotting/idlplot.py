@@ -160,6 +160,7 @@ def plothist(x,
              adaptive_depth=[2, 10],
              weight_norm=False,
              apply_func=None,
+             statistic=None,
              knuth=False,
              cumulative=False,
              **kw):
@@ -248,21 +249,28 @@ def plothist(x,
                 'or adaptive options')
     if kernel is None:
         if not adaptive:
-            if not np.isscalar(weights):
+            if np.isscalar(weights) and weights is not None:
+                weights = np.zeros_like(dat) + weights
+            if statistic is None:
                 hh, loc = np.histogram(dat,
                                        range=(min, max),
                                        bins=nbins,
                                        weights=weights)
-            else:
-                hh, loc = np.histogram(dat, range=(min, max), bins=nbins)
-                hh = hh * weights
 
-            if weight_norm:
-                hh1, loc = np.histogram(dat,
-                                        range=(min, max),
-                                        bins=nbins,
-                                        weights=None)
-                hh = hh * 1. / hh1
+                if weight_norm:
+                    hh1, loc = np.histogram(dat,
+                                            range=(min, max),
+                                            bins=nbins,
+                                            weights=None)
+                    hh = hh * 1. / hh1
+            else:
+                S = scipy.stats.binned_statistic(dat,
+                                                 weights,
+                                                 statistic,
+                                                 range=[min, max],
+                                                 bins=nbins)
+                hh = S.statistic
+                loc = S.bin_edges
         else:
             import adabinner
             hh, loc = adabinner.hist(dat,
