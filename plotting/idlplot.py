@@ -90,6 +90,7 @@ def smoother(arr, smooth=None, kernel=None):
 
 
 def exceptionDecorator(func):
+
     def wrapper(*args, **kwargs):
         try:
             isInteractive = plt.isinteractive()
@@ -789,33 +790,45 @@ def tvhist2d(x,
     if ymax is None:
         ymax = np.nanmax(y1)
 
-    range1 = (xmin, xmax, ymin, ymax)
-    range = [[ymin, ymax], [xmin, xmax]]
+    plot_range = (xmin, xmax, ymin, ymax)
+    hist_range = [[ymin, ymax], [xmin, xmax]]
+    hist_range_ordered = []
+    hist_range_reverse = []
+    for i in range(2):
+        left, right = hist_range[i]
+        if left > right:
+            hist_range_ordered.append([right, left])
+            hist_range_reverse.append(True)
+        else:
+            hist_range_ordered.append([left, right])
+            hist_range_reverse.append(False)
+
     binsRev = bins[::-1]
     if statistic is None:
         if not quick:
             hh, yedges, xedges = scipy.histogram2d(y1,
                                                    x1,
-                                                   range=range,
+                                                   range=hist_range_ordered,
                                                    bins=binsRev,
                                                    weights=weights)
             if weight_norm:
-                hh1, yedges, xedges = scipy.histogram2d(y1,
-                                                        x1,
-                                                        range=range,
-                                                        bins=binsRev,
-                                                        weights=None)
+                hh1, yedges, xedges = scipy.histogram2d(
+                    y1,
+                    x1,
+                    range=hist_range_ordered,
+                    bins=binsRev,
+                    weights=None)
                 hh = hh * 1. / hh1
 
         else:
             import quick_hist
             hh = quick_hist.quick_hist((y1, x1),
-                                       range=range,
+                                       range=hist_range_ordered,
                                        nbins=binsRev,
                                        weights=weights)
             if weight_norm:
                 hh1 = quick_hist.quick_hist((y1, x1),
-                                            range=range,
+                                            range=hist_range_ordered,
                                             nbins=binsRev)
                 hh = hh * 1. / hh1
     else:
@@ -823,11 +836,18 @@ def tvhist2d(x,
                                              x1,
                                              weights,
                                              statistic,
-                                             range=range,
+                                             range=hist_range_ordered,
                                              bins=binsRev).statistic
+    # reverse some of the dimensions if the axis range is reverse
+    slices = []
+    for i in range(2):
+        if hist_range_reverse[i]:
+            slices.append(slice(None, None, -1))
+        else:
+            slices.append(slice(None, None, None))
+    hh = hh[tuple(slices)]
     if apply_func is not None:
         hh = apply_func(hh)
-
     hh = smoother(hh, smooth=smooth, kernel=kernel)
 
     if normx is not None:
@@ -878,10 +898,9 @@ def tvhist2d(x,
            scatter_thresh] = np.nan  # fill the areas with low density by NaNs
 
     if xflip:
-        range1 = (range1[1], range1[0], range1[2], range1[3])
         hh = np.fliplr(hh)
     if yflip:
-        range1 = (range1[0], range1[1], range1[3], range1[2])
+        plot_range = tuple(plot_range[_] for _ in [0, 1, 3, 2])
         hh = np.flipud(hh)
     if subplot is not None:
         noerase = True
@@ -926,7 +945,7 @@ def tvhist2d(x,
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     axim = plt.imshow(hh,
-                      extent=range1,
+                      extent=plot_range,
                       aspect='auto',
                       interpolation=interpolation,
                       cmap=cmap,
