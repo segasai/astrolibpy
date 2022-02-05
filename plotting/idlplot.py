@@ -90,7 +90,6 @@ def smoother(arr, smooth=None, kernel=None):
 
 
 def exceptionDecorator(func):
-
     def wrapper(*args, **kwargs):
         try:
             isInteractive = plt.isinteractive()
@@ -898,6 +897,7 @@ def tvhist2d(x,
            scatter_thresh] = np.nan  # fill the areas with low density by NaNs
 
     if xflip:
+        plot_range = tuple(plot_range[_] for _ in [1, 0, 2, 3])
         hh = np.fliplr(hh)
     if yflip:
         plot_range = tuple(plot_range[_] for _ in [0, 1, 3, 2])
