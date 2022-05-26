@@ -58,7 +58,7 @@ def getCursor(conn, driver=None, preamb=None, notNamed=False):
 def __inserter(dtype, filename, qIn, endEvent):
     fp = h5py.File(filename, 'w')
     i = 0
-    while (not endEvent.is_set()):
+    while True:
         try:
             tups = qIn.get(True, 0.1)
             res = numpy.core.records.array(tups, dtype=dtype)
@@ -73,8 +73,10 @@ def __inserter(dtype, filename, qIn, endEvent):
                     fp[n][-newN:] = res[n]
             i += 1
         except Empty:
-            continue
-
+            if endEvent.is_set():
+                break
+            else:
+                continue
     fp.close()
 
 
