@@ -1,6 +1,8 @@
 import sys
+from urllib.parse import quote_plus
 from lxml import etree
 from urllib.request import urlopen
+from urllib.parse import urlencode
 
 
 def resolve(objectName):
@@ -13,7 +15,8 @@ esolve the object by name using CDS
     Requires the following modules:
         suds, lxml
     """
-    url = 'http://vizier.u-strasbg.fr/cgi-bin/Sesame/-ox/?%s' % objectName
+    url = 'http://vizier.u-strasbg.fr/cgi-bin/Sesame/-ox/?%s' % quote_plus(
+        objectName)
     f = urlopen(url)
     result = f.read()
     tree = etree.fromstring(result)
