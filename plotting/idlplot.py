@@ -90,6 +90,7 @@ def smoother(arr, smooth=None, kernel=None):
 
 
 def exceptionDecorator(func):
+
     def wrapper(*args, **kwargs):
         try:
             isInteractive = plt.isinteractive()
@@ -689,6 +690,19 @@ def tvaxis(image,
     return axim
 
 
+def __parse_limit(val, x, oper=None):
+    if isinstance(val, str):
+        if val[0] == 'p':
+            perc = float(val[1:])
+            return scipy.stats.scoreatpercentile(x[np.isfinite(x)], perc)
+        else:
+            raise ValueError('unsupported limit format %s' % (val))
+    if val is not None:
+        return val
+    else:
+        return oper(x)
+
+
 @exceptionDecorator
 def tvhist2d(x,
              y,
@@ -750,6 +764,8 @@ def tvhist2d(x,
         normal arguments
         >> tvhist2d(xs,ys,xmin=0,ymin=10,ymin=-1,ymax=2,bins=[30,30])
         >> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
+        Also xmin,..ymax can be specified as percentiles as strings, i.e.
+        >> tvhist2d(xs,ys,'p1','p99','p5','p95') for 1/99/5/95% respectively
     vmin,vmax
         the ranges of intensities shown on the plot
     bins
@@ -780,14 +796,10 @@ def tvhist2d(x,
     x1 = listToArrFlat(x)
     y1 = listToArrFlat(y)
 
-    if xmin is None:
-        xmin = np.nanmin(x1)
-    if ymin is None:
-        ymin = np.nanmin(y1)
-    if xmax is None:
-        xmax = np.nanmax(x1)
-    if ymax is None:
-        ymax = np.nanmax(y1)
+    xmin = __parse_limit(xmin, x1, np.nanmin)
+    xmax = __parse_limit(xmax, x1, np.nanmax)
+    ymin = __parse_limit(ymin, y1, np.nanmin)
+    ymax = __parse_limit(ymax, y1, np.nanmax)
 
     plot_range = (xmin, xmax, ymin, ymax)
     hist_range = [[ymin, ymax], [xmin, xmax]]
