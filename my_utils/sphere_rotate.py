@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import numexpr
 from cv_coord import cv_coord
 
@@ -18,6 +18,25 @@ def fromrect(x, y, z):
     return ra, dec
 
 
+def rotation_matrix(rapol, decpol, ra0):
+    """
+    Return the rotation matrix corresponding to the pole of rapol, decpol
+    and with zero of new latitude corresponding to ra=ra0
+    This matrix need to be np.dot'ed with the input vector to get
+    forward transform
+    """
+    tmppol = cv_coord(rapol, decpol, 1, degr=True, fr='sph',
+                      to='rect')  # pole axis
+    tmpvec1 = cv_coord(ra0, 0, 1, degr=True, fr='sph', to='rect')  # x axis
+    tmpvec1 = np.array(tmpvec1)
+
+    tmpvec1[2] = (-tmppol[0] * tmpvec1[0] - tmppol[1] * tmpvec1[1]) / tmppol[2]
+    tmpvec1 /= np.sqrt((tmpvec1**2).sum())
+    tmpvec2 = np.cross(tmppol, tmpvec1)  # y axis
+    M = np.array([tmpvec1, tmpvec2, tmppol])
+    return M
+
+
 def sphere_rotate(ra, dec, rapol, decpol, ra0, revert=False):
     """ rotate ra,dec to a new spherical coordinate system where the pole is
     at rapol,decpol and the zeropoint is at ra=ra0
@@ -25,28 +44,19 @@ def sphere_rotate(ra, dec, rapol, decpol, ra0, revert=False):
     """
 
     x, y, z = torect(ra, dec)
-
-    tmppol = cv_coord(rapol, decpol, 1, degr=True, fr='sph',
-                      to='rect')  # pole axis
-    tmpvec1 = cv_coord(ra0, 0, 1, degr=True, fr='sph', to='rect')  # x axis
-    tmpvec1 = numpy.array(tmpvec1)
-
-    tmpvec1[2] = (-tmppol[0] * tmpvec1[0] - tmppol[1] * tmpvec1[1]) / tmppol[2]
-    tmpvec1 /= numpy.sqrt((tmpvec1**2).sum())
-    tmpvec2 = numpy.cross(tmppol, tmpvec1)  # y axis
+    M = rotation_matrix(rapol, decpol, ra0)
 
     if not revert:
-        Axx, Axy, Axz = tmpvec1
-        Ayx, Ayy, Ayz = tmpvec2
-        Azx, Azy, Azz = tmppol
+        Axx, Axy, Axz = M[0]
+        Ayx, Ayy, Ayz = M[1]
+        Azx, Azy, Azz = M[2]
     else:
-        Axx, Ayx, Azx = tmpvec1
-        Axy, Ayy, Azy = tmpvec2
-        Axz, Ayz, Azz = tmppol
+        Axx, Ayx, Azx = M[0]
+        Axy, Ayy, Azy = M[1]
+        Axz, Ayz, Azz = M[2]
     xnew = numexpr.evaluate('x*Axx+y*Axy+z*Axz')
     ynew = numexpr.evaluate('x*Ayx+y*Ayy+z*Ayz')
     znew = numexpr.evaluate('x*Azx+y*Azy+z*Azz')
-
     del x, y, z
     tmp = fromrect(xnew, ynew, znew)
     return (tmp[0], tmp[1])
