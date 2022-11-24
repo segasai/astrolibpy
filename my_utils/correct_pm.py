@@ -3,11 +3,26 @@ import astropy.coordinates as acoo
 import astropy.units as auni
 
 # Use v4.0 defaults
-GCPARAMS = acoo.galactocentric_frame_defaults.get_from_registry("v4.0")['parameters']
+GCPARAMS = acoo.galactocentric_frame_defaults.get_from_registry(
+    "v4.0")['parameters']
+
 
 def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
+    """Corrects the proper motion for the speed of the Sun
+    Arguments:
+        ra - RA in deg
+        dec -- Declination in deg
+        pmra -- pm in RA in mas/yr
+        pmdec -- pm in declination in mas/yr
+        dist -- distance in kpc
+        split (optional) -- integer number to split calculations in blocks
+               to avoid OOM
+    Returns:
+        (pmra,pmdec) the tuple with the proper motions corrected for the
+        Sun's motion
+    """
     if vlsr is not None:
-        print ('WARNING vlsr is ignored')
+        print('WARNING vlsr is ignored')
     if split is None:
         return correct_pm0(ra, dec, pmra, pmdec, dist)
     else:
@@ -26,12 +41,7 @@ def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
         ret = []
         for curra, curdec, curpmra, curpmdec, curdist in zip(
                 ra1, dec1, pmra1, pmdec1, dist1):
-            ret.append(
-                correct_pm0(curra,
-                            curdec,
-                            curpmra,
-                            curpmdec,
-                            curdist))
+            ret.append(correct_pm0(curra, curdec, curpmra, curpmdec, curdist))
         retpm1 = np.concatenate([_[0] for _ in ret])
         retpm2 = np.concatenate([_[1] for _ in ret])
         return retpm1, retpm2
@@ -46,7 +56,8 @@ def correct_pm0(ra, dec, pmra, pmdec, dist):
         pmdec -- pm in declination in mas/yr
         dist -- distance in kpc
     Returns:
-        (pmra,pmdec) the tuple with the proper motions corrected for the Sun's motion
+        (pmra,pmdec) the tuple with the proper motions corrected for the
+        Sun's motion
     """
     C = acoo.ICRS(ra=ra * auni.deg,
                   dec=dec * auni.deg,
@@ -77,10 +88,11 @@ def correct_vel(ra, dec, vel, vlsr=None):
         pmdec -- pm in declination in mas/yr
         dist -- distance in kpc
     Returns:
-        (pmra,pmdec) the tuple with the proper motions corrected for the Sun's motion
+        (pmra,pmdec) the tuple with the proper motions corrected for the
+        Sun's motion
     """
     if vlsr is not None:
-        print ('WARNING vlsr is ignored')
+        print('WARNING vlsr is ignored')
 
     C = acoo.ICRS(ra=ra * auni.deg,
                   dec=dec * auni.deg,
