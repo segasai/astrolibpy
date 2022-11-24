@@ -6,13 +6,16 @@ import astropy.units as auni
 GCPARAMS = acoo.galactocentric_frame_defaults.get_from_registry(
     "v4.0")['parameters']
 
+kms = auni.km / auni.s
+masyr = auni.mas / auni.year
+
 
 def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
     """Corrects the proper motion for the speed of the Sun
     Arguments:
         ra - RA in deg
         dec -- Declination in deg
-        pmra -- pm in RA in mas/yr
+        pmra -- pm in RA in mas/yr (with cosine term)
         pmdec -- pm in declination in mas/yr
         dist -- distance in kpc
         split (optional) -- integer number to split calculations in blocks
@@ -52,7 +55,7 @@ def correct_pm0(ra, dec, pmra, pmdec, dist):
     Arguments:
         ra - RA in deg
         dec -- Declination in deg
-        pmra -- pm in RA in mas/yr
+        pmra -- pm in RA in mas/yr (with a cosine term)
         pmdec -- pm in declination in mas/yr
         dist -- distance in kpc
     Returns:
@@ -61,10 +64,10 @@ def correct_pm0(ra, dec, pmra, pmdec, dist):
     """
     C = acoo.ICRS(ra=ra * auni.deg,
                   dec=dec * auni.deg,
-                  radial_velocity=0 * auni.km / auni.s,
+                  radial_velocity=0 * kms,
                   distance=dist * auni.kpc,
-                  pm_ra_cosdec=pmra * auni.mas / auni.year,
-                  pm_dec=pmdec * auni.mas / auni.year)
+                  pm_ra_cosdec=pmra * masyr,
+                  pm_dec=pmdec * masyr)
     frame = acoo.Galactocentric(**GCPARAMS)
     Cg = C.transform_to(frame)
     Cg1 = acoo.Galactocentric(x=Cg.x,
@@ -75,8 +78,8 @@ def correct_pm0(ra, dec, pmra, pmdec, dist):
                               v_z=Cg.v_z * 0,
                               **GCPARAMS)
     C1 = Cg1.transform_to(acoo.ICRS())
-    return ((C.pm_ra_cosdec - C1.pm_ra_cosdec).to_value(auni.mas / auni.year),
-            (C.pm_dec - C1.pm_dec).to_value(auni.mas / auni.year))
+    return ((C.pm_ra_cosdec - C1.pm_ra_cosdec).to_value(masyr),
+            (C.pm_dec - C1.pm_dec).to_value(masyr))
 
 
 def correct_vel(ra, dec, vel, vlsr=None):
@@ -96,10 +99,10 @@ def correct_vel(ra, dec, vel, vlsr=None):
 
     C = acoo.ICRS(ra=ra * auni.deg,
                   dec=dec * auni.deg,
-                  radial_velocity=vel * auni.km / auni.s,
+                  radial_velocity=vel * kms,
                   distance=np.ones_like(vel) * auni.kpc,
-                  pm_ra_cosdec=np.zeros_like(vel) * auni.mas / auni.year,
-                  pm_dec=np.zeros_like(vel) * auni.mas / auni.year)
+                  pm_ra_cosdec=np.zeros_like(vel) * masyr,
+                  pm_dec=np.zeros_like(vel) * masyr)
     frame = acoo.Galactocentric(**GCPARAMS)
     Cg = C.transform_to(frame)
     Cg1 = acoo.Galactocentric(x=Cg.x,
@@ -110,5 +113,4 @@ def correct_vel(ra, dec, vel, vlsr=None):
                               v_z=Cg.v_z * 0,
                               **GCPARAMS)
     C1 = Cg1.transform_to(acoo.ICRS())
-    return np.asarray(((C.radial_velocity - C1.radial_velocity) /
-                       (auni.km / auni.s)).decompose())
+    return np.asarray((C.radial_velocity - C1.radial_velocity).to_value(kms))
