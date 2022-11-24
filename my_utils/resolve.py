@@ -2,7 +2,6 @@ import sys
 from urllib.parse import quote_plus
 from lxml import etree
 from urllib.request import urlopen
-from urllib.parse import urlencode
 
 
 def resolve(objectName):
