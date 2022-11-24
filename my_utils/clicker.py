@@ -5,13 +5,14 @@ import numpy as np
 
 class MultiClicker:
     """ Class to collect the clicked points
-    You initialize it as 
+    You initialize it as
     >>> cl = MultiClicker(plt.gcf())
     Then all the clicks will be recorded in cl.points
     If you click the right-hand button, the recording will stop.
-    You can also stop recording by calling 
+    You can also stop recording by calling
     >>> cl.stop()
     """
+
     def __init__(self, fig):
         self.cid = None
         self.points = []
@@ -25,7 +26,7 @@ class MultiClicker:
                     self.stop()
                 else:
                     self.points.append((event.xdata, event.ydata))
-            except:
+            except:  # noqa
                 raise
                 print('printing failed')
 
@@ -37,16 +38,18 @@ class MultiClicker:
 
 
 class NearbyClicker:
-    """ Class to call function on clicked points
+    """
+    Class to call function on clicked points
     If you have plotted the xs,ys points
     and defined function
     def callback(i)
     Then when you create a clicker
     >>> NearbyClicker(plt.gcf(), xs, ys, callback)
-    At each click a point that is closest to the clicked location is recorded 
-    and the callback function is called with the integer number of this point
-    
+    At each click a point that is closest to the clicked location is
+    recorded and the callback function is called with the integer
+    number of this point
     """
+
     def __init__(self, fig, xs, ys, callback):
         self.cid = None
         self.xs = xs
@@ -63,7 +66,7 @@ class NearbyClicker:
                           (event.xdata, event.ydata, pos, self.xs[pos],
                            self.ys[pos]))
                     callback(pos)
-            except:
+            except:  # noqa
                 print('callback failed')
 
         self.canvas = fig.canvas
@@ -74,6 +77,9 @@ class NearbyClicker:
 
 
 def clicker(fig, xobj=None):
+    """
+    This function records the coordinates of a single click on the figure
+    """
     cid = None
 
     def onclick(event):
@@ -85,7 +91,7 @@ def clicker(fig, xobj=None):
                 if isinstance(xobj, dict):
                     xobj['x'] = event.xdata
                     xobj['y'] = event.ydata
-        except:
+        except:  # noqa
             print('printing failed')
         event.canvas.mpl_disconnect(cid)
 
@@ -93,6 +99,10 @@ def clicker(fig, xobj=None):
 
 
 def clicker_multi(fig):
+    """
+    This function records the coordinates of a multiple clicks
+    on the figure
+    """
     cid = None
     res = []
 
@@ -105,7 +115,7 @@ def clicker_multi(fig):
                 event.canvas.mpl_disconnect(cid)
             else:
                 res.append((event.xdata, event.ydata))
-        except:
+        except:  # noqa
             print('printing failed')
 
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
