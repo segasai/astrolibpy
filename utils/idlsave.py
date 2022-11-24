@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2009-2010 Sergey Koposov
+# Copyright (C) 2009-2022 Sergey Koposov
 # This file is part of astrolibpy
 #
-#	 astrolibpy is free software: you can redistribute it and/or modify
-#	 it under the terms of the GNU General Public License as published by
-#	 the Free Software Foundation, either version 3 of the License, or
-#	 (at your option) any later version.
+# astrolibpy is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#	astrolibpy is distributed in the hope that it will be useful,
-#	 but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	 GNU General Public License for more details.
+# astrolibpy is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#	 You should have received a copy of the GNU General Public License
-#	 along with astrolibpy.	 If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with astrolibpy.	 If not, see <http://www.gnu.org/licenses/>.
 """
 To work with idlsave you need first to do
 from idlsave import idlsave
@@ -80,7 +80,7 @@ class idlsave:
         > exec(idlsave.save("myday.psav",'x,y'))
         Now you can leave python. You can later restore the x,y, variables
         using idlsave.restore
-        
+
         Storage format for version 2 files is the following:
             The first 8 bytes store the offset of the pickled dictionary of
             offsets. The dictionary of offsets stores the
@@ -131,7 +131,7 @@ class idlsave:
                 version=None,
                 printVars=False):
         """Restores the variables stored in a file by idlsave.save routine
-        Example: 
+        Example:
         > exec(idlsave.restore("mydat.psav"))
         Note that you MUST use this exact form exec(idlsave.restore(...))
         Or you can restore only the variables that you want:
@@ -141,7 +141,7 @@ class idlsave:
         vid = idlsave.versionId(1)
         try:
             prefix = f.read(len(vid)).decode('ascii')
-        except:
+        except:  # noqa
             version = 1
         if version is None:
             version = idlsave.parseVersion(prefix)
