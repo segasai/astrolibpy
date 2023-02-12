@@ -109,8 +109,8 @@ def doit(tabname,
         _failure_cleanup(conn, connSupplied)
         raise
 
-    RES = _run_query(colstring,
-                     tabname,
+    RES = _run_query(tabname,
+                     colstring,
                      racol,
                      deccol,
                      rad,
@@ -134,8 +134,8 @@ def doit(tabname,
     return RES
 
 
-def _run_query(colstring,
-               tabname,
+def _run_query(tabname,
+               colstring,
                racol,
                deccol,
                rad,
