@@ -76,6 +76,37 @@ class NearbyClicker:
         self.canvas.mpl_disconnect(self.cid)
 
 
+class CallbackClicker:
+    """
+    Class to call function on clicked location
+    If you have plotted the xs,ys points
+    and defined function
+    def callback(x,y)
+    Then when you create a clicker
+    >>> NearbyClicker(plt.gcf(), callback)
+    At each click a the callback function is called with the location
+    """
+
+    def __init__(self, fig, callback):
+        self.cid = None
+
+        def onclick(event):
+            try:
+                if event.button == 3:
+                    self.stop()
+                else:
+                    print('Clicked %f %f ' % (event.xdata, event.ydata))
+                    callback(event.xdata, event.ydata)
+            except:  # noqa
+                print('callback failed')
+
+        self.canvas = fig.canvas
+        self.cid = self.canvas.mpl_connect('button_press_event', onclick)
+
+    def stop(self):
+        self.canvas.mpl_disconnect(self.cid)
+
+
 def clicker(fig, xobj=None):
     """
     This function records the coordinates of a single click on the figure
