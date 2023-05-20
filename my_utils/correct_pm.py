@@ -27,7 +27,7 @@ def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
     if vlsr is not None:
         print('WARNING vlsr is ignored')
     if split is None:
-        return correct_pm0(ra, dec, pmra, pmdec, dist)
+        return _correct_pm0(ra, dec, pmra, pmdec, dist)
     else:
         N = len(ra)
         n1 = N // split
@@ -44,13 +44,13 @@ def correct_pm(ra, dec, pmra, pmdec, dist, split=None, vlsr=None):
         ret = []
         for curra, curdec, curpmra, curpmdec, curdist in zip(
                 ra1, dec1, pmra1, pmdec1, dist1):
-            ret.append(correct_pm0(curra, curdec, curpmra, curpmdec, curdist))
+            ret.append(_correct_pm0(curra, curdec, curpmra, curpmdec, curdist))
         retpm1 = np.concatenate([_[0] for _ in ret])
         retpm2 = np.concatenate([_[1] for _ in ret])
         return retpm1, retpm2
 
 
-def correct_pm0(ra, dec, pmra, pmdec, dist):
+def _correct_pm0(ra, dec, pmra, pmdec, dist):
     """Corrects the proper motion for the speed of the Sun
     Arguments:
         ra - RA in deg
@@ -82,7 +82,34 @@ def correct_pm0(ra, dec, pmra, pmdec, dist):
             (C.pm_dec - C1.pm_dec).to_value(masyr))
 
 
-def correct_vel(ra, dec, vel, vlsr=None):
+def correct_vel(ra, dec, vel, vlsr=None, split=None):
+    """Corrects the proper motion for the speed of the Sun
+    Arguments:
+        ra - RA in deg
+        dec -- Declination in deg
+        vel -- heliocentric rv
+    Returns:
+        radial velocity corrected for solar reflex motion
+    """
+    if vlsr is not None:
+        print('WARNING vlsr is ignored')
+    if split is None:
+        return _correct_vel0(ra, dec, vel)
+    else:
+        N = len(ra)
+        n1 = N // split
+
+        ra1 = np.array_split(ra, n1)
+        dec1 = np.array_split(dec, n1)
+        vel1 = np.array_split(vel, n1)
+        ret = []
+        for curra, curdec, curvel in zip(ra1, dec1, vel1):
+            ret.append(_correct_vel0(curra, curdec, curvel))
+        ret = np.concatenate(ret)
+        return ret
+
+
+def _correct_vel0(ra, dec, vel, vlsr=None):
     """Corrects the proper motion for the speed of the Sun
     Arguments:
         ra - RA in deg
