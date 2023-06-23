@@ -7,9 +7,14 @@ def doit(tabname,
          dec,
          colstring,
          radeccols=('ra', 'dec'),
+         pmradeccols=('pmra', 'pmdec'),
+         epoch=None,
          rad=1.,
          extra=None,
+         epochcol=None,
+         max_pm_offset=30,
          yourradeccols=('ra', 'dec'),
+         yourepochcol='epoch',
          tab_alias='tt',
          host=None,
          port=None,
@@ -34,11 +39,20 @@ def doit(tabname,
         The numpy array with declinations
     colstring: string
         The comma sepated list of columns that you want to retrieve
+    epoch: numpy (optional)
+        If specified we try to use proper motions for the xmatch
     radeccols: tuple (optional)
         The tuple of two strings with the name of ra,dec columns in
         the remote table. Default ('ra','dec')
+    pmradeccols: tuple (optional)
+        The tuple of proper motion columns in the table
+    epochcol: str
+        The name of the column with epoch
     rad: float (optional)
         The cross-match radius in arcseconds (default 1)
+    max_pm_offset: float (optional)
+        The maximum offset in arcsec allowed. If proper motions
+        are used
     extra: string allows you to specify and additional SQL Where condition
     tab_alias: string
         The alias for the table that you are crossmatching against, so you can
@@ -65,20 +79,7 @@ def doit(tabname,
         extra = 'true'
     your_ra, your_dec = yourradeccols
     preamb = '' or preamb
-    RES = sqlutilpy.local_join(
-        str.format(
-            """
-            select {colstring} from
-                  ( select * from mytable order by
-            q3c_ang2ipix({your_ra},{your_dec})
-                  ) as m
-            left join lateral (select * from {tabname} as s where
-            q3c_join(m.{your_ra}, m.{your_dec},
-            s.{racol}, s.{deccol}, {rad}/3600.) and {extra}
-                order by q3c_dist(m.{your_ra}, m.{your_dec},
-                s.{racol},s.{deccol}) asc limit 1) as {tab_alias}
-            on true order by xid """, **locals()),
-        'mytable', (ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'),
+    kw = dict(
         preamb=('set enable_seqscan to off;' + 'set enable_mergejoin to off;' +
                 'set enable_hashjoin to off;' + (preamb or '')),
         host=host,
@@ -88,6 +89,53 @@ def doit(tabname,
         password=password,
         asDict=asDict,
         conn=conn)
+
+    if epoch is None:
+        RES = sqlutilpy.local_join(
+            str.format(
+                """
+            select {colstring} from
+                  ( select * from mytable order by
+            q3c_ang2ipix({your_ra},{your_dec})
+                  ) as m
+            left join lateral (select * from {tabname} as s where
+            q3c_join(m.{your_ra}, m.{your_dec},
+            s.{racol}, s.{deccol}, {rad}/3600.) and {extra}
+                order by q3c_dist(m.{your_ra}, m.{your_dec},
+                s.{racol},s.{deccol}) asc limit 1) as {tab_alias}
+            on true order by xid """, **locals()), 'mytable',
+            (ra, dec, np.arange(len(ra))), (your_ra, your_dec, 'xid'), **kw)
+    else:
+        try:
+            nep = len(epoch)
+        except TypeError:
+            epoch = np.zeros(len(ra)) + epoch
+        else:
+            if nep != len(ra):
+                raise Exception(
+                    'length of the epoch must be equal to length of positions')
+        maxap = max_pm_offset + rad
+        pmracol, pmdeccol = pmradeccols
+        dist_str = f'''q3c_dist_pm(
+                s.{racol},s.{deccol}, s.{pmracol}, s.{pmdeccol}, 1, 
+                s.{epochcol}, m.{your_ra}, m.{your_dec}, 
+                m.{yourepochcol})'''
+        RES = sqlutilpy.local_join(
+            str.format(
+                """
+            select {colstring} from
+                  ( select * from mytable order by
+            q3c_ang2ipix({your_ra},{your_dec})
+                  ) as m
+            left join lateral (select * from {tabname} as s where
+            q3c_join(m.{your_ra}, m.{your_dec},
+            s.{racol}, s.{deccol}, {maxap}/3600.) and {extra}
+                and {dist_str}<{rad}/3600.
+                order by {dist_str} asc limit 1) as {tab_alias}
+            on true order by xid """,
+                **locals()), 'mytable', (ra, dec, np.arange(len(ra)), epoch),
+            (your_ra, your_dec, 'xid', yourepochcol), **kw)
+
     return RES
 
 
