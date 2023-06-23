@@ -952,7 +952,7 @@ def tvhist2d(x,
     if zlog:
         norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
     elif zsqrt:
-        norm = matplotlib.colors.SqrtNorm(vmin=vmin, vmax=vmax)
+        norm = matplotlib.colors.PowerNorm(0.5,vmin=vmin, vmax=vmax)
     else:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
