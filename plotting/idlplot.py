@@ -768,6 +768,8 @@ def tvhist2d(x,
         >> tvhist2d(xs,ys,'p1','p99','p5','p95') for 1/99/5/95% respectively
     vmin,vmax
         the ranges of intensities shown on the plot
+    vminfrac, vmaxfrac
+        The percenitiles for vmin,vmax (i.e. 0,1 correspond to 0%,100%)
     bins
         the list of two integers specifying how many bins in x,y you want
     smooth
