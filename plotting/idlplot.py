@@ -784,13 +784,19 @@ def tvhist2d(x,
     weight_norm
         if True the value in each bin is mean weight of points within
         the bin
+    weights
+        The array of weights for weighted histogram or for computing a
+        statatistic
     bar
         boolean parameter for switching on/off the plotting of the color-bar
     bar_pad, bar_fraction
         padding and fraction for bar placement
     bar_ticks_locator
         locator for the tickmarks on the colorbar
-
+    statistic 
+        The function or statistic applied to weights. It can be 'mean',
+        'median' or arbitrary function.
+    
     """
 
     x1 = listToArrFlat(x)
@@ -952,7 +958,7 @@ def tvhist2d(x,
     if zlog:
         norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
     elif zsqrt:
-        norm = matplotlib.colors.PowerNorm(0.5,vmin=vmin, vmax=vmax)
+        norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
     else:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
