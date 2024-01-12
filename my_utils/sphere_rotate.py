@@ -1,6 +1,5 @@
 import numpy as np
 import numexpr
-from cv_coord import cv_coord
 
 
 def torect(ra, dec):
@@ -25,9 +24,8 @@ def rotation_matrix(rapol, decpol, ra0):
     This matrix need to be np.dot'ed with the input vector to get
     forward transform
     """
-    tmppol = cv_coord(rapol, decpol, 1, degr=True, fr='sph',
-                      to='rect')  # pole axis
-    tmpvec1 = cv_coord(ra0, 0, 1, degr=True, fr='sph', to='rect')  # x axis
+    tmppol = np.array(torect(rapol, decpol))  # pole axis
+    tmpvec1 = np.array(torect(ra0, 0))  # x axis
     tmpvec1 = np.array(tmpvec1)
 
     tmpvec1[2] = (-tmppol[0] * tmpvec1[0] - tmppol[1] * tmpvec1[1]) / tmppol[2]
