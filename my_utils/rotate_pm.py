@@ -34,7 +34,9 @@ def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
     pmphi1, pmphi2 in the new coordinate system
     """
 
-    ra, dec, pmra, pmdec = [np.atleast_1d(_) for _ in [ra, dec, pmra, pmdec]]
+    ra, dec, pmra, pmdec = [
+        np.asarray(np.atleast_1d(_)) for _ in [ra, dec, pmra, pmdec]
+    ]
     M = sphere_rotate.rotation_matrix(rapol, decpol, ra0)
     if revert:
         M = M.T
