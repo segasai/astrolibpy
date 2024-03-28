@@ -589,6 +589,7 @@ def tvaxis(image,
            bar_label='',
            bar_fraction=0.05,
            zlog=False,
+           zsqrt=False,
            smooth=None,
            vmaxfrac=None,
            xflip=False,
@@ -655,6 +656,8 @@ def tvaxis(image,
 
     if zlog:
         norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
+    elif zsqrt:
+        norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
     else:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
     if xflip:
