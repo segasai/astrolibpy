@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010 Sergey Koposov
+# Copyright (C) 2009-2024 Sergey Koposov
 # This file is part of astrolibpy
 #
 # astrolibpy is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ import scipy
 import scipy.stats
 import scipy.ndimage.filters
 import scipy.stats
-from matplotlib.pyplot import draw_if_interactive
 import matplotlib
 import math
 import copy
@@ -64,10 +63,8 @@ def _get_ranges(x, y, xr, yr, xrange, yrange, pad_range):
         raise ValueError('xr and xrange are both specified')
     if yr is not None and yrange is not None:
         raise ValueError('yr and yrange are both specified')
-    if xr is not None:
-        xrange = xr
-    if yr is not None:
-        yrange = yr
+    xrange = xrange or xr
+    yrange = yrange or yr
 
     if xrange is None and yrange is None:
         ind = np.isfinite(x)
@@ -149,23 +146,13 @@ def exceptionDecorator(func):
     and then return back to whatever previous mode was
     (irrespective if there was an exception or not)
     """
+
     def wrapper(*args, **kwargs):
-        try:
-            isInteractive = plt.isinteractive()
-
-            # switch to non-interactive mode
-            # matplotlib.interactive(False)
-
+        with plt.ioff():
             ret = func(*args, **kwargs)
-
-            matplotlib.interactive(isInteractive)
-
-            draw_if_interactive()
-            return ret
-        except Exception as exc:  # noqa
-            # switch back
-            matplotlib.interactive(isInteractive)
-            raise
+        if plt.isinteractive():
+            plt.gcf().show()
+        return ret
 
     wrapper.__doc__ = func.__doc__
 
