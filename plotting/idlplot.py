@@ -170,7 +170,7 @@ def exceptionDecorator(func):
 def __findKnuth(x, minv, maxv):
     """
     Implement Knuth method for histogram bin selection
-        
+
     """
     N = ((x >= minv) & (x <= maxv)).sum()
 
@@ -398,7 +398,7 @@ def plot(arg1,
     """ Plot your data in an IDL-like way with a lot of options in one
     command.
     Example:
-    
+
     >> plot(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",
         color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
     """
@@ -462,8 +462,8 @@ def plot(arg1,
 
 
 @exceptionDecorator
-def plot_scatter(arg1,
-                 arg2,
+def plot_scatter(x,
+                 y,
                  c=None,
                  s=None,
                  xrange=None,
@@ -481,27 +481,37 @@ def plot_scatter(arg1,
                  yr=None,
                  title=None,
                  label=None,
-                 nodata=False,
                  marker='o',
-                 linestyle=None,
                  markersize=None,
                  xaxis_formatter=None,
                  yaxis_formatter=None,
                  autoscalex=False,
                  autoscaley=False,
                  axis=None,
+                 bar=False,
+                 bar_label=None,
+                 bar_fraction=0.05,
                  pad_range=0,
                  **kw):
-    """ Plot your data in an IDL-like way with a lot of options in one
-    command.
+    """
+    Plot your data in an IDL-like way with a lot of options in one
+    command. This particular command is a wrapper around matplotlib.scatter
+    Thus plot scatter plot where the colour and size of the points is
+    determined by an array.
     Example:
-    
-    >> plot_scatter(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",
+
+    >> plot_scatter(x, y, c=z, xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",
         color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
+
+    Arguments:
+    x, y: arrays to be plotted
+    c: array of colours (can be None)
+    s: array of sizes (can be None)
     """
 
-    x = listToArrFlat(arg1)
-    y = listToArrFlat(arg2)
+    x = listToArrFlat(x)
+    y = listToArrFlat(y)
+
     if c is not None:
         c = listToArrFlat(c)
     if s is not None:
@@ -543,21 +553,28 @@ def plot_scatter(arg1,
 
     if title is not None:
         plt.title(title)
-    if not nodata:
-        axis.scatter(x,
-                     y,
-                     c=c,
-                     s=s,
-                     marker=marker,
-                     label=label,
-                     color=color,
-                     **kw)
+    scat = axis.scatter(x,
+                        y,
+                        c=c,
+                        s=s,
+                        marker=marker,
+                        label=label,
+                        color=color,
+                        **kw)
+    if bar:
+        if int(''.join((matplotlib.__version__).split('.')[:2])) >= 11:
+            kw = {'use_gridspec': True}
+        else:
+            kw = {}
+        cb = plt.colorbar(fraction=bar_fraction, mappable=scat, **kw)
+        if bar_label is not None:
+            cb.set_label(bar_label)
 
 
 def oplot(x, y=None, **kw):
     """
     Overplot your data (just a simple wrapper around plot)
-    
+
     Example:
     >> oplot(x,2+y/10.,ps=3,color='blue')
     """
@@ -586,11 +603,11 @@ def ploterror(x,
               **kw):
     """
     Plot the data with error-bars
-    
+
     Example:
     >> ploterror(x,y,erry) # plot only Y error-bars
     >> ploterror(x,y,errx,erry) # plot data with X and Y error-bars
-    
+
     Keyword parameters:
     ------------------
     capsize
@@ -670,7 +687,7 @@ def tvaxis(image,
            position=None,
            noerase=False,
            bar=False,
-           bar_label='',
+           bar_label=None,
            bar_fraction=0.05,
            zlog=False,
            zsqrt=False,
@@ -685,7 +702,7 @@ def tvaxis(image,
     Display the 2D image with proper axes (similar to plt.imshow)
     Example:
     >> tvaxis(im,-20,10,-40,50)
-    
+
     Keyword parameters:
     ------------------
     xmin,xmax,ymin,ymax
@@ -699,7 +716,7 @@ def tvaxis(image,
         histogram
     bar
         boolean parameter for switching on/off the plotting of the color-bar
-    
+
     """
 
     if not noerase:
@@ -772,7 +789,8 @@ def tvaxis(image,
         else:
             kw = {}
         cb = plt.colorbar(fraction=bar_fraction, **kw)
-        cb.set_label(bar_label)
+        if bar_label is not None:
+            cb.set_label(bar_label)
 
     return axim
 
@@ -840,9 +858,9 @@ def tvhist2d(x,
     """ Plot the 2D histogram of the data
     Example:
     >> tvhist2d(xs,ys,bins=[30,30])
-    
+
     >> tvhist2d(xs,ys,0,10,-1,2,bins=[30,30])
-    
+
     Keyword arguments:
     -----------------
     xmin,xmax,ymin,ymax
@@ -882,10 +900,10 @@ def tvhist2d(x,
         padding and fraction for bar placement
     bar_ticks_locator
         locator for the tickmarks on the colorbar
-    statistic 
+    statistic
         The function or statistic applied to weights. It can be 'mean',
         'median' or arbitrary function.
-    
+
     """
 
     x1 = listToArrFlat(x)
@@ -1078,7 +1096,8 @@ def tvhist2d(x,
                           format=bar_formatter,
                           ticks=bar_ticks_locator,
                           **kw)
-        cb.set_label(bar_label)
+        if bar_label is not None:
+            cb.set_label(bar_label)
     if xlog:
         plt.gca().set_xscale('log')
     if ylog:
@@ -1141,10 +1160,10 @@ def contour(z,
     In that case  x,y can be either 2D arrays with the same shape as z, or
     1D arrays with the
     appropriate dimensions.
-    
+
     Keyword arguments:
     -----------------
-    
+
     xr, xrange, yr, yrange
         plot ranges for x and y
     fill
