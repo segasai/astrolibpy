@@ -143,7 +143,12 @@ def smoother(arr, smooth=None, kernel=None):
 
 
 def exceptionDecorator(func):
-
+    """
+    The purpose of this decorator is to
+    do the plotting in the non-interactive mode
+    and then return back to whatever previous mode was
+    (irrespective if there was an exception or not)
+    """
     def wrapper(*args, **kwargs):
         try:
             isInteractive = plt.isinteractive()
