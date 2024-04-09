@@ -38,7 +38,7 @@ def listToArrFlat(x):
     return np.asarray(x).flatten()
 
 
-def get_marker(ps, linestyle):
+def _get_marker(ps, linestyle):
     """
     Wrapper for point markers which understand idl-like ps options
     (e.g. ps=3 for the point, ps=4 for the diamond)
@@ -57,6 +57,59 @@ def get_marker(ps, linestyle):
             else:
                 outlinestyle = '-'
     return (marker, outlinestyle)
+
+
+def _get_ranges(x, y, xr, yr, xrange, yrange, pad_range):
+    if xr is not None and xrange is not None:
+        raise ValueError('xr and xrange are both specified')
+    if yr is not None and yrange is not None:
+        raise ValueError('yr and yrange are both specified')
+    if xr is not None:
+        xrange = xr
+    if yr is not None:
+        yrange = yr
+
+    if xrange is None and yrange is None:
+        ind = np.isfinite(x)
+        if not ind.any():
+            xrange = [0, 1]
+        else:
+            xrange = [np.min(x[ind]), np.max(x[ind])]
+        ind = np.isfinite(y)
+        if not ind.any():
+            yrange = [0, 1]
+        else:
+            yrange = [np.min(y[ind]), np.max(y[ind])]
+        assert (pad_range >= 0)
+        xrange = [
+            xrange[0] - pad_range * (xrange[1] - xrange[0]),
+            xrange[1] + pad_range * (xrange[1] - xrange[0])
+        ]
+        yrange = [
+            yrange[0] - pad_range * (yrange[1] - yrange[0]),
+            yrange[1] + pad_range * (yrange[1] - yrange[0])
+        ]
+
+        del ind
+    elif xrange is None and yrange is not None:
+        ind = (y < max(yrange[1], yrange[0])) & (y > min(
+            yrange[0], yrange[1])) & np.isfinite(x)
+        if ind.any():
+            xrange = [np.min(x[ind]), np.max(x[ind])]
+        else:
+            xrange = [np.min(x), np.max(x)]
+        del ind
+    elif xrange is not None and yrange is None:
+        ind = (x < np.maximum(xrange[1], xrange[0])) & (x > np.minimum(
+            xrange[0], xrange[1])) & np.isfinite(y)
+        if ind.any():
+            yrange = [np.min(y[ind]), np.max(y[ind])]
+        else:
+            yrange = [np.min(y), np.max(y)]
+        del ind
+    if len(yrange) != 2 or len(xrange) != 2:
+        raise ValueError("Wrong xrange or yrange")
+    return xrange, yrange
 
 
 def filter_epa(im, kernsize):
@@ -367,52 +420,9 @@ def plot(arg1,
     if axis is None:
         axis = plt.gca()
 
-    marker, linestyle = get_marker(ps, linestyle)
-    if xr is not None:
-        xrange = xr
-    if yr is not None:
-        yrange = yr
+    marker, linestyle = _get_marker(ps, linestyle)
+    xrange, yrange = _get_ranges(x, y, xr, yr, xrange, yrange, pad_range)
 
-    if xrange is None and yrange is None:
-        ind = np.isfinite(x)
-        if not ind.any():
-            xrange = [0, 1]
-        else:
-            xrange = [np.min(x[ind]), np.max(x[ind])]
-        ind = np.isfinite(y)
-        if not ind.any():
-            yrange = [0, 1]
-        else:
-            yrange = [np.min(y[ind]), np.max(y[ind])]
-        assert (pad_range >= 0)
-        xrange = [
-            xrange[0] - pad_range * (xrange[1] - xrange[0]),
-            xrange[1] + pad_range * (xrange[1] - xrange[0])
-        ]
-        yrange = [
-            yrange[0] - pad_range * (yrange[1] - yrange[0]),
-            yrange[1] + pad_range * (yrange[1] - yrange[0])
-        ]
-
-        del ind
-    elif xrange is None and yrange is not None:
-        ind = (y < max(yrange[1], yrange[0])) & (y > min(
-            yrange[0], yrange[1])) & np.isfinite(x)
-        if ind.any():
-            xrange = [np.min(x[ind]), np.max(x[ind])]
-        else:
-            xrange = [np.min(x), np.max(x)]
-        del ind
-    elif xrange is not None and yrange is None:
-        ind = (x < np.maximum(xrange[1], xrange[0])) & (x > np.minimum(
-            xrange[0], xrange[1])) & np.isfinite(y)
-        if ind.any():
-            yrange = [np.min(y[ind]), np.max(y[ind])]
-        else:
-            yrange = [np.min(y), np.max(y)]
-        del ind
-    if len(yrange) != 2 or len(xrange) != 2:
-        raise ValueError("Wrong xrange or yrange")
     if not overplot:
         axis.minorticks_on()
     if xtitle is not None:
@@ -449,6 +459,99 @@ def plot(arg1,
                   markeredgecolor=markeredgecolor,
                   markeredgewidth=markeredgewidth,
                   **kw)
+
+
+@exceptionDecorator
+def plot_scatter(arg1,
+                 arg2,
+                 c=None,
+                 s=None,
+                 xrange=None,
+                 yrange=None,
+                 thick=None,
+                 xtitle=None,
+                 ytitle=None,
+                 color=None,
+                 noerase=False,
+                 overplot=False,
+                 position=None,
+                 ylog=False,
+                 xlog=False,
+                 xr=None,
+                 yr=None,
+                 title=None,
+                 label=None,
+                 nodata=False,
+                 marker='o',
+                 linestyle=None,
+                 markersize=None,
+                 xaxis_formatter=None,
+                 yaxis_formatter=None,
+                 autoscalex=False,
+                 autoscaley=False,
+                 axis=None,
+                 pad_range=0,
+                 **kw):
+    """ Plot your data in an IDL-like way with a lot of options in one
+    command.
+    Example:
+    
+    >> plot_scatter(x,y,xrange=[0,39],yrange=[-1,10],ps=4,xtitle="X",
+        color='black',position=[0.1,0.1,0.9,0.9], xlog=True)
+    """
+
+    x = listToArrFlat(arg1)
+    y = listToArrFlat(arg2)
+    if c is not None:
+        c = listToArrFlat(c)
+    if s is not None:
+        s = listToArrFlat(s)
+
+    if not noerase:
+        plt.gcf().clf()
+    if position is not None and axis is None:
+        mypos = position[:]
+        mypos[2] = position[2] - position[0]
+        mypos[3] = position[3] - position[1]
+        plt.axes(mypos)
+    if axis is None:
+        axis = plt.gca()
+
+    xrange, yrange = _get_ranges(x, y, xr, yr, xrange, yrange, pad_range)
+    if not overplot:
+        axis.minorticks_on()
+    if xtitle is not None:
+        axis.set_xlabel(xtitle)
+    if ytitle is not None:
+        axis.set_ylabel(ytitle)
+
+    axis.set_autoscalex_on(autoscalex)
+    axis.set_autoscaley_on(autoscaley)
+    if not overplot:
+        axis.set_xlim(xrange)
+        axis.set_ylim(yrange)
+
+    if xlog:
+        axis.set_xscale('log', subs=[2, 3, 4, 5, 6, 7, 8, 9])
+    if ylog:
+        axis.set_yscale('log', subs=[2, 3, 4, 5, 6, 7, 8, 9])
+
+    if xaxis_formatter is not None:
+        axis.xaxis.set_major_formatter(xaxis_formatter)
+    if yaxis_formatter is not None:
+        axis.yaxis.set_major_formatter(yaxis_formatter)
+
+    if title is not None:
+        plt.title(title)
+    if not nodata:
+        axis.scatter(x,
+                     y,
+                     c=c,
+                     s=s,
+                     marker=marker,
+                     label=label,
+                     color=color,
+                     **kw)
 
 
 def oplot(x, y=None, **kw):
@@ -515,7 +618,7 @@ def ploterror(x,
     if markerfacecolor is not None:
         kw0['markerfacecolor'] = markerfacecolor
     plot(x, y, color=color, ps=ps, overplot=overplot, noerase=noerase, **kw0)
-    (marker, outlinestyle) = get_marker(ps, None)
+    (marker, outlinestyle) = _get_marker(ps, None)
     kw1 = {
         'ecolor': ecolor,
         'marker': marker,

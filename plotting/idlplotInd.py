@@ -6,7 +6,7 @@ This module is a set wrappers around idlplot designed to make
 the plots of subsets of the data: e.g.
 plot(x,y,ind=ind)
 instead of plot(x[ind],y[ind])
-  
+ 
 """
 
 
@@ -49,6 +49,20 @@ def plot(a, b=None, **kw):
             idlplot.plot(a[ind], b[ind], **kw)
         else:
             idlplot.plot(a[ind], None, **kw)
+
+
+def plot_scatter(a, b, s=None, c=None, **kw):
+    ind = kw.get('ind')
+
+    if ind is None:
+        idlplot.plot_scatter(a, b, s=s, c=c, **kw)
+    else:
+        del kw['ind']
+        if c is not None:
+            c = c[ind]
+        if s is not None:
+            s = s[ind]
+        idlplot.plot_scatter(a[ind], b[ind], s=s, c=c, **kw)
 
 
 def oplot(a, b=None, **kw):
@@ -104,6 +118,7 @@ def scatter(a, b, c=None, s=None, *args, **kw):
 
 tvhist2d.__doc__ = idlplot.tvhist2d.__doc__
 plot.__doc__ = idlplot.plot.__doc__
+plot_scatter.__doc__ = idlplot.plot_scatter.__doc__
 oplot.__doc__ = idlplot.oplot.__doc__
 ploterror.__doc__ = idlplot.ploterror.__doc__
 plothist.__doc__ = idlplot.plothist.__doc__
