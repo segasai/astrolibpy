@@ -341,7 +341,6 @@ def plot(arg1,
          markeredgewidth=None,
          axis=None,
          pad_range=0,
-         transpose=False,
          **kw):
     """ Plot your data in an IDL-like way with a lot of options in one
     command.
@@ -423,8 +422,6 @@ def plot(arg1,
 
     axis.set_autoscalex_on(autoscalex)
     axis.set_autoscaley_on(autoscaley)
-    if transpose:
-        xrange, yrange = yrange, xrange
     if not overplot:
         axis.set_xlim(xrange)
         axis.set_ylim(yrange)
@@ -441,33 +438,17 @@ def plot(arg1,
     if title is not None:
         plt.title(title)
     if not nodata:
-        if transpose:
-            x, y = y, x
-        if markersize is None:
-            axis.plot(x,
-                      y,
-                      marker=marker,
-                      linestyle=linestyle,
-                      linewidth=thick,
-                      color=color,
-                      label=label,
-                      markerfacecolor=markerfacecolor,
-                      markeredgecolor=markeredgecolor,
-                      markeredgewidth=markeredgewidth,
-                      **kw)
-        else:
-            axis.plot(x,
-                      y,
-                      marker=marker,
-                      linestyle=linestyle,
-                      linewidth=thick,
-                      color=color,
-                      label=label,
-                      markersize=markersize,
-                      markerfacecolor=markerfacecolor,
-                      markeredgecolor=markeredgecolor,
-                      markeredgewidth=markeredgewidth,
-                      **kw)
+        axis.plot(x,
+                  y,
+                  marker=marker,
+                  linestyle=linestyle,
+                  linewidth=thick,
+                  color=color,
+                  label=label,
+                  markerfacecolor=markerfacecolor,
+                  markeredgecolor=markeredgecolor,
+                  markeredgewidth=markeredgewidth,
+                  **kw)
 
 
 def oplot(x, y=None, **kw):
