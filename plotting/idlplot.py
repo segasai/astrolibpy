@@ -30,10 +30,14 @@ plt.ion()
 
 
 def listToArr(x):
+    if isinstance(x, np.ma.MaskedArray):
+        x = x.filled(np.nan)
     return np.asarray(x)
 
 
 def listToArrFlat(x):
+    if isinstance(x, np.ma.MaskedArray):
+        x = x.filled(np.nan)
     return np.asarray(x).flatten()
 
 
@@ -615,8 +619,8 @@ def ploterror(x,
     else:
         erry = listToArr(err1)
         errx = listToArr(err0)
-    x = listToArr(x)
-    y = listToArr(y)
+    x = listToArrFlat(x)
+    y = listToArrFlat(y)
     kw0 = kw.copy()
     if kw0.get('yr') is None:
         kw0['yr'] = [np.nanmin(y - erry), np.nanmax(y + erry)]
