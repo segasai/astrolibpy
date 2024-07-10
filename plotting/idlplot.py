@@ -167,7 +167,7 @@ def __findKnuth(x, minv, maxv):
     N = ((x >= minv) & (x <= maxv)).sum()
 
     def funcer(M):
-        hh, loc = scipy.histogram(x, bins=M, range=[minv, maxv])
+        hh, loc = np.histogram(x, bins=M, range=[minv, maxv])
         return np.log(M) + 1. / N * (scipy.special.gammaln(M / 2.) -
                                      M * scipy.special.gammaln(0.5) -
                                      scipy.special.gammaln(N + M / 2.) +
@@ -923,18 +923,17 @@ def tvhist2d(x,
     binsRev = bins[::-1]
     if statistic is None:
         if not quick:
-            hh, yedges, xedges = scipy.histogram2d(y1,
-                                                   x1,
-                                                   range=hist_range_ordered,
-                                                   bins=binsRev,
-                                                   weights=weights)
+            hh, yedges, xedges = np.histogram2d(y1,
+                                                x1,
+                                                range=hist_range_ordered,
+                                                bins=binsRev,
+                                                weights=weights)
             if weight_norm:
-                hh1, yedges, xedges = scipy.histogram2d(
-                    y1,
-                    x1,
-                    range=hist_range_ordered,
-                    bins=binsRev,
-                    weights=None)
+                hh1, yedges, xedges = np.histogram2d(y1,
+                                                     x1,
+                                                     range=hist_range_ordered,
+                                                     bins=binsRev,
+                                                     weights=None)
                 hh = hh * 1. / hh1
 
         else:
