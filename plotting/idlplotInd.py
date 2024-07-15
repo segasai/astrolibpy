@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 import idlplot
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,9 +59,9 @@ def plot_scatter(a, b, s=None, c=None, **kw):
         idlplot.plot_scatter(a, b, s=s, c=c, **kw)
     else:
         del kw['ind']
-        if c is not None:
+        if c is not None and isinstance(c, Iterable):
             c = c[ind]
-        if s is not None:
+        if s is not None and isinstance(s, Iterable):
             s = s[ind]
         idlplot.plot_scatter(a[ind], b[ind], s=s, c=c, **kw)
 
