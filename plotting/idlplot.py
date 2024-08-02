@@ -740,24 +740,9 @@ def tvaxis(image,
         raise ValueError('Wrong dimensions of the input array')
     im = smoother(im, smooth=smooth, kernel=kernel)
 
-    if vminfrac is not None and vmin is None:
-        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
-                                             100 * vminfrac)
-    if vmaxfrac is not None and vmax is None:
-        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
-                                             100 * vmaxfrac)
-    if vmin is not None and vmax is not None and vmin >= vmax:
-        warnings.warn("vmin is >= vmax... Resetting their values",
-                      RuntimeWarning)
-        vmin = None
-        vmax = None
+    vmin, vmax, norm = _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog,
+                                         zsqrt, im)
 
-    if zlog:
-        norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
-    elif zsqrt:
-        norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
-    else:
-        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
     if xflip:
         im = np.fliplr(im)
     if yflip:
@@ -790,6 +775,28 @@ def tvaxis(image,
             cb.set_label(bar_label)
 
     return axim
+
+
+def _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog, zsqrt, im):
+    if vminfrac is not None and vmin is None:
+        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
+                                             100 * vminfrac)
+    if vmaxfrac is not None and vmax is None:
+        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
+                                             100 * vmaxfrac)
+    if vmin is not None and vmax is not None and vmin >= vmax:
+        warnings.warn("vmin is >= vmax... Resetting their values",
+                      RuntimeWarning)
+        vmin = None
+        vmax = None
+
+    if zlog:
+        norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
+    elif zsqrt:
+        norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
+    else:
+        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+    return vmin, vmax, norm
 
 
 def __parse_limit(val, x, oper=None):
@@ -1046,24 +1053,8 @@ def tvhist2d(x,
     if yaxis_formatter is not None:
         axis.yaxis.set_major_formatter(yaxis_formatter)
 
-    if vminfrac is not None and vmin is None:
-        vmin = scipy.stats.scoreatpercentile(hh[np.isfinite(hh)],
-                                             100 * vminfrac)
-    if vmaxfrac is not None and vmax is None:
-        vmax = scipy.stats.scoreatpercentile(hh[np.isfinite(hh)],
-                                             100 * vmaxfrac)
-    if vmin is not None and vmax is not None and vmin >= vmax:
-        warnings.warn("vmin is >= vmax... Resetting their values",
-                      RuntimeWarning)
-        vmin = None
-        vmax = None
-
-    if zlog:
-        norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
-    elif zsqrt:
-        norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
-    else:
-        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+    vmin, vmax, norm = _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog,
+                                         zsqrt, hh)
 
     axim = plt.imshow(hh,
                       extent=plot_range,
