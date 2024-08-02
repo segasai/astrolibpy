@@ -1082,16 +1082,12 @@ def tvhist2d(x,
     if bar:
         if bar_formatter is None:
             bar_formatter = matplotlib.ticker.ScalarFormatter()
-        if int(''.join((matplotlib.__version__).split('.')[:2])) >= 11:
-            kw = {'use_gridspec': True}
-        else:
-            kw = {}
         cb = plt.colorbar(fraction=bar_fraction,
                           pad=bar_pad,
                           ax=axis,
                           format=bar_formatter,
                           ticks=bar_ticks_locator,
-                          **kw)
+                          use_grid_spec=True)
         if bar_label is not None:
             cb.set_label(bar_label)
     if xlog:
