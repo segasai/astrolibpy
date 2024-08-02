@@ -791,6 +791,15 @@ def _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog, zsqrt, im):
         vmax = None
 
     if zlog:
+        # here comes a special case
+        # if vmin is None and actual minimum is X then it is undistinguishable from
+        # 0 in log scale, so we set it to 0.9*X
+        if vmin is None:
+            try:
+                vmin = np.min(im[im > 0])
+                vmin = 0.9 * vmin
+            except ValueError:
+                pass
         norm = matplotlib.colors.LogNorm(vmin=vmin, vmax=vmax)
     elif zsqrt:
         norm = matplotlib.colors.PowerNorm(0.5, vmin=vmin, vmax=vmax)
