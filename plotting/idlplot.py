@@ -1087,7 +1087,7 @@ def tvhist2d(x,
                           ax=axis,
                           format=bar_formatter,
                           ticks=bar_ticks_locator,
-                          use_grid_spec=True)
+                          use_gridspec=True)
         if bar_label is not None:
             cb.set_label(bar_label)
     if xlog:
