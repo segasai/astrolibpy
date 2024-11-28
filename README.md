@@ -1,7 +1,9 @@
 # astrolibpy 
-### This library contains a few routines I wrote or I converted from IDL.
-### Author (2008-2024) Sergey Koposov
-### Email: skoposov __AT__ ed __DOT__ ac __DOT__ uk
+### This library contains a few astronomy routines that I wrote or I converted from IDL.
+
+Author (2008-2024) Sergey Koposov
+
+Email: skoposov __AT__ ed __DOT__ ac __DOT__ uk
 
 The tools that may be still interesting to other users are 
 * idlsave.py -- module for saving/restoring sets of variables in a file
@@ -14,10 +16,11 @@ The tools that may be still interesting to other users are
   the options you want. Also allows efficient histogramming, subsetting etc
 
 
+
 The astrolib part of this repo is probably obsolete given the existance of astropy
 
 ### Installation
-This package does not need to be installed in the sense if of 'pip install', so if you
+This package does not need to be installed in the sense of 'pip install', so if you
 want to you use it, you can either copy a script that you want and add it to the current
 directory or clone the repo and add the path to PYTHONPATH
 
