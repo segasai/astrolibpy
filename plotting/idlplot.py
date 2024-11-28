@@ -921,6 +921,8 @@ def tvhist2d(x,
 
     x1 = listToArrFlat(x)
     y1 = listToArrFlat(y)
+    if weights is not None:
+        weights1 = listToArrFlat(weights)
 
     xmin = __parse_limit(xmin, x1, np.nanmin)
     xmax = __parse_limit(xmax, x1, np.nanmax)
@@ -947,7 +949,7 @@ def tvhist2d(x,
                                                 x1,
                                                 range=hist_range_ordered,
                                                 bins=binsRev,
-                                                weights=weights)
+                                                weights=weights1)
             if weight_norm:
                 hh1, yedges, xedges = np.histogram2d(y1,
                                                      x1,
@@ -961,7 +963,7 @@ def tvhist2d(x,
             hh = quick_hist.quick_hist((y1, x1),
                                        range=hist_range_ordered,
                                        nbins=binsRev,
-                                       weights=weights)
+                                       weights=weights1)
             if weight_norm:
                 hh1 = quick_hist.quick_hist((y1, x1),
                                             range=hist_range_ordered,
@@ -970,7 +972,7 @@ def tvhist2d(x,
     else:
         hh = scipy.stats.binned_statistic_2d(y1,
                                              x1,
-                                             weights,
+                                             weights1,
                                              statistic,
                                              range=hist_range_ordered,
                                              bins=binsRev).statistic
