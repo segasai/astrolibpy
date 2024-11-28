@@ -309,7 +309,6 @@ def plothist(x,
                                        range=(min, max),
                                        bins=nbins,
                                        weights=weights)
-                print('xx', min, max, nbins)
                 if weight_norm:
                     hh1, loc = np.histogram(dat,
                                             range=(min, max),
