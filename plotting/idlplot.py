@@ -923,7 +923,8 @@ def tvhist2d(x,
     y1 = listToArrFlat(y)
     if weights is not None:
         weights1 = listToArrFlat(weights)
-
+    else:
+        weights1 = None
     xmin = __parse_limit(xmin, x1, np.nanmin)
     xmax = __parse_limit(xmax, x1, np.nanmax)
     ymin = __parse_limit(ymin, y1, np.nanmin)
