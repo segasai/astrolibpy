@@ -265,6 +265,9 @@ def plothist(x,
             weights = weights[ind]
     else:
         dat = x
+    dat = listToArrFlat(dat)
+    if weights is not None:
+        weights = listToArrFlat(weights)
     maxNone = False
     if min is None:
         min = np.nanmin(dat)
@@ -306,7 +309,7 @@ def plothist(x,
                                        range=(min, max),
                                        bins=nbins,
                                        weights=weights)
-
+                print('xx', min, max, nbins)
                 if weight_norm:
                     hh1, loc = np.histogram(dat,
                                             range=(min, max),
@@ -792,7 +795,8 @@ def _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog, zsqrt, im):
 
     if zlog:
         # here comes a special case
-        # if vmin is None and actual minimum is X then it is undistinguishable from
+        # if vmin is None and actual minimum is X then it is
+        # undistinguishable from
         # 0 in log scale, so we set it to 0.9*X
         if vmin is None:
             try:
