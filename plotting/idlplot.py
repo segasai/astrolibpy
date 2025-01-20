@@ -18,8 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 import scipy.stats
-import scipy.ndimage.filters
-import scipy.stats
+import scipy.ndimage
 import matplotlib
 import math
 import copy
@@ -125,7 +124,7 @@ def filter_epa(im, kernsize):
     filt = (1 - r2) * (r2 <= 1)
     filt = filt / filt.sum()
     # IMPORTANT TRANSPOSITION, because the image first dimension is y
-    im1 = scipy.ndimage.filters.convolve(im, filt.T, mode='reflect')
+    im1 = scipy.ndimage.convolve(im, filt.T, mode='reflect')
     return im1
 
 
@@ -135,7 +134,7 @@ def smoother(arr, smooth=None, kernel=None):
             if hasattr(smooth, '__iter__'):
                 smooth = smooth[::-1]
                 # because gaussian_filter convention is second dimension is x
-            arr = scipy.ndimage.filters.gaussian_filter(arr * 1., smooth)
+            arr = scipy.ndimage.gaussian_filter(arr * 1., smooth)
         elif kernel == 'epa':
             arr = filter_epa(arr * 1., smooth)
         else:
@@ -781,11 +780,9 @@ def tvaxis(image,
 
 def _set_vminmax_norm(vmin, vminfrac, vmax, vmaxfrac, zlog, zsqrt, im):
     if vminfrac is not None and vmin is None:
-        vmin = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
-                                             100 * vminfrac)
+        vmin = np.percentile(im[np.isfinite(im)], 100 * vminfrac)
     if vmaxfrac is not None and vmax is None:
-        vmax = scipy.stats.scoreatpercentile(im[np.isfinite(im)],
-                                             100 * vmaxfrac)
+        vmax = np.percentile(im[np.isfinite(im)], 100 * vmaxfrac)
     if vmin is not None and vmax is not None and vmin >= vmax:
         warnings.warn("vmin is >= vmax... Resetting their values",
                       RuntimeWarning)
@@ -815,7 +812,7 @@ def __parse_limit(val, x, oper=None):
     if isinstance(val, str):
         if val[0] == 'p':
             perc = float(val[1:])
-            return scipy.stats.scoreatpercentile(x[np.isfinite(x)], perc)
+            return np.percentile(x[np.isfinite(x)], perc)
         else:
             raise ValueError('unsupported limit format %s' % (val))
     if val is not None:
@@ -1137,9 +1134,6 @@ def contour(z,
             c_charsize=12.0,
             c_thick=1,
             thick=1,
-            font="monospace",
-            weight="normal",
-            charsize=14.0,
             bar=True,
             fill=True,
             overplot=False,
@@ -1271,13 +1265,7 @@ def contour(z,
 # Add contour lines:
     if c_levels is None:
         c_levels = levels  # [0:len(levels):int(nlevels/12)]
-    cset2 = axis.contour(x,
-                         y,
-                         z,
-                         c_levels,
-                         colors=c_color,
-                         linewidths=c_thick,
-                         hold='on')
+    cset2 = axis.contour(x, y, z, c_levels, colors=c_color, linewidths=c_thick)
     if label is not None:
         cset2.collections[0].set_label(label)
 # Do not display dashed contours for negative values:
