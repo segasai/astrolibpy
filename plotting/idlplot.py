@@ -725,6 +725,8 @@ def tvaxis(image,
         mypos[2] = position[2] - position[0]
         mypos[3] = position[3] - position[1]
         plt.axes(mypos)
+
+    axis = plt.gca()
     if xmin is None:
         xmin = 0
     if ymin is None:
@@ -756,13 +758,13 @@ def tvaxis(image,
                       origin='lower',
                       **kw)
     if xlog:
-        plt.gca().set_xscale('log')
+        axis.set_xscale('log')
     if ylog:
-        plt.gca().set_yscale('log')
+        axis.set_yscale('log')
 
-    plt.gca().set_xlabel(xtitle)
-    plt.gca().set_ylabel(ytitle)
-    plt.gca().minorticks_on()
+    axis.set_xlabel(xtitle)
+    axis.set_ylabel(ytitle)
+    axis.minorticks_on()
 
     if title is not None:
         plt.title(title)
@@ -1191,11 +1193,11 @@ def contour(z,
 # Define position of this plot:
     if not noerase and not overplot:
         plt.gcf().clf()
-        if position is not None:
-            mypos = position[:]
-            mypos[2] = position[2] - position[0]
-            mypos[3] = position[3] - position[1]
-            plt.axes(mypos)
+    if position is not None:
+        mypos = position[:]
+        mypos[2] = position[2] - position[0]
+        mypos[3] = position[3] - position[1]
+        plt.axes(mypos)
     axis = plt.gca()
 
     # Rescaling of the axes:
