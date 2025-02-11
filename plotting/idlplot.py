@@ -154,7 +154,7 @@ def exceptionDecorator(func):
         with plt.ioff():
             ret = func(*args, **kwargs)
         if plt.isinteractive():
-            plt.gcf().show()
+            plt.show()
         return ret
 
     wrapper.__doc__ = func.__doc__
