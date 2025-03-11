@@ -10,7 +10,15 @@ def sind(x):
     return np.sin(np.deg2rad(x))
 
 
-def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
+def rotate_pm(ra,
+              dec,
+              pmra,
+              pmdec,
+              rapol=None,
+              decpol=None,
+              mat=None,
+              ra0=None,
+              revert=False):
     """
     Rotate the proper motion to the sphere_rotate coord system 
     that is specified by the pole direction and right ascencion of the (0,0) pt
@@ -37,7 +45,13 @@ def rotate_pm(ra, dec, pmra, pmdec, rapol, decpol, ra0, revert=False):
     ra, dec, pmra, pmdec = [
         np.asarray(np.atleast_1d(_)) for _ in [ra, dec, pmra, pmdec]
     ]
-    M = sphere_rotate.rotation_matrix(rapol, decpol, ra0)
+    if rapol is not None and decpol is not None and ra0 is not None:
+        M = sphere_rotate.rotation_matrix(rapol, decpol, ra0)
+    else:
+        if mat is None:
+            raise Exception(
+                'either rapol,decpol,ra0 or mat needs to be provided')
+        M = mat
     if revert:
         M = M.T
     # unit vectors

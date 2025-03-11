@@ -35,14 +35,27 @@ def rotation_matrix(rapol, decpol, ra0):
     return M
 
 
-def sphere_rotate(ra, dec, rapol, decpol, ra0, revert=False):
+def sphere_rotate(ra,
+                  dec,
+                  rapol=None,
+                  decpol=None,
+                  ra0=None,
+                  revert=False,
+                  mat=None):
     """ rotate ra,dec to a new spherical coordinate system where the pole is
     at rapol,decpol and the zeropoint is at ra=ra0
     revert flag allows to reverse the transformation
     """
 
     x, y, z = torect(ra, dec)
-    M = rotation_matrix(rapol, decpol, ra0)
+    if rapol is not None and decpol is not None and ra0 is not None:
+        M = rotation_matrix(rapol, decpol, ra0)
+    else:
+        if mat is None:
+            raise Exception('matrix or rapol,decpol, ra0'
+                            ' need to be provided')
+        else:
+            M = mat
 
     if not revert:
         Axx, Axy, Axz = M[0]
