@@ -168,9 +168,8 @@ def doit_by_key(tabname,
         The numpy array with ids that will be used for matching
     colstring: string
         The comma sepated list of columns that you want to retrieve
-    radeccols: tuple (optional)
-        The tuple of two strings with the name of ra,dec columns in
-        the remote table. Default ('ra','dec')
+    key_col: string
+        The name of the column in the table used to xmatch (i.e. 'source_id')
     rad: float (optional)
         The cross-match radius in arcseconds (default 1)
     extra: string allows you to specify and additional SQL Where condition
@@ -188,10 +187,9 @@ def doit_by_key(tabname,
 
     Example:
     --------
-    > ra = np.arange(10)
-    > dec = np.arange(10)+5
-    > gmag,rmag= crossmatcher.doit('sdssdr9.phototag', ra,dec,
-           'psfmag_g,psfmag_r', rad=2.)
+    > ids = np.arange(10)
+    > gmag,rmag= crossmatcher.doit('sdssdr9.phototag',ids,
+           'psfmag_g,psfmag_r', key_col ='source_id')
 
     """
     if extra is None:
