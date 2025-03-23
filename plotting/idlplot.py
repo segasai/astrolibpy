@@ -21,11 +21,22 @@ import scipy.stats
 import scipy.ndimage
 import matplotlib
 import math
+import sys
 import copy
 import warnings
 
+
+def _in_notebook():
+    # unfortunately something got changed in
+    # notebooks that
+    # simply plot() and oplot() stopped
+    # working in notebooks, because of the explicit plt.show()
+    return 'ipykernel' in sys.modules
+
+
 # this module is by default in interactive regime
-plt.ion()
+# if not _in_notebook():
+#    plt.ion()
 
 
 def listToArr(x):
@@ -151,10 +162,15 @@ def exceptionDecorator(func):
     """
 
     def wrapper(*args, **kwargs):
-        with plt.ioff():
+        if _in_notebook():
+            # something is broken in interactive/non-interactive modes
+            # in jupyter
             ret = func(*args, **kwargs)
-        if plt.isinteractive():
-            plt.show()
+        else:
+            with plt.ioff():
+                ret = func(*args, **kwargs)
+            if plt.isinteractive():
+                plt.show()
         return ret
 
     wrapper.__doc__ = func.__doc__
