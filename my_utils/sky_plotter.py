@@ -58,7 +58,7 @@ class Info:
         self.ra_shift = ra_shift
 
 
-def make_axes(ra_shift=None, dra_label=30):
+def make_axes(ra_shift=None, dra_label=30, plot_grid=True, grid_linestyle=':'):
     """
     Create a Mollweide projection plot with customized RA labels.
 
@@ -81,7 +81,7 @@ def make_axes(ra_shift=None, dra_label=30):
 
     # Set RA ticks and labels
     plt.xticks(ticks=np.radians(xticks_shift), labels=xtick_labels, rotation=0)
-    plt.grid(True)
+    plt.grid(plot_grid, linestyle=grid_linestyle)
 
     # Set custom coordinate formatter
     ax.format_coord = Formatter(ra_shift)
