@@ -58,7 +58,7 @@ class Info:
         self.ra_shift = ra_shift
 
 
-def make_axes(ra_shift=None, dra_lab=30):
+def make_axes(ra_shift=None, dra_label=30):
     """
     Create a Mollweide projection plot with customized RA labels.
 
@@ -66,7 +66,7 @@ def make_axes(ra_shift=None, dra_lab=30):
     ----------
     ra_shift : float, optional
         Shift in right ascension (degrees). Default is 0.
-    dra_lab : int, optional
+    dra_label : int, optional
         Step size for RA labels (degrees). Default is 30.
     """
     if ra_shift is None:
@@ -74,7 +74,7 @@ def make_axes(ra_shift=None, dra_lab=30):
     ax = plt.subplot(111, projection='mollweide')
 
     # Generate RA tick positions and labels
-    xticks = np.arange(0, 360, dra_lab)
+    xticks = np.arange(0, 360, dra_label)
     xticks_shift = (flip * xticks + ra_shift + 360 + 180) % 360 - 180
     xtick_labels = xticks.astype(int)
     xtick_labels = ['{:d}$^o$'.format(i) for i in xtick_labels]
@@ -145,7 +145,7 @@ def _insert_nans(x, ind):
     return x1
 
 
-def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
+def scatter(ra, dec, ra_shift=None, dra_label=30, overplot=False, **kwargs):
     """
     Scatter plot in Mollweide projection.
 
@@ -157,7 +157,7 @@ def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
         Declination (degrees).
     ra_shift : float, optional
         Shift in right ascension (degrees). Default is None.
-    dra_lab : int, optional
+    dra_label : int, optional
         Step size for RA labels (degrees). Default is 30.
     overplot : bool, optional
         If True, reuse the existing axes. Default is False.
@@ -165,7 +165,7 @@ def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
         Additional arguments passed to `plt.scatter`.
     """
     if not overplot:
-        make_axes(ra_shift=ra_shift, dra_lab=dra_lab)
+        make_axes(ra_shift=ra_shift, dra_label=dra_label)
     else:
         ra_shift = plt.gca()._extra.ra_shift
 
@@ -179,7 +179,7 @@ def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
     plt.scatter(ra_rad, dec_rad, **kwargs)
 
 
-def plot(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
+def plot(ra, dec, ra_shift=None, dra_label=30, overplot=False, **kwargs):
     """
     Line plot in Mollweide projection.
 
@@ -191,7 +191,7 @@ def plot(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
         Declination (degrees).
     ra_shift : float, optional
         Shift in right ascension (degrees). Default is None.
-    dra_lab : int, optional
+    dra_label : int, optional
         Step size for RA labels (degrees). Default is 30.
     overplot : bool, optional
         If True, reuse the existing axes. Default is False.
@@ -199,7 +199,7 @@ def plot(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
         Additional arguments passed to `plt.plot`.
     """
     if not overplot:
-        make_axes(ra_shift=ra_shift, dra_lab=dra_lab)
+        make_axes(ra_shift=ra_shift, dra_label=dra_label)
         ra_shift = ra_shift or 0
     else:
         ra_shift = plt.gca()._extra.ra_shift
@@ -221,6 +221,7 @@ def hpx_show(im,
              ra_shift=None,
              overplot=False,
              nest=True,
+             dra_label=30,
              pix_per_deg=10,
              **kwargs):
     """
@@ -249,7 +250,7 @@ def hpx_show(im,
         The plotted HEALPix map.
     """
     if not overplot:
-        make_axes(ra_shift=ra_shift)
+        make_axes(ra_shift=ra_shift, dra_label=dra_label)
         ra_shift = ra_shift or 0
     else:
         ra_shift = plt.gca()._extra.ra_shift
