@@ -230,6 +230,8 @@ def hpx_show(im,
     ----------
     im : ndarray
         HEALPix array (length 12 * nside^2).
+        The assumption that the array is in the same coordinate
+        system as the plot.
     ra_shift : float, optional
         Shift in right ascension (degrees). Default is None.
     overplot : bool, optional
@@ -263,7 +265,7 @@ def hpx_show(im,
     nside = int(round((len(im) / 12)**0.5))
     assert len(im) == 12 * nside**2
     hpx = healpy.ang2pix(nside,
-                         flip * np.rad2deg(lon2d) + ra_shift,
+                         flip * (np.rad2deg(lon2d) - ra_shift),
                          np.rad2deg(lat2d),
                          lonlat=True,
                          nest=nest)
