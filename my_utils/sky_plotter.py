@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import healpy
 
-flip = -1
+flip = -1  # for astronomical convention
 
 
 class Formatter:
@@ -22,6 +22,10 @@ class Info:
 
 
 def make_axes(ra_shift=None, dra_lab=30):
+    """ create the axes
+    dra_lab: is the step in ra labels
+    ra_shift: this is sphere rotation in ra
+    """
     if ra_shift is None:
         ra_shift = 0
     ax = plt.subplot(111, projection='mollweide')
@@ -40,12 +44,12 @@ def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
     """
     Scatter plot in Mollweide
     Parameters
-    ----------                                                                                  
-    ra : array                                                                        
-        right ascension in deg                                                               
-    dec : array                                                                        
+    ----------
+    ra : array
+        right ascension in deg
+    dec : array
         declination in deg
-    ra_shift: shift in right ascension
+    ra_shift: shift/rotation in right ascension
     """
     if not overplot:
         make_axes(ra_shift=ra_shift, dra_lab=dra_lab)
@@ -58,18 +62,22 @@ def scatter(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
     plt.scatter(ra_rad, dec_rad, **kwargs)
 
 
-def line_unwrapper(ra, dec):
+def _line_unwrapper(ra, dec):
+    """
+    when the line crosses the lon=-pi or lon=pi lines
+    put nan there to avoid wrapping of lines
+    """
     dra = np.diff(ra)
     cross = np.abs(dra) > np.pi
-    x1 = insert_nans(ra, cross)
-    y1 = insert_nans(dec, cross)
+    x1 = _insert_nans(ra, cross)
+    y1 = _insert_nans(dec, cross)
     return x1, y1
 
 
-def insert_nans(x, ind):
+def _insert_nans(x, ind):
     """
     x   : original 1D array of length N
-    ind : boolean array of length N-1 
+    ind : boolean array of length N-1
     """
     N = len(x)
     # Number of True entries tells us how many NaNs to insert
@@ -95,12 +103,12 @@ def insert_nans(x, ind):
 
 def plot(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
     """
-    Scatter plot in Mollweide
+    Plot/Line plot in Mollweide
     Parameters
-    ----------                                                                                  
-    ra : array                                                                        
-        right ascension in deg                                                               
-    dec : array                                                                        
+    ----------
+    ra : array
+        right ascension in deg
+    dec : array
         declination in deg
     ra_shift: shift in right ascension
     """
@@ -112,7 +120,7 @@ def plot(ra, dec, ra_shift=None, dra_lab=30, overplot=False, **kwargs):
     ra_rad = np.deg2rad(flip * np.asarray(ra) + ra_shift)
     ra_rad = (ra_rad + 11 * np.pi) % (2 * np.pi) - np.pi
     dec_rad = np.deg2rad(dec)
-    ra_rad1, dec_rad1 = line_unwrapper(ra_rad, dec_rad)
+    ra_rad1, dec_rad1 = _line_unwrapper(ra_rad, dec_rad)
     plt.plot(ra_rad1, dec_rad1, **kwargs)
 
 
@@ -122,10 +130,15 @@ def hpx_show(im,
              nest=True,
              pix_per_deg=10,
              **kwargs):
-    """ 
+    """
+    Plot a HEALPIX array on the mollweide map
     im: ndarray
         Array that needs to be plotted (with the length 12*nside**2)
-    
+    ra_shift: rotation in right ascension
+    overplot: bool
+        To reuse the axes or not
+    pix_per_deg: float
+        How fine should be the discretisation of the healpix map
     """
     if not overplot:
         make_axes(ra_shift=ra_shift)
