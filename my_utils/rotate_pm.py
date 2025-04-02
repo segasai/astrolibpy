@@ -17,7 +17,7 @@ def rotate_pm(ra,
               rapol=None,
               decpol=None,
               ra0=None,
-              revert=False
+              revert=False,
               mat=None,
               ):
     """
