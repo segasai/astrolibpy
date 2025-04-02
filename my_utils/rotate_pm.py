@@ -16,9 +16,10 @@ def rotate_pm(ra,
               pmdec,
               rapol=None,
               decpol=None,
-              mat=None,
               ra0=None,
-              revert=False):
+              revert=False
+              mat=None,
+              ):
     """
     Rotate the proper motion to the sphere_rotate coord system 
     that is specified by the pole direction and right ascencion of the (0,0) pt
