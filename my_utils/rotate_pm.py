@@ -10,18 +10,19 @@ def sind(x):
     return np.sin(np.deg2rad(x))
 
 
-def rotate_pm(ra,
-              dec,
-              pmra,
-              pmdec,
-              rapol=None,
-              decpol=None,
-              ra0=None,
-              revert=False,
-              mat=None,
-              ):
+def rotate_pm(
+    ra,
+    dec,
+    pmra,
+    pmdec,
+    rapol=None,
+    decpol=None,
+    ra0=None,
+    revert=False,
+    mat=None,
+):
     """
-    Rotate the proper motion to the sphere_rotate coord system 
+    Rotate the proper motion to the sphere_rotate coord system
     that is specified by the pole direction and right ascencion of the (0,0) pt
     I assume all angles are in degrees and proper motions are in mas/yr
     Arguments:
@@ -36,7 +37,7 @@ def rotate_pm(ra,
     ra0: float
         RA of the (0,0) point of the new coordinate system
     revert: bool
-        if true do the inverse transformation. I.e. convert 
+        if true do the inverse transformation. I.e. convert
         phi1,phi2,pmphii1,pmphi2
         to pmra,pmdec
     Returns:
