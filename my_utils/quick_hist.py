@@ -63,6 +63,8 @@ def _getcode():
    double curfac = cur_nbins * 1./ (cur_range1- cur_range0);
    for(i=0;i<nx;i++)
    {
+    if (ind[i] == 0) {continue;}
+    // skip if we are already outside the ranges
     cur_pos = (int)floor( ( cur_arr[i]-cur_range0) * curfac);
     if ((cur_pos>=0 ) && (cur_pos<cur_nbins))
     {
