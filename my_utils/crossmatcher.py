@@ -143,7 +143,6 @@ def doit_by_key(tabname,
                 keys,
                 colstring,
                 key_col=None,
-                rad=1.,
                 extra=None,
                 yourkeycol='id',
                 tab_alias='tt',
@@ -170,8 +169,6 @@ def doit_by_key(tabname,
         The comma sepated list of columns that you want to retrieve
     key_col: string
         The name of the column in the table used to xmatch (i.e. 'source_id')
-    rad: float (optional)
-        The cross-match radius in arcseconds (default 1)
     extra: string allows you to specify and additional SQL Where condition
     tab_alias: string
         The alias for the table that you are crossmatching against, so you can
@@ -188,9 +185,9 @@ def doit_by_key(tabname,
     Example:
     --------
     > ids = np.arange(10)
-    > gmag,rmag= crossmatcher.doit('sdssdr9.phototag',ids,
-           'psfmag_g,psfmag_r', key_col ='source_id')
-
+    > my_source_id = np.array([44,42323232])
+    > rv,= crossmatcher.doit_by_key( "gaia_dr3.gaia_source",
+    > my_source_id,   'radial_velocity'    key_col='source_id')
     """
     if extra is None:
         extra = 'true'
