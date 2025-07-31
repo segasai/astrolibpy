@@ -194,10 +194,12 @@ def doit_by_key(tabname,
     preamb = '' or preamb
     RES = sqlutilpy.local_join(str.format(
         """
-            select {colstring} from from mytable as m
-            left join lateral (select * from {tabname} as s where
-            m.id=s.{key_col} and {extra} limit 1) as {tab_alias}
-            on true order by m.xid """, **locals()),
+select {colstring}
+        from mytable as m
+    left join lateral
+        (select * from {tabname} as s where m.id=s.{key_col}
+            and {extra} limit 1) as {tab_alias}
+    on true order by m.xid """, **locals()),
                                'mytable', (keys, np.arange(len(keys))),
                                ('id', 'xid'),
                                preamb=((preamb or '')),
