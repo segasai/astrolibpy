@@ -192,23 +192,22 @@ def doit_by_key(tabname,
     if extra is None:
         extra = 'true'
     preamb = '' or preamb
-    RES = sqlutilpy.local_join(
-        str.format(
-            """
+    RES = sqlutilpy.local_join(str.format(
+        """
             select {colstring} from
                   ( select * from mytable
                   ) as m
             left join lateral (select * from {tabname} as s where
             m.id=s.{key_col} and {extra} limit 1) as {tab_alias}
             on true order by xid """, **locals()),
-        'mytable', (keys, np.arange(len(keys))), ('id', 'xid'),
-        preamb=('set enable_seqscan to off;' + 'set enable_mergejoin to off;' +
-                'set enable_hashjoin to off;' + (preamb or '')),
-        host=host,
-        db=db,
-        user=user,
-        port=(port or 5432),
-        password=password,
-        asDict=asDict,
-        conn=conn)
+                               'mytable', (keys, np.arange(len(keys))),
+                               ('id', 'xid'),
+                               preamb=((preamb or '')),
+                               host=host,
+                               db=db,
+                               user=user,
+                               port=(port or 5432),
+                               password=password,
+                               asDict=asDict,
+                               conn=conn)
     return RES
