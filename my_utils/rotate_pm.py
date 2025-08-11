@@ -23,7 +23,7 @@ def rotate_pm(
 ):
     """
     Rotate the proper motion to the sphere_rotate coord system
-    that is specified by the pole direction and right ascencion of the (0,0) pt
+    that is specified by the pole direction and right ascension of the (0,0) pt
     I assume all angles are in degrees and proper motions are in mas/yr
     Arguments:
     ra:
@@ -37,11 +37,12 @@ def rotate_pm(
     ra0: float
         RA of the (0,0) point of the new coordinate system
     revert: bool
-        if true do the inverse transformation. I.e. convert
-        phi1,phi2,pmphii1,pmphi2
-        to pmra,pmdec
+        if True do the inverse transformation. In this cases the inputs are treated as
+        phi1,phi2,pmphi1,pmphi2
+        and pmra,pmdec are returned
     Returns:
-    pmphi1, pmphi2 in the new coordinate system
+    pmphi1, pmphi2 in the new coordinate system if revert=False
+    pmra,pmdec if revert=True
     """
 
     ra, dec, pmra, pmdec = [
