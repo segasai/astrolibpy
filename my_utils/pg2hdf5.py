@@ -1,5 +1,5 @@
 import numpy
-import psycopg2
+import psycopg
 import threading
 import h5py
 import argparse
@@ -36,7 +36,7 @@ def getConnection(db=None, driver=None, user=None, password=None, host=None):
         conn_str = conn_str + ' user=%s' % user
     if password is not None:
         conn_str = conn_str + ' password=%s' % password
-    conn = psycopg2.connect(conn_str)
+    conn = psycopg.connect(conn_str)
     return conn
 
 
@@ -84,7 +84,7 @@ def get(query,
         filename,
         params=None,
         db="wsdb",
-        driver="psycopg2",
+        driver="psycopg",
         user=None,
         password=None,
         host='localhost',
