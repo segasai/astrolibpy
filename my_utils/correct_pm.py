@@ -18,8 +18,7 @@ k_masyr_kpc = 4.740470463498976
 
 # Get the Sun's velocity vector relative to the GC in Galactocentric Cartesian
 # coordinates (U, V, W)
-v_sun_gal_xyz = GCPARAMS['galcen_v_sun'].get_d_xyz().to_value(
-    kms)  # [U, V, W] in km/s
+v_sun_gal_xyz = GCPARAMS['galcen_v_sun'].xyz.to_value(kms)  # [U, V, W] in km/s
 
 
 # We need the Sun's velocity vector expressed in ICRS Cartesian coordinates
